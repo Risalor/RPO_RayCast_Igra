@@ -7,8 +7,7 @@ void Game::initWindow() {
 
 	window = new sf::RenderWindow(videoMode, windowTitle, windowStyle);
 
-	shape.setRadius(100.f);
-	shape.setFillColor(sf::Color::Green);
+	states.push(new GamePlayState());
 }
 
 void Game::draw() {
@@ -16,7 +15,7 @@ void Game::draw() {
 	window->clear();
 
 	//draw
-	window->draw(shape);
+	states.top()->draw(window);
 
 	//display
 	window->display();
@@ -29,6 +28,8 @@ void Game::update() {
 		if (event.type == sf::Event::Closed)
 			window->close();
 	}
+
+	states.top()->update(0.01f);
 }
 
 Game::Game() {
@@ -37,6 +38,8 @@ Game::Game() {
 
 Game::~Game() {
 	delete window;
+	delete states.top();
+	states.pop();
 }
 
 void Game::run() {

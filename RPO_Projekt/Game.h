@@ -1,10 +1,11 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "GamePlayState.h"
+#include <stack>
 
 class Game {
 private:
 	sf::RenderWindow* window = nullptr;
-	sf::CircleShape shape;
+	std::stack<State*> states;
 	void initWindow();
 	void draw();
 	void update();
