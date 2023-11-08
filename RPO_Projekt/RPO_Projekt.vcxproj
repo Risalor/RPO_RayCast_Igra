@@ -132,12 +132,15 @@
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GamePlayState.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="RPO_Projekt.cpp" />
     <ClCompile Include="State.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
     <ClInclude Include="GamePlayState.h" />
+    <ClInclude Include="global.hpp" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="State.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

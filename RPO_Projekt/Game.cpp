@@ -1,11 +1,12 @@
 #include "Game.h"
 
 void Game::initWindow() {
-	sf::VideoMode videoMode = sf::VideoMode(640.f, 480.f);
+	sf::VideoMode videoMode = sf::VideoMode(720.f, 480.f);
 	auto windowStyle = sf::Style::Default;
 	std::string windowTitle = "RPO Igra";
 
 	window = new sf::RenderWindow(videoMode, windowTitle, windowStyle);
+	window->setFramerateLimit(60);
 
 	states.push(new GamePlayState());
 }

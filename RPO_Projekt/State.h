@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+#include "Map.h"
 class State {
 protected:
 	virtual void initState() = 0;
