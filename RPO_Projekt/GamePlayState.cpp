@@ -18,5 +18,5 @@ void GamePlayState::update(float dt) {
 }
 
 void GamePlayState::draw(sf::RenderTarget* window) {
-	window->draw(shape);
+	map.draw(window);
 }

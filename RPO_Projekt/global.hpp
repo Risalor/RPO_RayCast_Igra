@@ -1,0 +1,6 @@
+
+namespace glb {
+	namespace consts {
+		
+	}
+}

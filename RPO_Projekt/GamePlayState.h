@@ -4,6 +4,7 @@ class GamePlayState : public State {
 private:
 	void initState();
 	sf::CircleShape shape;
+	Map map;
 public:
 	GamePlayState();
 	~GamePlayState();
