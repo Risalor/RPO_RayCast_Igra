@@ -1,4 +1,5 @@
-#include "Map.h"
+﻿#include "Map.h"
+#include <iostream>
 
 Map::Map() {
 	playerPos.x = 22;
@@ -38,7 +39,7 @@ void Map::draw(sf::RenderTarget* window) {
 		plane.x = plane.x * cos(0.1f) - plane.y * sin(0.1f);
 		plane.y = oldPlane.x * sin(0.1f) + plane.y * cos(0.1f);
 	}
-
+	
 	sf::Image img;
 	img.create(screenWidth, screenHeight, sf::Color::Black);
 

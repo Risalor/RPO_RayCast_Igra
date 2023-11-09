@@ -1,8 +1,9 @@
 #include "GamePlayState.h"
 
-void GamePlayState::initState() {
+void GamePlayState::initState()  {
 	shape.setRadius(100.f);
 	shape.setFillColor(sf::Color::Green);
+	player = Player(10.f);
 }
 
 GamePlayState::GamePlayState() : State() {
@@ -14,9 +15,12 @@ GamePlayState::~GamePlayState() {
 }
 
 void GamePlayState::update(float dt) {
-	shape.setPosition(shape.getPosition().x + 1.f * dt, shape.getPosition().y + 1.f * dt);
+	player.update(dt);
+	
 }
 
 void GamePlayState::draw(sf::RenderTarget* window) {
+	
 	map.draw(window);
+	
 }

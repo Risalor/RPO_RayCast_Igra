@@ -134,6 +134,7 @@
     <ClCompile Include="GamePlayState.cpp" />
     <ClCompile Include="global.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="RPO_Projekt.cpp" />
     <ClCompile Include="State.cpp" />
   </ItemGroup>
@@ -142,6 +143,7 @@
     <ClInclude Include="GamePlayState.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="State.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
