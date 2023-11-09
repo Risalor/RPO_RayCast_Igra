@@ -1,12 +1,13 @@
 #include "Map.h"
 
 Map::Map() {
-	playerPos.x = 22;
-	playerPos.y = 12;
+	playerPos.x = 4;
+	playerPos.y = 4;
 	playerDir.x = -1;
 	playerDir.y = 0;
-	plane.x = 0;
+	plane.x = 0.f;
 	plane.y = 0.66f;
+	playerAng = std::atan2(playerDir.y, playerDir.x);
 }
 
 void Map::draw(sf::RenderTarget* window) {
@@ -38,6 +39,11 @@ void Map::draw(sf::RenderTarget* window) {
 		plane.x = plane.x * cos(0.1f) - plane.y * sin(0.1f);
 		plane.y = oldPlane.x * sin(0.1f) + plane.y * cos(0.1f);
 	}
+
+	std::cout << plane.x << " " << plane.y << " " << playerDir.x << " " << playerDir.y << " " << playerPos.x << " " << playerPos.y << "\n";
+
+	/*playerDir.x = cos(rotacija);
+	playerDir.y = sin(rotacija);*/
 
 	sf::Image img;
 	img.create(screenWidth, screenHeight, sf::Color::Black);
