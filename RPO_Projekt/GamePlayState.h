@@ -1,6 +1,5 @@
 #pragma once
 #include "State.h"
-#include "Player.h"
 class GamePlayState : public State {
 private:
 	void initState();

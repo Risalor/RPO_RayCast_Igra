@@ -2,49 +2,25 @@
 #include <iostream>
 
 Map::Map() {
-	playerPos.x = 4;
-	playerPos.y = 4;
-	playerDir.x = -1;
-	playerDir.y = 0;
 	plane.x = 0.f;
 	plane.y = 0.66f;
-	playerAng = std::atan2(playerDir.y, playerDir.x);
 }
 
-void Map::draw(sf::RenderTarget* window) {
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-		if (glb::consts::worldMap[int(playerPos.x + playerDir.x)][int(playerPos.y)] == false) playerPos.x += playerDir.x * 0.1f;
-		if (glb::consts::worldMap[int(playerPos.x)][int(playerPos.y + playerDir.y)] == false) playerPos.y += playerDir.y * 0.1f;
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		if (glb::consts::worldMap[int(playerPos.x - playerDir.y)][int(playerPos.y)] == false) playerPos.x -= playerDir.x * 0.1f;
-		if (glb::consts::worldMap[int(playerPos.x)][int(playerPos.y - playerDir.y)] == false) playerPos.y -= playerDir.y * 0.1f;
-	}
+void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		sf::Vector2f oldDir(playerDir);
-		playerDir.x = playerDir.x * cos(-0.1f) - playerDir.y * sin(-0.1f);
-		playerDir.y = oldDir.x * sin(-0.1f) + playerDir.y * cos(-0.1f);
 		sf::Vector2f oldPlane(plane);
 		plane.x = plane.x * cos(-0.1f) - plane.y * sin(-0.1f);
 		plane.y = oldPlane.x * sin(-0.1f) + plane.y * cos(-0.1f);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		sf::Vector2f oldDir(playerDir);
-		playerDir.x = playerDir.x * cos(0.1f) - playerDir.y * sin(0.1f);
-		playerDir.y = oldDir.x * sin(0.1f) + playerDir.y * cos(0.1f);
 		sf::Vector2f oldPlane(plane);
 		plane.x = plane.x * cos(0.1f) - plane.y * sin(0.1f);
 		plane.y = oldPlane.x * sin(0.1f) + plane.y * cos(0.1f);
 	}
 
-	std::cout << plane.x << " " << plane.y << " " << playerDir.x << " " << playerDir.y << " " << playerPos.x << " " << playerPos.y << "\n";
-
-	/*playerDir.x = cos(rotacija);
-	playerDir.y = sin(rotacija);*/
+	//std::cout << plane.x << " " << plane.y << " " << playerDir.x << " " << playerDir.y << " " << playerPos.x << " " << playerPos.y << "\n";
 
 	sf::Image img;
 	img.create(screenWidth, screenHeight, sf::Color::Black);
@@ -52,12 +28,12 @@ void Map::draw(sf::RenderTarget* window) {
 	for (int i = 0; i < 720; i++) {
 		double cameraX = 2 * i / 720.0 - 1;
 		sf::Vector2f rayDir;
-		rayDir.x = playerDir.x + plane.x * cameraX;
-		rayDir.y = playerDir.y + plane.y * cameraX;
+		rayDir.x = pInfo.getDir().x + plane.x * cameraX;
+		rayDir.y = pInfo.getDir().y + plane.y * cameraX;
 
 		sf::Vector2i map;
-		map.x = static_cast<int>(playerPos.x);
-		map.y = static_cast<int>(playerPos.y);
+		map.x = static_cast<int>(pInfo.getPos().x);
+		map.y = static_cast<int>(pInfo.getPos().y);
 
 		sf::Vector2f sideDist;
 
@@ -73,20 +49,20 @@ void Map::draw(sf::RenderTarget* window) {
 
 		if (rayDir.x < 0) {
 			step.x = -1;
-			sideDist.x = (playerPos.x - map.x) * deltaDist.x;
+			sideDist.x = (pInfo.getPos().x - map.x) * deltaDist.x;
 		}
 		else {
 			step.x = 1;
-			sideDist.x = (map.x + 1.f - playerPos.x) * deltaDist.x;
+			sideDist.x = (map.x + 1.f - pInfo.getPos().x) * deltaDist.x;
 		}
 
 		if (rayDir.y < 0) {
 			step.y = -1;
-			sideDist.y = (playerPos.y - map.y) * deltaDist.y;
+			sideDist.y = (pInfo.getPos().y - map.y) * deltaDist.y;
 		}
 		else {
 			step.y = 1;
-			sideDist.y = (map.y + 1.f - playerPos.y) * deltaDist.y;
+			sideDist.y = (map.y + 1.f - pInfo.getPos().y) * deltaDist.y;
 		}
 
 		while (!hit) {
@@ -107,10 +83,10 @@ void Map::draw(sf::RenderTarget* window) {
 		}
 
 		if (side == 0) {
-			wallDist = (map.x - playerPos.x + (1 - step.x) / 2) / rayDir.x;
+			wallDist = (map.x - pInfo.getPos().x + (1 - step.x) / 2) / rayDir.x;
 		}
 		else {
-			wallDist = (map.y - playerPos.y + (1 - step.y) / 2) / rayDir.y;
+			wallDist = (map.y - pInfo.getPos().y + (1 - step.y) / 2) / rayDir.y;
 		}
 
 		int lineHeight = static_cast<int>(screenHeight / wallDist);
@@ -128,10 +104,6 @@ void Map::draw(sf::RenderTarget* window) {
 		}
 
 		for (int u = drawStart; u < drawEnd; u++) {
-			/*for (int c = i * 6; c < i * 6 + 6; c++) {
-				img.setPixel(c, u, col);
-			}*/
-
 			img.setPixel(i, u, col);
 		}
 	}
