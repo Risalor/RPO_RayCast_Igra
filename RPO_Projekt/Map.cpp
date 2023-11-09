@@ -1,4 +1,5 @@
-#include "Map.h"
+﻿#include "Map.h"
+#include <iostream>
 
 Map::Map() {
 	playerPos.x = 4;
