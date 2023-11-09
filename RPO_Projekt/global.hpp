@@ -1,6 +1,0 @@
-
-namespace glb {
-	namespace consts {
-		
-	}
-}

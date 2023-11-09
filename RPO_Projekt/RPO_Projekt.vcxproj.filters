@@ -30,6 +30,9 @@
     <ClCompile Include="Map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="global.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -41,7 +44,7 @@
     <ClInclude Include="GamePlayState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="global.hpp">
+    <ClInclude Include="global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Map.h">

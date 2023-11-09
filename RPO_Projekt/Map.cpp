@@ -12,13 +12,13 @@ Map::Map() {
 void Map::draw(sf::RenderTarget* window) {
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-		if (worldMap[int(playerPos.x + playerDir.x)][int(playerPos.y)] == false) playerPos.x += playerDir.x * 0.1f;
-		if (worldMap[int(playerPos.x)][int(playerPos.y + playerDir.y)] == false) playerPos.y += playerDir.y * 0.1f;
+		if (glb::consts::worldMap[int(playerPos.x + playerDir.x)][int(playerPos.y)] == false) playerPos.x += playerDir.x * 0.1f;
+		if (glb::consts::worldMap[int(playerPos.x)][int(playerPos.y + playerDir.y)] == false) playerPos.y += playerDir.y * 0.1f;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		if (worldMap[int(playerPos.x - playerDir.y)][int(playerPos.y)] == false) playerPos.x -= playerDir.x * 0.1f;
-		if (worldMap[int(playerPos.x)][int(playerPos.y - playerDir.y)] == false) playerPos.y -= playerDir.y * 0.1f;
+		if (glb::consts::worldMap[int(playerPos.x - playerDir.y)][int(playerPos.y)] == false) playerPos.x -= playerDir.x * 0.1f;
+		if (glb::consts::worldMap[int(playerPos.x)][int(playerPos.y - playerDir.y)] == false) playerPos.y -= playerDir.y * 0.1f;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
@@ -94,7 +94,7 @@ void Map::draw(sf::RenderTarget* window) {
 				side = 1;
 			}
 
-			if (worldMap[map.x][map.y] > 0) {
+			if (glb::consts::worldMap[map.x][map.y] > 0) {
 				hit = true;
 			}
 		}
