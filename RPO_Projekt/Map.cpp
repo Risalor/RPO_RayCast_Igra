@@ -2,8 +2,8 @@
 #include <iostream>
 
 Map::Map() {
-	plane.x = 0.f;
-	plane.y = 0.66f;
+	plane.x = 0.66f;
+	plane.y = 0.f;
 }
 
 void Map::draw(sf::RenderTarget* window, Player& pInfo) {
@@ -20,10 +20,8 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 		plane.y = oldPlane.x * sin(0.1f) + plane.y * cos(0.1f);
 	}
 
-	//std::cout << plane.x << " " << plane.y << " " << playerDir.x << " " << playerDir.y << " " << playerPos.x << " " << playerPos.y << "\n";
-
-	sf::Image img;
-	img.create(screenWidth, screenHeight, sf::Color::Black);
+	sf::Image buffer;
+	buffer.create(screenWidth, screenHeight, sf::Color::Transparent);
 
 	for (int i = 0; i < 720; i++) {
 		double cameraX = 2 * i / 720.0 - 1;
@@ -38,8 +36,8 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 		sf::Vector2f sideDist;
 
 		sf::Vector2f deltaDist;
-		deltaDist.x = (rayDir.y == 0) ? 1e30 : std::abs(1 / rayDir.x);
-		deltaDist.y = (rayDir.x == 0) ? 1e30 : std::abs(1 / rayDir.y);
+		deltaDist.x = std::abs(1 / rayDir.x);
+		deltaDist.y = std::abs(1 / rayDir.y);
 
 		float wallDist;
 		sf::Vector2i step;
@@ -50,17 +48,15 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 		if (rayDir.x < 0) {
 			step.x = -1;
 			sideDist.x = (pInfo.getPos().x - map.x) * deltaDist.x;
-		}
-		else {
+		} else {
 			step.x = 1;
 			sideDist.x = (map.x + 1.f - pInfo.getPos().x) * deltaDist.x;
-		}
-
+		} 
+		
 		if (rayDir.y < 0) {
 			step.y = -1;
 			sideDist.y = (pInfo.getPos().y - map.y) * deltaDist.y;
-		}
-		else {
+		} else {
 			step.y = 1;
 			sideDist.y = (map.y + 1.f - pInfo.getPos().y) * deltaDist.y;
 		}
@@ -70,8 +66,7 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 				sideDist.x += deltaDist.x;
 				map.x += step.x;
 				side = 0;
-			}
-			else {
+			} else {
 				sideDist.y += deltaDist.y;
 				map.y += step.y;
 				side = 1;
@@ -84,8 +79,7 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 
 		if (side == 0) {
 			wallDist = (map.x - pInfo.getPos().x + (1 - step.x) / 2) / rayDir.x;
-		}
-		else {
+		} else {
 			wallDist = (map.y - pInfo.getPos().y + (1 - step.y) / 2) / rayDir.y;
 		}
 
@@ -104,12 +98,12 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 		}
 
 		for (int u = drawStart; u < drawEnd; u++) {
-			img.setPixel(i, u, col);
+			buffer.setPixel(i, u, col);
 		}
 	}
 
 	sf::Texture tex;
-	tex.loadFromImage(img);
+	tex.loadFromImage(buffer);
 	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
 	shp.setTexture(&tex);
 

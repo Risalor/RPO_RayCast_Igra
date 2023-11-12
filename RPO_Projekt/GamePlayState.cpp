@@ -1,8 +1,6 @@
 #include "GamePlayState.h"
 
 void GamePlayState::initState()  {
-	shape.setRadius(100.f);
-	shape.setFillColor(sf::Color::Green);
 	player = Player(10.f);
 }
 

@@ -6,8 +6,8 @@ Player::Player(float speed) :movementSpeed(movementSpeed), rotationSpeed(rotatio
 	
     playerPos.x = 22;
     playerPos.y = 12;
-	playerDir.x = -1;
-	playerDir.y = 0;
+	playerDir.x = 0;
+	playerDir.y = 1;
 	movementSpeed = 10.f;
 	rotationSpeed = 10.f;
 }
@@ -25,7 +25,7 @@ void Player::update(float dt) {
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		if (glb::consts::worldMap[int(playerPos.x - playerDir.y)][int(playerPos.y)] == false) playerPos.x -= playerDir.x * 0.1f;
+		if (glb::consts::worldMap[int(playerPos.x - playerDir.x)][int(playerPos.y)] == false) playerPos.x -= playerDir.x * 0.1f;
 		if (glb::consts::worldMap[int(playerPos.x)][int(playerPos.y - playerDir.y)] == false) playerPos.y -= playerDir.y * 0.1f;
 	}
 
