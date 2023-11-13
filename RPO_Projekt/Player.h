@@ -3,8 +3,7 @@
 #include "global.h"
 
 
-class Player
-{
+class Player {
     sf::Vector2f playerPos;
     sf::Vector2f playerDir;
     float movementSpeed;

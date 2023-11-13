@@ -1,7 +1,7 @@
 #include "Game.h"
 
 void Game::initWindow() {
-	sf::VideoMode videoMode = sf::VideoMode(screenWidth, screenHeight);
+	sf::VideoMode videoMode = sf::VideoMode(screenWidth + 411.42f, screenHeight);
 	auto windowStyle = sf::Style::Default;
 	std::string windowTitle = "RPO Igra";
 

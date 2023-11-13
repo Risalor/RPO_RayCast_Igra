@@ -20,6 +20,11 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 		plane.y = oldPlane.x * sin(0.1f) + plane.y * cos(0.1f);
 	}
 
+	rayCastDraw(window, pInfo);
+	draw2D(window, pInfo);
+}
+
+void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo) {
 	sf::Image buffer;
 	buffer.create(screenWidth, screenHeight, sf::Color::Transparent);
 
@@ -48,15 +53,17 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 		if (rayDir.x < 0) {
 			step.x = -1;
 			sideDist.x = (pInfo.getPos().x - map.x) * deltaDist.x;
-		} else {
+		}
+		else {
 			step.x = 1;
 			sideDist.x = (map.x + 1.f - pInfo.getPos().x) * deltaDist.x;
-		} 
-		
+		}
+
 		if (rayDir.y < 0) {
 			step.y = -1;
 			sideDist.y = (pInfo.getPos().y - map.y) * deltaDist.y;
-		} else {
+		}
+		else {
 			step.y = 1;
 			sideDist.y = (map.y + 1.f - pInfo.getPos().y) * deltaDist.y;
 		}
@@ -66,7 +73,8 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 				sideDist.x += deltaDist.x;
 				map.x += step.x;
 				side = 0;
-			} else {
+			}
+			else {
 				sideDist.y += deltaDist.y;
 				map.y += step.y;
 				side = 1;
@@ -79,7 +87,8 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 
 		if (side == 0) {
 			wallDist = (map.x - pInfo.getPos().x + (1 - step.x) / 2) / rayDir.x;
-		} else {
+		}
+		else {
 			wallDist = (map.y - pInfo.getPos().y + (1 - step.y) / 2) / rayDir.y;
 		}
 
@@ -93,7 +102,8 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 
 		if (side == 1) {
 			col = sf::Color::Magenta;
-		} else {
+		}
+		else {
 			col = sf::Color::Blue;
 		}
 
@@ -108,4 +118,29 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo) {
 	shp.setTexture(&tex);
 
 	window->draw(shp);
+}
+
+void Map::draw2D(sf::RenderTarget* window, Player& pInfo) {
+	sf::RectangleShape rect(sf::Vector2f(17.14f, 17.14f));
+	rect.setOutlineThickness(1.f);
+	sf::CircleShape pl(5.f);
+	pl.setFillColor(sf::Color::Green);
+	pl.setPosition(sf::Vector2f((pInfo.getPos().y*17.14f + screenWidth) - 2.5f, (pInfo.getPos().x*17.14f) - 2.5f));
+
+	for (int i = 0; i < mapWidth; i++) {
+		for (int j = 0; j < mapHeight; j++) {
+			if (glb::consts::worldMap[j][i] > 0) {
+				rect.setFillColor(sf::Color::White);
+				rect.setOutlineColor(sf::Color::Black);
+			} else {
+				rect.setFillColor(sf::Color::Black);
+				rect.setOutlineColor(sf::Color::White);
+			}
+
+			rect.setPosition((float)i * 17.14f + screenWidth, (float)j * 17.14f);
+			window->draw(rect);
+		}
+	}
+
+	window->draw(pl);
 }
