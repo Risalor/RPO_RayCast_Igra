@@ -10,6 +10,8 @@ Map::Map() {
 		for (const auto& it : std::filesystem::directory_iterator(folder)) {
 			if (std::filesystem::is_regular_file(it)) {
 				sf::Image img;
+				images.push_back(sf::Image());
+				images[images.size() - 1].loadFromFile(it.path().string());
 				if (img.loadFromFile(it.path().string())) {
 					texture.push_back(std::vector<sf::Color>());
 					texture[texture.size() - 1].resize(texHeight * texWidth);
@@ -27,8 +29,7 @@ Map::Map() {
 				}
 			}
 		}
-	}
-	else {
+	} else {
 		std::cout << "Folder does not exist or is not a directory." << std::endl;
 	}
 }
@@ -175,8 +176,6 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 }
 
 void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInfo) {
-	sf::RectangleShape rect(sf::Vector2f(17.14f, 17.14f));
-	rect.setOutlineThickness(1.f);
 	sf::CircleShape pl(5.f);
 	pl.setFillColor(sf::Color::Green);
 	pl.setPosition(sf::Vector2f((pInfo.getPos().y * 17.14f + screenWidth) - 2.5f, (pInfo.getPos().x * 17.14f) - 2.5f));
@@ -191,14 +190,17 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eI
 
 	for (int i = 0; i < mapWidth; i++) {
 		for (int j = 0; j < mapHeight; j++) {
+			sf::Texture tex;
+			sf::RectangleShape rect(sf::Vector2f(17.14f, 17.14f));
+			//rect.setOutlineThickness(1.f);
 			if (glb::consts::worldMap[j][i] > 0) {
-				rect.setFillColor(sf::Color::White);
-				rect.setOutlineColor(sf::Color::Black);
+				tex.loadFromImage(images[glb::consts::worldMap[j][i] - 1]);
+				rect.setOutlineThickness(1.f);
+				rect.setTexture(&tex);
 			} else {
 				rect.setFillColor(sf::Color::Black);
 				rect.setOutlineColor(sf::Color::White);
 			}
-
 			rect.setPosition((float)i * 17.14f + screenWidth, (float)j * 17.14f);
 			window->draw(rect);
 		}

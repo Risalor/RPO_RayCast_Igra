@@ -11,6 +11,7 @@ private:
 	sf::Vector2f plane;
 	void rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInfo);
 	void draw2D(sf::RenderTarget* window, Player& pInfo , std::vector<Enemy>& eInfo);
+	std::vector<sf::Image> images;
 	std::vector<std::vector<sf::Color>> texture;
 public:
 	Map();
