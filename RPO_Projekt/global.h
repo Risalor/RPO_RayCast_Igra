@@ -2,6 +2,8 @@
 
 #define mapWidth 24
 #define mapHeight 28
+#define texWidth 64
+#define texHeight 64
 #define screenWidth 720
 #define screenHeight 480
 #define M_PI 3.14159265358979323846

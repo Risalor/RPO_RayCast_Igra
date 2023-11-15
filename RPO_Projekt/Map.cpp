@@ -4,6 +4,17 @@
 Map::Map() {
 	plane.x = 0.66f;
 	plane.y = 0.f;
+
+	texture.resize(texHeight * texWidth);
+	sf::Image img;
+	img.loadFromFile("C:\\Projects\\RPO_Projekt\\Assets\\WallTex\\textTex.png");
+	int x = 0;
+	for (int i = 0; i < texWidth; i++) {
+		for (int j = 0; j < texHeight; j++) {
+			texture[x] = img.getPixel(i, j);
+			x++;
+		}
+	}
 }
 
 void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInfo) {
@@ -25,8 +36,8 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInf
 }
 
 void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInfo) {
-	sf::Image buffer;
-	buffer.create(screenWidth, screenHeight, sf::Color::Transparent);
+	sf::Image* buffer = new sf::Image;
+	buffer->create(screenWidth, screenHeight, sf::Color::Transparent);
 
 	for (int i = 0; i < 720; i++) {
 		double cameraX = 2 * i / 720.0 - 1;
@@ -98,24 +109,52 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		int drawEnd = lineHeight / 2 + screenHeight / 2;
 		if (drawEnd >= screenHeight) drawEnd = screenHeight - 1;
 
+		//_____CALC_TEXTURE___//
+
+		int texNum = glb::consts::worldMap[map.x][map.y] - 1;
+		double wallHit;
+
+		if (side == 0) {
+			wallHit = pInfo.getPos().y + wallDist * rayDir.y;
+		} else {
+			wallHit = pInfo.getPos().x + wallDist * rayDir.x;
+		}
+		wallHit -= floor(wallHit);
+
+		int texHit = int(wallHit * double(texWidth));
+
+		if (side == 0 && rayDir.x > 0) {
+			texHit = texWidth - texHit - 1;
+		}
+
+		if (side == 1 && rayDir.y < 0) {
+			texHit = texWidth - texHit - 1;
+		}
+
+		double texStep = 1.f * texHeight / lineHeight;
+		double texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * texStep;
+
 		sf::Color col;
 
-		if (side == 1) {
+		/*if (side == 1) {
 			col = sf::Color::Magenta;
 		}
 		else {
 			col = sf::Color::Blue;
-		}
+		}*/
 
 		for (int u = drawStart; u < drawEnd; u++) {
-			buffer.setPixel(i, u, col);
+			int texY = (int)texPos & (texHeight - 1);
+			texPos += texStep;
+			buffer->setPixel(i, u, texture[texHeight * texY + texHit]);
 		}
 	}
 
 	sf::Texture tex;
-	tex.loadFromImage(buffer);
+	tex.loadFromImage(*buffer);
 	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
 	shp.setTexture(&tex);
+	delete buffer;
 
 	window->draw(shp);
 }
