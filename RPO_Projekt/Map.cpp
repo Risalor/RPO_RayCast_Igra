@@ -1,9 +1,37 @@
 ﻿#include "Map.h"
-#include <iostream>
 
 Map::Map() {
 	plane.x = 0.66f;
 	plane.y = 0.f;
+
+	std::filesystem::path folder("Assets/WallTex");
+
+	if (std::filesystem::exists(folder) && std::filesystem::is_directory(folder)) {
+		for (const auto& it : std::filesystem::directory_iterator(folder)) {
+			if (std::filesystem::is_regular_file(it)) {
+				sf::Image img;
+				images.push_back(sf::Image());
+				images[images.size() - 1].loadFromFile(it.path().string());
+				if (img.loadFromFile(it.path().string())) {
+					texture.push_back(std::vector<sf::Color>());
+					texture[texture.size() - 1].resize(texHeight * texWidth);
+
+					int x = 0;
+					for (int i = 0; i < texWidth; i++) {
+						for (int j = 0; j < texHeight; j++) {
+							texture[texture.size() - 1][x] = img.getPixel(j, i);
+							x++;
+						}
+					}
+				}
+				else {
+					std::cout << "Failed to load image: " << it.path().string() << std::endl;
+				}
+			}
+		}
+	} else {
+		std::cout << "Folder does not exist or is not a directory." << std::endl;
+	}
 }
 
 void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInfo) {
@@ -98,17 +126,44 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		int drawEnd = lineHeight / 2 + screenHeight / 2;
 		if (drawEnd >= screenHeight) drawEnd = screenHeight - 1;
 
+		//_____CALC_TEXTURE___//
+
+		int texNum = glb::consts::worldMap[map.x][map.y] - 1;
+		double wallHit;
+
+		if (side == 0) {
+			wallHit = pInfo.getPos().y + wallDist * rayDir.y;
+		} else {
+			wallHit = pInfo.getPos().x + wallDist * rayDir.x;
+		}
+		wallHit -= floor(wallHit);
+
+		int texHit = int(wallHit * double(texWidth));
+
+		if (side == 0 && rayDir.x > 0) {
+			texHit = texWidth - texHit - 1;
+		}
+
+		if (side == 1 && rayDir.y < 0) {
+			texHit = texWidth - texHit - 1;
+		}
+
+		double texStep = 1.f * texHeight / lineHeight;
+		double texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * texStep;
+
 		sf::Color col;
 
-		if (side == 1) {
+		/*if (side == 1) {
 			col = sf::Color::Magenta;
 		}
 		else {
 			col = sf::Color::Blue;
-		}
+		}*/
 
 		for (int u = drawStart; u < drawEnd; u++) {
-			buffer.setPixel(i, u, col);
+			int texY = (int)texPos & (texHeight - 1);
+			texPos += texStep;
+			buffer.setPixel(i, u, texture[texNum][texHeight * texY + texHit]);
 		}
 	}
 
@@ -121,8 +176,6 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 }
 
 void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInfo) {
-	sf::RectangleShape rect(sf::Vector2f(17.14f, 17.14f));
-	rect.setOutlineThickness(1.f);
 	sf::CircleShape pl(5.f);
 	pl.setFillColor(sf::Color::Green);
 	pl.setPosition(sf::Vector2f((pInfo.getPos().y * 17.14f + screenWidth) - 2.5f, (pInfo.getPos().x * 17.14f) - 2.5f));
@@ -137,14 +190,17 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eI
 
 	for (int i = 0; i < mapWidth; i++) {
 		for (int j = 0; j < mapHeight; j++) {
+			sf::Texture tex;
+			sf::RectangleShape rect(sf::Vector2f(17.14f, 17.14f));
+			//rect.setOutlineThickness(1.f);
 			if (glb::consts::worldMap[j][i] > 0) {
-				rect.setFillColor(sf::Color::White);
-				rect.setOutlineColor(sf::Color::Black);
+				tex.loadFromImage(images[glb::consts::worldMap[j][i] - 1]);
+				rect.setOutlineThickness(1.f);
+				rect.setTexture(&tex);
 			} else {
 				rect.setFillColor(sf::Color::Black);
 				rect.setOutlineColor(sf::Color::White);
 			}
-
 			rect.setPosition((float)i * 17.14f + screenWidth, (float)j * 17.14f);
 			window->draw(rect);
 		}
