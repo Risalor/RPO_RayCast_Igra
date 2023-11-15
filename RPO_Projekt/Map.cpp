@@ -1,19 +1,35 @@
 ﻿#include "Map.h"
-#include <iostream>
 
 Map::Map() {
 	plane.x = 0.66f;
 	plane.y = 0.f;
 
-	texture.resize(texHeight * texWidth);
-	sf::Image img;
-	img.loadFromFile("C:\\Projects\\RPO_Projekt\\Assets\\WallTex\\textTex.png");
-	int x = 0;
-	for (int i = 0; i < texWidth; i++) {
-		for (int j = 0; j < texHeight; j++) {
-			texture[x] = img.getPixel(i, j);
-			x++;
+	std::filesystem::path folder("Assets/WallTex");
+
+	if (std::filesystem::exists(folder) && std::filesystem::is_directory(folder)) {
+		for (const auto& it : std::filesystem::directory_iterator(folder)) {
+			if (std::filesystem::is_regular_file(it)) {
+				sf::Image img;
+				if (img.loadFromFile(it.path().string())) {
+					texture.push_back(std::vector<sf::Color>());
+					texture[texture.size() - 1].resize(texHeight * texWidth);
+
+					int x = 0;
+					for (int i = 0; i < texWidth; i++) {
+						for (int j = 0; j < texHeight; j++) {
+							texture[texture.size() - 1][x] = img.getPixel(i, j);
+							x++;
+						}
+					}
+				}
+				else {
+					std::cout << "Failed to load image: " << it.path().string() << std::endl;
+				}
+			}
 		}
+	}
+	else {
+		std::cout << "Folder does not exist or is not a directory." << std::endl;
 	}
 }
 
@@ -36,8 +52,8 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInf
 }
 
 void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInfo) {
-	sf::Image* buffer = new sf::Image;
-	buffer->create(screenWidth, screenHeight, sf::Color::Transparent);
+	sf::Image buffer;
+	buffer.create(screenWidth, screenHeight, sf::Color::Transparent);
 
 	for (int i = 0; i < 720; i++) {
 		double cameraX = 2 * i / 720.0 - 1;
@@ -146,15 +162,14 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		for (int u = drawStart; u < drawEnd; u++) {
 			int texY = (int)texPos & (texHeight - 1);
 			texPos += texStep;
-			buffer->setPixel(i, u, texture[texHeight * texY + texHit]);
+			buffer.setPixel(i, u, texture[texNum][texHeight * texY + texHit]);
 		}
 	}
 
 	sf::Texture tex;
-	tex.loadFromImage(*buffer);
+	tex.loadFromImage(buffer);
 	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
 	shp.setTexture(&tex);
-	delete buffer;
 
 	window->draw(shp);
 }
