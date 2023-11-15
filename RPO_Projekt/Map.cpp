@@ -17,7 +17,7 @@ Map::Map() {
 					int x = 0;
 					for (int i = 0; i < texWidth; i++) {
 						for (int j = 0; j < texHeight; j++) {
-							texture[texture.size() - 1][x] = img.getPixel(i, j);
+							texture[texture.size() - 1][x] = img.getPixel(j, i);
 							x++;
 						}
 					}
