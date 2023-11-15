@@ -151,15 +151,6 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		double texStep = 1.f * texHeight / lineHeight;
 		double texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * texStep;
 
-		sf::Color col;
-
-		/*if (side == 1) {
-			col = sf::Color::Magenta;
-		}
-		else {
-			col = sf::Color::Blue;
-		}*/
-
 		for (int u = drawStart; u < drawEnd; u++) {
 			int texY = (int)texPos & (texHeight - 1);
 			texPos += texStep;
@@ -192,14 +183,13 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eI
 		for (int j = 0; j < mapHeight; j++) {
 			sf::Texture tex;
 			sf::RectangleShape rect(sf::Vector2f(17.14f, 17.14f));
-			//rect.setOutlineThickness(1.f);
+			rect.setOutlineThickness(1.f);
+			rect.setOutlineColor(sf::Color::Transparent);
 			if (glb::consts::worldMap[j][i] > 0) {
 				tex.loadFromImage(images[glb::consts::worldMap[j][i] - 1]);
-				rect.setOutlineThickness(1.f);
 				rect.setTexture(&tex);
 			} else {
 				rect.setFillColor(sf::Color::Black);
-				rect.setOutlineColor(sf::Color::White);
 			}
 			rect.setPosition((float)i * 17.14f + screenWidth, (float)j * 17.14f);
 			window->draw(rect);
