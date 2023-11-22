@@ -156,6 +156,14 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			texPos += texStep;
 			buffer.setPixel(i, u, texture[texNum][texHeight * texY + texHit]);
 		}
+
+		for (int u = 0; u < drawStart; u++) {
+			buffer.setPixel(i, u, sf::Color(50, 50, 50));
+		}
+
+		for (int u = drawEnd; u < screenHeight; u++) {
+			buffer.setPixel(i, u, sf::Color(255, 255, 255));
+		}
 	}
 
 	sf::Texture tex;
