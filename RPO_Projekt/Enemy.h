@@ -12,6 +12,7 @@ private:
 	sf::Vector2f eTargetPos;
 
 	float eSpeed;
+	float eVision;
 	float eRange;
 
 public:
