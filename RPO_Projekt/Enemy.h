@@ -11,6 +11,10 @@ private:
 	sf::Vector2f eStartPos;
 	sf::Vector2f eTargetPos;
 
+protected:
+
+	int eHealth = 10;
+
 	float eSpeed;
 	float eVision;
 	float eRange;
@@ -26,6 +30,6 @@ public:
 
 	void patrol(float dt);
 	void aggro(float dt);
-	void attack();
 
+	virtual void attack();
 };

@@ -18,11 +18,11 @@ Enemy::Enemy(int spx, int spy, int tpx, int tpy) {
 Enemy::~Enemy() {}
 
 bool isVisible(const sf::Vector2f& pPos, const sf::Vector2f& ePos) {
-	int pTileX = static_cast<int>(pPos.x);
-	int pTileY = static_cast<int>(pPos.y);
-
-	int eTileX = static_cast<int>(ePos.x);
-	int eTileY = static_cast<int>(ePos.y);
+	int pTileX = int(pPos.x);
+	int pTileY = int(pPos.y);
+				 
+	int eTileX = int(ePos.x);
+	int eTileY = int(ePos.y);
 
 	int dx = abs(eTileX - pTileX);
 	int dy = abs(eTileY - pTileY);

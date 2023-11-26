@@ -34,7 +34,7 @@ Map::Map() {
 	}
 }
 
-void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInfo) {
+void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo) {
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
 		sf::Vector2f oldPlane(plane);
@@ -52,7 +52,7 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInf
 	draw2D(window, pInfo, eInfo);
 }
 
-void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInfo) {
+void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo) {
 	sf::Image buffer;
 	buffer.create(screenWidth, screenHeight, sf::Color::Transparent);
 
@@ -174,7 +174,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 	window->draw(shp);
 }
 
-void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eInfo) {
+void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo) {
 	sf::CircleShape pl(5.f);
 	pl.setFillColor(sf::Color::Green);
 	pl.setPosition(sf::Vector2f((pInfo.getPos().y * 17.14f + screenWidth) - 2.5f, (pInfo.getPos().x * 17.14f) - 2.5f));
@@ -183,7 +183,7 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy>& eI
 	for (int i = 0; i < eInfo.size(); i++) {
 		sf::CircleShape en(5.f);
 		en.setFillColor(sf::Color::Red);
-		en.setPosition(sf::Vector2f((eInfo[i].getPos().y * 17.14f + screenWidth) - 2.5f, (eInfo[i].getPos().x * 17.14f) - 2.5f));
+		en.setPosition(sf::Vector2f((eInfo[i]->getPos().y * 17.14f + screenWidth) - 2.5f, (eInfo[i]->getPos().x * 17.14f) - 2.5f));
 		enCircles.push_back(en);
 	}
 

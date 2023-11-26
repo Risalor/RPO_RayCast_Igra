@@ -133,6 +133,8 @@
   <ItemGroup>
     <ClCompile Include="Armor.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyMelee.cpp" />
+    <ClCompile Include="EnemyRange.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GamePlayState.cpp" />
     <ClCompile Include="global.cpp" />
@@ -147,6 +149,8 @@
   <ItemGroup>
     <ClInclude Include="Armor.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyMelee.h" />
+    <ClInclude Include="EnemyRange.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GamePlayState.h" />
     <ClInclude Include="global.h" />

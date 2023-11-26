@@ -2,8 +2,8 @@
 
 void GamePlayState::initState()  {
 	player = Player(10.f);
-	enemy.push_back(Enemy(2, 3, 6, 5));
-	enemy.push_back(Enemy(6, 17, 7, 18));
+	enemy.push_back(new EnemyMelee(2, 3, 6, 5));
+	enemy.push_back(new EnemyRange(6, 17, 7, 18));
 	Inventory inv;
 	inv.addItem(Weapon(0,10,"sword"));
 	inv.addItem(Weapon(0, 10, "AK-47"));
@@ -31,7 +31,7 @@ GamePlayState::~GamePlayState() {
 void GamePlayState::update(float dt) {
 	player.update(dt);
 	for (int i = 0; i < enemy.size(); i++) {
-		enemy[i].update(dt, player.getPos());	
+		enemy[i]->update(dt, player.getPos());	
 	}
 }
 

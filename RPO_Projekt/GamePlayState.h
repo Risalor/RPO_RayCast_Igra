@@ -5,7 +5,7 @@ private:
 	void initState();
 	Player player;
 	
-	std::vector<Enemy> enemy;
+	std::vector<Enemy*> enemy;
 	Map map;
 public:
 	GamePlayState();
