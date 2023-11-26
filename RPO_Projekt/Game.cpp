@@ -24,13 +24,12 @@ void Game::draw() {
 
 void Game::update() {
 	sf::Event event;
-	while (window->pollEvent(event))
-	{
+	while (window->pollEvent(event)) {
 		if (event.type == sf::Event::Closed)
 			window->close();
 	}
 
-	states.top()->update(0.01f);
+	states.top()->update(deltaTime);
 }
 
 Game::Game() {
@@ -44,8 +43,11 @@ Game::~Game() {
 }
 
 void Game::run() {
+	sf::Clock cl;
 	while (window->isOpen()) {
 		update();
 		draw();
+		deltaTime = cl.restart().asSeconds();
+		std::cout << deltaTime << "\n";
 	}
 }

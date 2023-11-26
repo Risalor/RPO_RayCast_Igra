@@ -6,6 +6,7 @@ class Game {
 private:
 	sf::RenderWindow* window = nullptr;
 	std::stack<State*> states;
+	float deltaTime;
 	void initWindow();
 	void draw();
 	void update();
