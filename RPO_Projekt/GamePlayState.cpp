@@ -1,6 +1,6 @@
 #include "GamePlayState.h"
 
-void GamePlayState::initState()  {
+void GamePlayState::initState() {
 	player = Player(10.f);
 	enemy.push_back(Enemy(2, 3, 6, 5));
 	enemy.push_back(Enemy(6, 17, 7, 18));
@@ -28,10 +28,14 @@ GamePlayState::~GamePlayState() {
 
 }
 
-void GamePlayState::update(float dt) {
+void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 	player.update(dt);
 	for (int i = 0; i < enemy.size(); i++) {
 		enemy[i].update(dt, player.getPos());	
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+		State::trigger = StateTrigger::END_STATE;
 	}
 }
 

@@ -10,7 +10,7 @@ private:
 public:
 	GamePlayState();
 	~GamePlayState();
-	void update(float dt);
+	void update(float dt, sf::Vector2f mousePos);
 	void draw(sf::RenderTarget* window);
 };
 
