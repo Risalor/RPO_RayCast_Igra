@@ -1,5 +1,5 @@
 #pragma once
-#include "GamePlayState.h"
+#include "MainMenuState.h"
 #include <stack>
 
 class Game {
@@ -10,6 +10,7 @@ private:
 	void initWindow();
 	void draw();
 	void update();
+	void manageStates();
 public:
 	Game();
 	~Game();

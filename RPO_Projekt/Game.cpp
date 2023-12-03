@@ -8,7 +8,7 @@ void Game::initWindow() {
 	window = new sf::RenderWindow(videoMode, windowTitle, windowStyle);
 	window->setFramerateLimit(60);
 
-	states.push(new GamePlayState());
+	states.push(new MainMenuState());
 }
 
 void Game::draw() {
@@ -28,8 +28,31 @@ void Game::update() {
 		if (event.type == sf::Event::Closed)
 			window->close();
 	}
+	states.top()->update(deltaTime, window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
+}
 
-	states.top()->update(deltaTime);
+void Game::manageStates() {
+	switch (states.top()->getTrigger()) {
+	case StateTrigger::END_GAME:
+		while (states.empty()) {
+			delete states.top();
+			states.pop();
+		}
+		window->close();
+		break;
+	case StateTrigger::START_GAME:
+		states.top()->setTrigger(StateTrigger::NO_TRIGGER);
+		states.push(new GamePlayState());
+		break;
+	case StateTrigger::END_STATE:
+		delete states.top();
+		states.pop();
+		if (states.empty()) {
+			window->close();
+		}
+	default:
+		break;
+	}
 }
 
 Game::Game() {
@@ -48,6 +71,7 @@ void Game::run() {
 		update();
 		draw();
 		deltaTime = cl.restart().asSeconds();
-		std::cout << deltaTime << "\n";
+		manageStates();
+		//std::cout << deltaTime << "\n";
 	}
 }
