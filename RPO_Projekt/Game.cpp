@@ -7,6 +7,7 @@ void Game::initWindow() {
 
 	window = new sf::RenderWindow(videoMode, windowTitle, windowStyle);
 	window->setFramerateLimit(60);
+	window->setMouseCursorVisible(false);
 
 	states.push(new MainMenuState());
 }
@@ -50,6 +51,11 @@ void Game::manageStates() {
 		if (states.empty()) {
 			window->close();
 		}
+		break;
+	case StateTrigger::START_EDITOR:
+		states.top()->setTrigger(StateTrigger::NO_TRIGGER);
+		states.push(new EditorState());
+		break;
 	default:
 		break;
 	}

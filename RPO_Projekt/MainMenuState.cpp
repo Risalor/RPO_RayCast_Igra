@@ -15,6 +15,14 @@ void MainMenuState::initState() {
 	background.setSize(sf::Vector2f(screenWidth + 411.42f, screenHeight));
 	tex.loadFromFile("Assets/Backgrounds/MenuBackground.png");
 	background.setTexture(&tex);
+
+	if (!mouse_up.loadFromFile("Assets/Cursor/cursor.gif")) {
+		std::cout << "Cannot load texture\n";
+	}
+
+	if (!mouse_down.loadFromFile("Assets/Cursor/cursor_down.gif")) {
+		std::cout << "Cannot load texture\n";
+	}
 }
 
 MainMenuState::MainMenuState() : State() {
@@ -29,6 +37,13 @@ void MainMenuState::update(float dt, sf::Vector2f mousePos) {
 	buttons[0].update(mousePos);
 	buttons[1].update(mousePos);
 	buttons[2].update(mousePos);
+
+	mouse.setPosition(mousePos);
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		mouse.setTexture(mouse_down);
+	} else {
+		mouse.setTexture(mouse_up);
+	}
 
 	if (menuMusic.getStatus() == sf::Sound::Status::Stopped) {
 		if (!buffer.loadFromFile("Assets/Music/MainMenu.wav")) {
@@ -60,4 +75,5 @@ void MainMenuState::draw(sf::RenderTarget* window) {
 	buttons[0].draw(window);
 	buttons[1].draw(window);
 	buttons[2].draw(window);
+	window->draw(mouse);
 }
