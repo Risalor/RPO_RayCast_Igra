@@ -1,5 +1,5 @@
 #pragma once
-#include "GamePlayState.h"
+#include "EditorState.h"
 
 class MainMenuState : public State {
 private:
