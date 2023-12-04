@@ -21,7 +21,11 @@ void Button::initTex() {
 
 Button::Button(sf::Vector2f pos, std::string buttonText) {
 
-	if (!buffer.loadFromFile("Assets/Buttons/button.wav")) {
+	if (!hoverBuffer.loadFromFile("Assets/Buttons/button.wav")) {
+		std::cout << "Unable to load sound";
+	}
+
+	if (!pressedBuffer.loadFromFile("Assets/Buttons/buttonClicked.wav")) {
 		std::cout << "Unable to load sound";
 	}
 
@@ -54,10 +58,10 @@ void Button::draw(sf::RenderTarget* window) {
 void Button::update(sf::Vector2f mouseCoord) {
 	if (btn.getGlobalBounds().contains(mouseCoord)) {
 		state = btnState::HOVER;
-		if (sound.getStatus() == sf::Sound::Status::Stopped && playSound) {
+		if (soundHover.getStatus() == sf::Sound::Status::Stopped && playSound) {
 			playSound = false;
-			sound.setBuffer(buffer);
-			sound.play();
+			soundHover.setBuffer(hoverBuffer);
+			soundHover.play();
 		}
 	} else {
 		playSound = true;
@@ -65,11 +69,15 @@ void Button::update(sf::Vector2f mouseCoord) {
 	}
 
 	if (btn.getGlobalBounds().contains(mouseCoord) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		if (soundPressed.getStatus() != sf::Sound::Status::Playing) {
+			soundPressed.setBuffer(pressedBuffer);
+			soundPressed.play();
+		}
 		state = btnState::CLICKED;
 	}
 }
 
-bool Button::clicked() const {
+bool Button::clicked() {
 	if (state == btnState::CLICKED) {
 		return true;
 	} 

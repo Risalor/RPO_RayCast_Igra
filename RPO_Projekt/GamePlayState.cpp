@@ -12,6 +12,15 @@ void GamePlayState::initState() {
 	inv.addItem(Armor( 10, "head"));
 	inv.addItem(Armor( 10, "blaa"));
 	
+	if (!buffer.loadFromFile("Assets/Music/GamePlay.wav")) {
+		std::cout << "Faildes to load soundBuffer\n";
+	}
+
+	music.setBuffer(buffer);
+	music.play();
+
+	music.setLoop(true);
+	music.setVolume(35.f);
 
 	/*for (size_t i = 0;i < inv.getSize();i++) {
 		std::cout << inv[i].debugPrint() << std::endl;
@@ -35,6 +44,8 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+		music.stop();
+		music.resetBuffer();
 		State::trigger = StateTrigger::END_STATE;
 	}
 }

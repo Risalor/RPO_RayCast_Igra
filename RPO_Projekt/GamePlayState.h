@@ -7,6 +7,9 @@ private:
 	
 	std::vector<Enemy*> enemy;
 	Map map;
+
+	sf::Sound music;
+	sf::SoundBuffer buffer;
 public:
 	GamePlayState();
 	~GamePlayState();

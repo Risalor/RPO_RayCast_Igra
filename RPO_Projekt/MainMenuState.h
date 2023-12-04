@@ -5,6 +5,10 @@ class MainMenuState : public State {
 private:
 	void initState();
 	std::vector<Button> buttons;
+	sf::SoundBuffer buffer;
+	sf::Sound menuMusic;
+	sf::RectangleShape background;
+	sf::Texture tex;
 public:
 	MainMenuState();
 	~MainMenuState();

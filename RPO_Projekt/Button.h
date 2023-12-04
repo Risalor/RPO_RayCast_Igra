@@ -11,8 +11,9 @@ private:
 	btnState state;
 	sf::Font font;
 	sf::Text text;
-	sf::SoundBuffer buffer;
-	sf::Sound sound;
+	sf::SoundBuffer hoverBuffer;
+	sf::SoundBuffer pressedBuffer;
+	sf::Sound soundHover, soundPressed;
 	bool playSound;
 	void initTex();
 public:
@@ -20,5 +21,5 @@ public:
 	~Button();
 	void draw(sf::RenderTarget* window);
 	void update(sf::Vector2f mouseCoord);
-	bool clicked() const;
+	bool clicked();
 };
