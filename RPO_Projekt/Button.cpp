@@ -69,8 +69,10 @@ void Button::update(sf::Vector2f mouseCoord) {
 	}
 
 	if (btn.getGlobalBounds().contains(mouseCoord) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-		soundPressed.setBuffer(pressedBuffer);
-		soundPressed.play();
+		if (soundPressed.getStatus() != sf::Sound::Status::Playing) {
+			soundPressed.setBuffer(pressedBuffer);
+			soundPressed.play();
+		}
 		state = btnState::CLICKED;
 	}
 }

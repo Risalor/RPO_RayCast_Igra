@@ -1,6 +1,6 @@
 //#include "Map.h"
 #include "Button.h"
-enum StateTrigger { START_GAME, END_STATE, END_GAME, NO_TRIGGER };
+enum StateTrigger { START_GAME, END_STATE, END_GAME, NO_TRIGGER, START_EDITOR };
 
 class State {
 protected:
