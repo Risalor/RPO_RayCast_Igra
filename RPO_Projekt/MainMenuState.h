@@ -1,5 +1,5 @@
 #pragma once
-#include "GamePlayState.h"
+#include "EditorState.h"
 
 class MainMenuState : public State {
 private:
@@ -9,6 +9,9 @@ private:
 	sf::Sound menuMusic;
 	sf::RectangleShape background;
 	sf::Texture tex;
+
+	sf::Sprite mouse;
+	sf::Texture mouse_up, mouse_down;
 public:
 	MainMenuState();
 	~MainMenuState();
