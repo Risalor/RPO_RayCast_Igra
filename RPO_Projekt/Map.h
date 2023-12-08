@@ -8,6 +8,8 @@
 #include <cmath>
 #include <iostream>
 #include <filesystem>
+#include <fstream>
+#include <sstream>
 
 class Map {
 private:

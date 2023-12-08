@@ -29,7 +29,24 @@ void GamePlayState::initState() {
 	
 }
 
+void GamePlayState::initMap() {
+	std::fstream file("Assets/Maps/MapLay.ors", std::ios::in | std::ios::binary);
+
+	if (file.is_open()) {
+		for (int i = 0; i < mapHeight; i++) {
+			for (int j = 0; j < mapWidth; j++) {
+				int num = 0;
+				file.read(reinterpret_cast<char*>(&num), sizeof(num));
+				glb::consts::worldMap[i][j] = num;
+			}
+		}
+	}
+
+	file.close();
+}
+
 GamePlayState::GamePlayState() : State() {
+	initMap();
 	initState();
 }
 

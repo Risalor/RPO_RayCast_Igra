@@ -25,6 +25,10 @@ void EditorState::initState() {
 	if (!mouse_down.loadFromFile("Assets/Cursor/cursor_down.gif")) {
 		std::cout << "Cannot load texture\n";
 	}
+
+	buttons.push_back(Button(sf::Vector2f(700.f, 200.f), "Clear"));
+	buttons.push_back(Button(sf::Vector2f(700.f, 100.f), "Save"));
+	buttons.push_back(Button(sf::Vector2f(700.f, 300.f), "Load"));
 }
 
 void EditorState::loadTextures() {
@@ -73,6 +77,48 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 		State::trigger = StateTrigger::END_STATE;
 	}
 
+	buttons.at(0).update(mousePos);
+	buttons.at(1).update(mousePos);
+	buttons.at(2).update(mousePos);
+
+	if (buttons.at(0).clicked()) {
+		for (auto& it : tile) {
+			for (auto& it2 : it) {
+				it2.rect.setTexture(nullptr);
+				it2.texNum = 0;
+			}
+		}
+	}
+
+	if (buttons.at(1).clicked()) {
+		std::fstream file("Assets/Maps/MapLay.ors", std::ios::out | std::ios::binary);
+
+		for (auto& it : tile) {
+			for (auto& it2 : it) {
+				file.write(reinterpret_cast<const char*>(&it2.texNum), sizeof(it2.texNum));
+			}
+		}
+
+		file.close();
+	}
+
+	if (buttons.at(2).clicked()) {
+		std::fstream file("Assets/Maps/MapLay.ors", std::ios::in | std::ios::binary);
+
+		if (file.is_open()) {
+			for (int i = 0; i < mapHeight; i++) {
+				for (int j = 0; j < mapWidth; j++) {
+					int num = 0;
+					file.read(reinterpret_cast<char*>(&num), sizeof(num));
+					tile.at(i).at(j).texNum = num;
+					tile.at(i).at(j).tex = selection.at(num).tex;
+				}
+			}
+		}
+
+		file.close();
+	}
+
 	for (auto& it : selection) {
 		if (it.rect.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			selected = it.texNum;
@@ -109,6 +155,10 @@ void EditorState::draw(sf::RenderTarget* window) {
 	for (auto& it : selection) {
 		window->draw(it.getRect());
 	}
+
+	buttons.at(0).draw(window);
+	buttons.at(1).draw(window);
+	buttons.at(2).draw(window);
 
 	window->draw(mouse);
 }

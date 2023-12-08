@@ -41,6 +41,8 @@ private:
 	sf::Sound music;
 	std::vector<std::vector<MapTile>> tile;
 
+	std::vector<Button> buttons;
+
 	std::vector<MapTile> selection;
 
 	int selected;
