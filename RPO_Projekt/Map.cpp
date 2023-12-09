@@ -3,6 +3,11 @@
 Map::Map() {
 	plane.x = 0.66f;
 	plane.y = 0.f;
+	ceil.setSize(sf::Vector2f(720.f, screenHeight / 2));
+	ceil.setFillColor(sf::Color(50, 50, 50));
+	floo.setSize(sf::Vector2f(720.f, screenHeight / 2));
+	floo.setFillColor(sf::Color(255, 255, 255));
+	floo.setPosition(sf::Vector2f(0.f, screenHeight / 2));
 
 	std::filesystem::path folder("Assets/WallTex");
 
@@ -56,6 +61,10 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 	sf::Image buffer;
 	buffer.create(screenWidth, screenHeight, sf::Color::Transparent);
 	std::vector<Wall> wall;
+
+	int hitSide = -1;
+	int wallDistMem = 0;
+	sf::Vector2i mapMem(-1, -1);
 
 	for (int i = 0; i < 720; i++) {
 		double cameraX = 2 * i / 720.0 - 1;
@@ -149,6 +158,35 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			texHit = texWidth - texHit - 1;
 		}
 
+		if (map.x != mapMem.x || map.y != mapMem.y || side != hitSide) {
+			mapMem = map;
+			hitSide = side;
+
+			if (!wall.empty()) {
+				wall.at(wall.size() - 1).wallDist2 = wallDistMem;
+			}
+
+			wall.push_back(Wall());
+			wall.at(wall.size() - 1).wallDist1 = (int)wallDist;
+			wall.at(wall.size() - 1).texNum = texNum;
+			wall.at(wall.size() - 1).line.push_back(HorizontalLine());
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).end = drawEnd;
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).start = drawStart;
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texStep = 1.f * texHeight / lineHeight;
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texStep;
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texX = texHit;
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).x = i;
+		} else {
+			wall.at(wall.size() - 1).line.push_back(HorizontalLine());
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).end = drawEnd;
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).start = drawStart;
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texStep = 1.f * texHeight / lineHeight;
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texStep;
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texX = texHit;
+			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).x = i;
+			wallDistMem = (int)wallDist;
+		}
+
 		//double texStep = 1.f * texHeight / lineHeight;
 		//double texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * texStep;
 
@@ -176,8 +214,6 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		}*/
 	}
 
-
-
 	/*for (auto& it : line) {
 		for (int u = it.start; u < it.end; u++) {
 			int texY = (int)it.texPos & (texHeight - 1);
@@ -186,11 +222,23 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		}
 	}*/
 
+	for (auto& it : wall) {
+		for (auto& it2 : it.line) {
+			for (int u = it2.start; u < it2.end; u++) {
+				int texY = (int)it2.texPos & (texHeight - 1);
+				it2.texPos += it2.texStep;
+				buffer.setPixel(it2.x, u, texture[it.texNum][texHeight * texY + it2.texX]);
+			}
+		}
+	}
+
 	sf::Texture tex;
 	tex.loadFromImage(buffer);
 	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
 	shp.setTexture(&tex);
 
+	window->draw(ceil);
+	window->draw(floo);
 	window->draw(shp);
 }
 
