@@ -3,11 +3,6 @@
 Map::Map() {
 	plane.x = 0.66f;
 	plane.y = 0.f;
-	ceil.setSize(sf::Vector2f(720.f, screenHeight / 2));
-	ceil.setFillColor(sf::Color(50, 50, 50));
-	floo.setSize(sf::Vector2f(720.f, screenHeight / 2));
-	floo.setFillColor(sf::Color(255, 255, 255));
-	floo.setPosition(sf::Vector2f(0.f, screenHeight / 2));
 
 	std::filesystem::path folder("Assets/WallTex");
 
@@ -15,8 +10,8 @@ Map::Map() {
 		for (const auto& it : std::filesystem::directory_iterator(folder)) {
 			if (std::filesystem::is_regular_file(it)) {
 				sf::Image img;
-				images.push_back(sf::Image());
-				images[images.size() - 1].loadFromFile(it.path().string());
+				textures.push_back(sf::Texture());
+				textures.at(textures.size() - 1).loadFromFile(it.path().string());
 				if (img.loadFromFile(it.path().string())) {
 					texture.push_back(std::vector<sf::Color>());
 					texture[texture.size() - 1].resize(texHeight * texWidth);
@@ -187,40 +182,14 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			wallDistMem = (int)wallDist;
 		}
 
-		//double texStep = 1.f * texHeight / lineHeight;
-		//double texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * texStep;
-
-		/*for (int u = drawStart; u < drawEnd; u++) {
-			int texY = (int)texPos & (texHeight - 1);
-			texPos += texStep;
-			buffer.setPixel(i, u, texture[texNum][texHeight * texY + texHit]);
-		}*/
-
-		/*line.at(line.size() - 1).texNum = texNum;
-		line.at(line.size() - 1).x = i;
-		line.at(line.size() - 1).wallDist = wallDist;
-		line.at(line.size() - 1).end = drawEnd;
-		line.at(line.size() - 1).start = drawStart;
-		line.at(line.size() - 1).texX = texHit;
-		line.at(line.size() - 1).texStep = 1.f * texHeight / lineHeight;
-		line.at(line.size() - 1).texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * line.at(line.size() - 1).texStep;*/
-
-		/*for (int u = 0; u < drawStart; u++) {
+		for (int u = 0; u < drawStart; u++) {
 			buffer.setPixel(i, u, sf::Color(50, 50, 50));
 		}
 
 		for (int u = drawEnd; u < screenHeight; u++) {
 			buffer.setPixel(i, u, sf::Color(255, 255, 255));
-		}*/
-	}
-
-	/*for (auto& it : line) {
-		for (int u = it.start; u < it.end; u++) {
-			int texY = (int)it.texPos & (texHeight - 1);
-			it.texPos += it.texStep;
-			buffer.setPixel(it.x, u, texture[it.texNum][texHeight * texY + it.texX]);
 		}
-	}*/
+	}
 
 	for (auto& it : wall) {
 		for (auto& it2 : it.line) {
@@ -237,8 +206,6 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
 	shp.setTexture(&tex);
 
-	window->draw(ceil);
-	window->draw(floo);
 	window->draw(shp);
 }
 
@@ -262,8 +229,7 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eI
 			rect.setOutlineThickness(1.f);
 			rect.setOutlineColor(sf::Color::Transparent);
 			if (glb::consts::worldMap[j][i] > 0) {
-				tex.loadFromImage(images[glb::consts::worldMap[j][i] - 1]);
-				rect.setTexture(&tex);
+				rect.setTexture(&textures.at(glb::consts::worldMap[j][i] - 1));
 			} else {
 				rect.setFillColor(sf::Color::Black);
 			}

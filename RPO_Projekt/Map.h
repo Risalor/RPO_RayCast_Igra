@@ -32,7 +32,7 @@ private:
 	sf::Vector2f plane;
 	void rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo);
 	void draw2D(sf::RenderTarget* window, Player& pInfo , std::vector<Enemy*> eInfo);
-	std::vector<sf::Image> images;
+	std::vector<sf::Texture> textures;
 	std::vector<std::vector<sf::Color>> texture;
 	sf::RectangleShape floo;
 	sf::RectangleShape ceil;
