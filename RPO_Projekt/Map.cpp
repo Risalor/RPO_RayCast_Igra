@@ -3,11 +3,6 @@
 Map::Map() {
 	plane.x = 0.66f;
 	plane.y = 0.f;
-	ceil.setSize(sf::Vector2f(720.f, screenHeight / 2));
-	ceil.setFillColor(sf::Color(50, 50, 50));
-	floo.setSize(sf::Vector2f(720.f, screenHeight / 2));
-	floo.setFillColor(sf::Color(255, 255, 255));
-	floo.setPosition(sf::Vector2f(0.f, screenHeight / 2));
 
 	std::filesystem::path folder("Assets/WallTex");
 
@@ -186,6 +181,14 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).x = i;
 			wallDistMem = (int)wallDist;
 		}
+
+		for (int u = 0; u < drawStart; u++) {
+			buffer.setPixel(i, u, sf::Color(50, 50, 50));
+		}
+
+		for (int u = drawEnd; u < screenHeight; u++) {
+			buffer.setPixel(i, u, sf::Color(255, 255, 255));
+		}
 	}
 
 	for (auto& it : wall) {
@@ -203,8 +206,6 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
 	shp.setTexture(&tex);
 
-	window->draw(ceil);
-	window->draw(floo);
 	window->draw(shp);
 }
 
