@@ -11,6 +11,22 @@
 #include <fstream>
 #include <sstream>
 
+struct HorizontalLine {
+	int x;
+	int start;
+	int end;
+	int texX;
+	double texStep;
+	double texPos;
+};
+
+struct Wall {
+	std::vector<HorizontalLine> line;
+	int texNum;
+	int wallDist1;
+	int wallDist2;
+};
+
 class Map {
 private:
 	sf::Vector2f plane;

@@ -55,6 +55,7 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInf
 void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo) {
 	sf::Image buffer;
 	buffer.create(screenWidth, screenHeight, sf::Color::Transparent);
+	std::vector<Wall> wall;
 
 	for (int i = 0; i < 720; i++) {
 		double cameraX = 2 * i / 720.0 - 1;
@@ -115,8 +116,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 		if (side == 0) {
 			wallDist = (map.x - pInfo.getPos().x + (1 - step.x) / 2) / rayDir.x;
-		}
-		else {
+		} else {
 			wallDist = (map.y - pInfo.getPos().y + (1 - step.y) / 2) / rayDir.y;
 		}
 
@@ -136,6 +136,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		} else {
 			wallHit = pInfo.getPos().x + wallDist * rayDir.x;
 		}
+
 		wallHit -= floor(wallHit);
 
 		int texHit = int(wallHit * double(texWidth));
@@ -148,23 +149,42 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			texHit = texWidth - texHit - 1;
 		}
 
-		double texStep = 1.f * texHeight / lineHeight;
-		double texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * texStep;
+		//double texStep = 1.f * texHeight / lineHeight;
+		//double texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * texStep;
 
-		for (int u = drawStart; u < drawEnd; u++) {
+		/*for (int u = drawStart; u < drawEnd; u++) {
 			int texY = (int)texPos & (texHeight - 1);
 			texPos += texStep;
 			buffer.setPixel(i, u, texture[texNum][texHeight * texY + texHit]);
-		}
+		}*/
 
-		for (int u = 0; u < drawStart; u++) {
+		/*line.at(line.size() - 1).texNum = texNum;
+		line.at(line.size() - 1).x = i;
+		line.at(line.size() - 1).wallDist = wallDist;
+		line.at(line.size() - 1).end = drawEnd;
+		line.at(line.size() - 1).start = drawStart;
+		line.at(line.size() - 1).texX = texHit;
+		line.at(line.size() - 1).texStep = 1.f * texHeight / lineHeight;
+		line.at(line.size() - 1).texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * line.at(line.size() - 1).texStep;*/
+
+		/*for (int u = 0; u < drawStart; u++) {
 			buffer.setPixel(i, u, sf::Color(50, 50, 50));
 		}
 
 		for (int u = drawEnd; u < screenHeight; u++) {
 			buffer.setPixel(i, u, sf::Color(255, 255, 255));
-		}
+		}*/
 	}
+
+
+
+	/*for (auto& it : line) {
+		for (int u = it.start; u < it.end; u++) {
+			int texY = (int)it.texPos & (texHeight - 1);
+			it.texPos += it.texStep;
+			buffer.setPixel(it.x, u, texture[it.texNum][texHeight * texY + it.texX]);
+		}
+	}*/
 
 	sf::Texture tex;
 	tex.loadFromImage(buffer);
