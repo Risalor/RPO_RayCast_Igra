@@ -11,6 +11,22 @@
 #include <fstream>
 #include <sstream>
 
+struct HorizontalLine {
+	int x;
+	int start;
+	int end;
+	int texX;
+	double texStep;
+	double texPos;
+};
+
+struct Wall {
+	std::vector<HorizontalLine> line;
+	int texNum;
+	int wallDist1;
+	int wallDist2;
+};
+
 class Map {
 private:
 	sf::Vector2f plane;
@@ -18,6 +34,8 @@ private:
 	void draw2D(sf::RenderTarget* window, Player& pInfo , std::vector<Enemy*> eInfo);
 	std::vector<sf::Image> images;
 	std::vector<std::vector<sf::Color>> texture;
+	sf::RectangleShape floo;
+	sf::RectangleShape ceil;
 public:
 	Map();
 	void draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo);

@@ -78,6 +78,6 @@ void Game::run() {
 		draw();
 		deltaTime = cl.restart().asSeconds();
 		manageStates();
-		//std::cout << deltaTime << "\n";
+		std::cout << deltaTime << "\n";
 	}
 }
