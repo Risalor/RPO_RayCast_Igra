@@ -14,7 +14,7 @@ Player::Player(float speed) :movementSpeed(movementSpeed), rotationSpeed(rotatio
 	this->shiftPressed = false;
 	this->shiftDelayTime = 1.4f;
 	this->shiftTimeCount = 0.f;
-	this->hp = 10;
+	this->hp = 20;
 }
 
 Player::~Player() {
@@ -24,7 +24,9 @@ Player::~Player() {
 void Player::update(float dt) {
 	move(dt);
 
-
+	if (this->hp <= 0) {
+		std::cout << "player DEAD\n";
+	}
 }
 
 

@@ -23,11 +23,16 @@ public:
     
     explicit Player(float speed = 10.0f);
     ~Player();
+
     sf::Vector2f getPos() const { return playerPos; }
     sf::Vector2f getDir() const { return playerDir; }
+
     void update(float dt);
     void move(float dt);
+
     const int& getHp() const { return this->hp;}
+    void setHp(int amount) { this->hp = amount;}
+    void takeDamage(int damage) {this->hp -= damage;}
    
 };
 

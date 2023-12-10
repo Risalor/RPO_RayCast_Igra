@@ -53,14 +53,16 @@ bool isVisible(const sf::Vector2f& pPos, const sf::Vector2f& ePos) {
 	return true;
 }
 
-void Enemy::update(float dt, sf::Vector2f pPos) {
+void Enemy::update(float dt, Player &player) {
+	
+	sf::Vector2f pPos = player.getPos();
 
 	sf::Vector2f pDistanceVector = pPos - ePos;
 	float pDistance = std::sqrt(pDistanceVector.x * pDistanceVector.x + pDistanceVector.y * pDistanceVector.y);
-
+	
 	if (pDistance < eVision && isVisible(pPos, ePos)) {
 		eTargetPos = pPos;
-		aggro(dt);
+		aggro(dt, player);
 	}
 	else {
 		patrol(dt);
@@ -85,14 +87,18 @@ void Enemy::patrol(float dt) {
 	}
 }
 
-void Enemy::aggro(float dt) {
+void Enemy::aggro(float dt, Player& player) {
 	eDir = eTargetPos - ePos;
 
 	float length = std::sqrt(eDir.x * eDir.x + eDir.y * eDir.y);
 	eDir /= length;
 
 	if (abs(ePos.x - eTargetPos.x) < eRange && abs(ePos.y - eTargetPos.y) < eRange) {
-		attack();
+		
+		if (attackTimer.getElapsedTime().asSeconds() >= eCooldown) {
+			attack(player);
+			attackTimer.restart();
+		}
 		return;
 	}
 
@@ -101,6 +107,6 @@ void Enemy::aggro(float dt) {
 	}
 }
 
-void Enemy::attack() {
-
+void Enemy::attack(Player& player) {
+	
 }

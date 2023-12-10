@@ -9,6 +9,6 @@ public:
     EnemyMelee(int spx, int spy, int tpx, int tpy);
     ~EnemyMelee();
 
-    void attack() override;
+    void attack(Player& player) override;
 };
 #pragma once

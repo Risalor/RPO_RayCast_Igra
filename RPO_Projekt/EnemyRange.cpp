@@ -4,10 +4,11 @@ EnemyRange::EnemyRange(int spx, int spy, int tpx, int tpy) : Enemy(spx, spy, tpx
 	eSpeed = 2.f;
 	eVision = 12.f;
 	eRange = 6.f;
+	eCooldown = 0.7f;
 }
 
 EnemyRange::~EnemyRange() {}
 
-void EnemyRange::attack() {
+void EnemyRange::attack(Player& player) {
 
 }

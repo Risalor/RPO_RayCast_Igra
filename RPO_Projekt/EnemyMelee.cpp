@@ -3,11 +3,14 @@
 EnemyMelee::EnemyMelee(int spx, int spy, int tpx, int tpy) : Enemy(spx, spy, tpx, tpy) {
 	eSpeed = 4.f;
 	eVision = 10.f;
-	eRange = 0.5;
+	eRange = 1;
+	eDamage = 2;
+	eCooldown = 1.2f;
 }
 
 EnemyMelee::~EnemyMelee() {}
 
-void EnemyMelee::attack() {
+void EnemyMelee::attack(Player& player) {
 
+	player.takeDamage(eDamage);
 }

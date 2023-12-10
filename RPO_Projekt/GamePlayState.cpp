@@ -57,7 +57,7 @@ GamePlayState::~GamePlayState() {
 void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 	player.update(dt);
 	for (int i = 0; i < enemy.size(); i++) {
-		enemy[i]->update(dt, player.getPos());	
+		enemy[i]->update(dt, player);	
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {

@@ -9,5 +9,5 @@ public:
 	EnemyRange(int spx, int spy, int tpx, int tpy);
     ~EnemyRange();
 
-    void attack() override;
+    void attack(Player& player) override;
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "global.h"
+#include "Player.h"
 #include <iostream>
 
 class Enemy {
@@ -11,6 +12,8 @@ private:
 	sf::Vector2f eStartPos;
 	sf::Vector2f eTargetPos;
 
+	sf::Clock attackTimer;
+
 protected:
 
 	int eHealth = 10;
@@ -18,6 +21,7 @@ protected:
 	float eSpeed;
 	float eVision;
 	float eRange;
+	float eCooldown;
 
 public:
 
@@ -26,10 +30,10 @@ public:
 
 	sf::Vector2f getPos() const { return ePos; }
 
-	void update(float dt, sf::Vector2f pPos);
+	void update(float dt, Player &player);
 
 	void patrol(float dt);
-	void aggro(float dt);
+	void aggro(float dt, Player& player);
 
-	virtual void attack();
+	virtual void attack(Player& player);
 };
