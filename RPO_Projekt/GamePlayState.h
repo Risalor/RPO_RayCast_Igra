@@ -5,8 +5,9 @@ private:
 	void initState();
 	void initMap();
 	Player player;
-	
+
 	std::vector<Enemy*> enemy;
+	static std::vector<Projectile*> projectiles;
 	Map map;
 
 	sf::Sound music;
@@ -16,5 +17,8 @@ public:
 	~GamePlayState();
 	void update(float dt, sf::Vector2f mousePos);
 	void draw(sf::RenderTarget* window);
+
+	static void addProjectile(Projectile* projectile);
+	static void removeProjectile(Projectile* projectile);
 };
 

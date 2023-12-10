@@ -29,12 +29,13 @@ Map::Map() {
 				}
 			}
 		}
-	} else {
+	}
+	else {
 		std::cout << "Folder does not exist or is not a directory." << std::endl;
 	}
 }
 
-void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo) {
+void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo) {
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
 		sf::Vector2f oldPlane(plane);
@@ -48,11 +49,11 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInf
 		plane.y = oldPlane.x * sin(0.1f) + plane.y * cos(0.1f);
 	}
 
-	rayCastDraw(window, pInfo, eInfo);
-	draw2D(window, pInfo, eInfo);
+	rayCastDraw(window, pInfo, eInfo, prInfo);
+	draw2D(window, pInfo, eInfo, prInfo);
 }
 
-void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo) {
+void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo) {
 	sf::Image buffer;
 	buffer.create(screenWidth, screenHeight, sf::Color::Transparent);
 	std::vector<Wall> wall;
@@ -120,7 +121,8 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 		if (side == 0) {
 			wallDist = (map.x - pInfo.getPos().x + (1 - step.x) / 2) / rayDir.x;
-		} else {
+		}
+		else {
 			wallDist = (map.y - pInfo.getPos().y + (1 - step.y) / 2) / rayDir.y;
 		}
 
@@ -137,7 +139,8 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 		if (side == 0) {
 			wallHit = pInfo.getPos().y + wallDist * rayDir.y;
-		} else {
+		}
+		else {
 			wallHit = pInfo.getPos().x + wallDist * rayDir.x;
 		}
 
@@ -171,7 +174,8 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texStep;
 			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texX = texHit;
 			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).x = i;
-		} else {
+		}
+		else {
 			wall.at(wall.size() - 1).line.push_back(HorizontalLine());
 			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).end = drawEnd;
 			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).start = drawStart;
@@ -209,7 +213,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 	window->draw(shp);
 }
 
-void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo) {
+void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo) {
 	sf::CircleShape pl(5.f);
 	pl.setFillColor(sf::Color::Green);
 	pl.setPosition(sf::Vector2f((pInfo.getPos().y * 17.14f + screenWidth) - 2.5f, (pInfo.getPos().x * 17.14f) - 2.5f));
@@ -222,6 +226,16 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eI
 		enCircles.push_back(en);
 	}
 
+	std::vector<sf::CircleShape> prCircles;
+	for (int i = 0; i < prInfo.size(); i++) {
+		sf::CircleShape pr(2.f);
+		if (prInfo[i] != nullptr) {
+			pr.setFillColor(sf::Color::Blue);
+			pr.setPosition(sf::Vector2f((prInfo[i]->getPos().y * 17.14f + screenWidth) - 2.5f, (prInfo[i]->getPos().x * 17.14f) - 2.5f));
+			prCircles.push_back(pr);
+		}		
+	}
+
 	for (int i = 0; i < mapWidth; i++) {
 		for (int j = 0; j < mapHeight; j++) {
 			sf::Texture tex;
@@ -230,7 +244,8 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eI
 			rect.setOutlineColor(sf::Color::Transparent);
 			if (glb::consts::worldMap[j][i] > 0) {
 				rect.setTexture(&textures.at(glb::consts::worldMap[j][i] - 1));
-			} else {
+			}
+			else {
 				rect.setFillColor(sf::Color::Black);
 			}
 			rect.setPosition((float)i * 17.14f + screenWidth, (float)j * 17.14f);
@@ -241,5 +256,8 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eI
 	window->draw(pl);
 	for (int i = 0; i < enCircles.size(); i++) {
 		window->draw(enCircles[i]);
+	}
+	for (int i = 0; i < prCircles.size(); i++) {
+		window->draw(prCircles[i]);
 	}
 }

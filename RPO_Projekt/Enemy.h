@@ -2,10 +2,11 @@
 #include <SFML/Graphics.hpp>
 #include "global.h"
 #include "Player.h"
+#include "Projectile.h"
 #include <iostream>
 
 class Enemy {
-private:
+protected:
 	sf::Vector2f ePos;
 	sf::Vector2f eDir;
 
@@ -30,7 +31,7 @@ public:
 
 	sf::Vector2f getPos() const { return ePos; }
 
-	void update(float dt, Player &player);
+	void update(float dt, Player& player);
 
 	void patrol(float dt);
 	void aggro(float dt, Player& player);
