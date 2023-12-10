@@ -131,8 +131,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationManager.cpp" />
     <ClCompile Include="Armor.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Decoration.cpp" />
     <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyMelee.cpp" />
@@ -147,12 +149,15 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="RPO_Projekt.cpp" />
+    <ClCompile Include="SpriteManager.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationManager.h" />
     <ClInclude Include="Armor.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Decoration.h" />
     <ClInclude Include="EditorState.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyMelee.h" />
@@ -166,6 +171,7 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Projectile.h" />
+    <ClInclude Include="SpriteManager.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
