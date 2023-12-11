@@ -4,6 +4,9 @@ Map::Map() {
 	plane.x = 0.66f;
 	plane.y = 0.f;
 
+	spriteManager.addNewTexture("Assets/WallTex/ztroll-face-meme-png_64x64.png");
+	spriteManager.addNewTexture("Assets/Projectile/projectile.png");
+
 	std::filesystem::path folder("Assets/WallTex");
 
 	if (std::filesystem::exists(folder) && std::filesystem::is_directory(folder)) {
@@ -211,6 +214,63 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 	shp.setTexture(&tex);
 
 	window->draw(shp);
+
+
+	
+	spriteManager.createSprite(0);
+	for (size_t i = 0; i < eInfo.size(); ++i) {
+		sf::Vector2f enemyPos = eInfo[i]->getPos();
+		sf::Vector2f relativePos = enemyPos - pInfo.getPos();
+
+		float invDet = 1.0f / (plane.x * pInfo.getDir().y - pInfo.getDir().x * plane.y);
+		float transformX = invDet * (pInfo.getDir().y * relativePos.x - pInfo.getDir().x * relativePos.y);
+		float transformY = invDet * (-plane.y * relativePos.x + plane.x * relativePos.y);
+
+		if (transformY <= 0) {
+			continue;
+		}
+
+		int spriteScreenX = static_cast<int>((screenWidth / 2) * (1 + transformX / transformY));
+
+		int spriteHeight = std::abs(static_cast<int>(screenHeight / transformY));
+		int spriteScreenY = screenHeight / 2 - spriteHeight / 2;
+
+		sf::Sprite* enemySprite = spriteManager.getSprite(0);
+		enemySprite->setPosition(spriteScreenX, spriteScreenY);
+
+		float scale = static_cast<float>(spriteHeight) / enemySprite->getTextureRect().width;
+		enemySprite->setScale(scale, scale);
+
+		window->draw(*enemySprite);
+	}
+
+	spriteManager.createSprite(1);
+	for (size_t i = 0; i < prInfo.size(); ++i) {
+		sf::Vector2f prPos = prInfo[i]->getPos();
+		sf::Vector2f relativePos = prPos - pInfo.getPos();
+
+		float invDet = 1.0f / (plane.x * pInfo.getDir().y - pInfo.getDir().x * plane.y);
+		float transformX = invDet * (pInfo.getDir().y * relativePos.x - pInfo.getDir().x * relativePos.y);
+		float transformY = invDet * (-plane.y * relativePos.x + plane.x * relativePos.y);
+
+		if (transformY <= 0) {
+			continue;
+		}
+
+		int spriteScreenX = static_cast<int>((screenWidth / 2) * (1 + transformX / transformY));
+
+		int spriteHeight = std::abs(static_cast<int>(screenHeight / transformY));
+		int spriteScreenY = screenHeight / 2 - spriteHeight / 2 + 20; 
+
+		sf::Sprite* enemySprite = spriteManager.getSprite(1);
+		enemySprite->setPosition(spriteScreenX, spriteScreenY);
+
+		float scale = static_cast<float>(spriteHeight) / enemySprite->getTextureRect().width;
+		enemySprite->setScale(scale / 4, scale / 4);
+
+		window->draw(*enemySprite);
+	}
+
 }
 
 void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo) {

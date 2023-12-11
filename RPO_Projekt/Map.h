@@ -6,6 +6,7 @@
 #include "EnemyRange.h"
 #include "EnemyMelee.h"
 #include "Projectile.h"
+#include "SpriteManager.h"
 #include <cmath>
 #include <iostream>
 #include <filesystem>
@@ -37,6 +38,7 @@ private:
 	std::vector<std::vector<sf::Color>> texture;
 	sf::RectangleShape floo;
 	sf::RectangleShape ceil;
+	SpriteManager spriteManager;
 public:
 	Map();
 	void draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo);
