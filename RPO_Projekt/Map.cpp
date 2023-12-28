@@ -1,5 +1,13 @@
 ﻿#include "Map.h"
 
+void Map::handleDoor(Player& pInfo) {
+	if (glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] == 5) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+			glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] = 0;
+		}
+	}
+}
+
 Map::Map() {
 	plane.x = 0.66f;
 	plane.y = 0.f;
@@ -59,6 +67,8 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInf
 void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo) {
 	sf::Image buffer;
 	buffer.create(screenWidth, screenHeight, sf::Color::Transparent);
+
+	handleDoor(pInfo);
 
 	for (int i = 0; i < screenHeight - 1; i++) {
 		sf::Vector2f rayL, rayR;
@@ -188,7 +198,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		if (side == 1 && rayDir.y < 0) {
 			texHit = texWidth - texHit - 1;
 		}
-
+		
 		if (map.x != mapMem.x || map.y != mapMem.y || side != hitSide) {
 			mapMem = map;
 			hitSide = side;

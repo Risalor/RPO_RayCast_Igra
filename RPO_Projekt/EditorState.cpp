@@ -4,7 +4,7 @@ void EditorState::initState() {
 	for (int i = 0; i < mapHeight; i++) {
 		tile.push_back(std::vector<MapTile>());
 		for (int j = 0; j < mapWidth; j++) {
-			tile.at(tile.size() - 1).push_back(MapTile(0, sf::Vector2f(17.f * j, 17.f * i)));
+			tile.at(tile.size() - 1).push_back(MapTile(0, sf::Vector2f(19.f * j, 19.f * i)));
 		}
 	}
 
@@ -29,6 +29,14 @@ void EditorState::initState() {
 	buttons.push_back(Button(sf::Vector2f(700.f, 200.f), "Clear"));
 	buttons.push_back(Button(sf::Vector2f(700.f, 100.f), "Save"));
 	buttons.push_back(Button(sf::Vector2f(700.f, 300.f), "Load"));
+
+	viewL = sf::View(sf::FloatRect(0, 0, 411, screenHeight));
+	viewR = sf::View(sf::FloatRect(411, 0, screenWidth, screenHeight));
+
+	viewL.setViewport(sf::FloatRect(0.f, 0.f, 0.36f, 1.f));
+	viewR.setViewport(sf::FloatRect(0.36f, 0.f, 0.64f, 1.f));
+	viewL.setSize(100, 117);
+	zoom = 1.f;
 }
 
 void EditorState::loadTextures() {
@@ -48,7 +56,41 @@ void EditorState::loadTextures() {
 			}
 		}
 	} else {
-		std::cout << "Folder does not exist or is not a directory." << std::endl;
+		std::cout << "Folder does not exist or is not a directory.\n";
+	}
+}
+
+void EditorState::moveView() {
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+		zoom *= 0.9f;
+		viewL.setSize(100 * zoom, 117 * zoom);
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+		zoom *= 1.1f;
+		viewL.setSize(100 * zoom, 117 * zoom);
+	}
+
+	if (zoom > 5.f) {
+		zoom = 5.f;
+	}
+
+	if (zoom < 0.1f) {
+		zoom = 0.1f;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+		viewL.move(-2.f * zoom, 0.f);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+		viewL.move(2.f * zoom, 0.f);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+		viewL.move(0.f, -2.f * zoom);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+		viewL.move(0.f, 2.f * zoom);
 	}
 }
 
@@ -65,6 +107,7 @@ EditorState::~EditorState() {
 
 void EditorState::update(float dt, sf::Vector2f mousePos) {
 	mouse.setPosition(mousePos);
+	mouseCoords = mousePos;
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		mouse.setTexture(mouse_down);
 	} else {
@@ -80,6 +123,8 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 	buttons.at(0).update(mousePos);
 	buttons.at(1).update(mousePos);
 	buttons.at(2).update(mousePos);
+
+	moveView();
 
 	if (buttons.at(0).clicked()) {
 		for (auto& it : tile) {
@@ -133,7 +178,7 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 
 	for (auto& it : tile) {
 		for (auto& it2 : it) {
-			if (it2.rect.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			if (it2.rect.getGlobalBounds().contains(sf::Vector2f(worldCoords)) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 				it2.texNum = selected;
 				if (selected != 0) {
 					it2.tex = selection.at(selected).tex;
@@ -146,11 +191,18 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 }
 
 void EditorState::draw(sf::RenderTarget* window) {
+
+	window->setView(viewL);
+
 	for (auto& it : tile) {
 		for (auto& it2 : it) {
 			window->draw(it2.getRect());
 		}
 	}
+
+	worldCoords = window->mapPixelToCoords(sf::Vector2i(mouseCoords));
+
+	window->setView(viewR);
 
 	for (auto& it : selection) {
 		window->draw(it.getRect());
@@ -159,6 +211,8 @@ void EditorState::draw(sf::RenderTarget* window) {
 	buttons.at(0).draw(window);
 	buttons.at(1).draw(window);
 	buttons.at(2).draw(window);
+
+	window->setView(window->getDefaultView());
 
 	window->draw(mouse);
 }

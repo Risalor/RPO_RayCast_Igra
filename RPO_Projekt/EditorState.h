@@ -37,6 +37,7 @@ class EditorState : public State {
 private:
 	void initState();
 	void loadTextures();
+	void moveView();
 	sf::SoundBuffer buffer;
 	sf::Sound music;
 	std::vector<std::vector<MapTile>> tile;
@@ -49,6 +50,10 @@ private:
 
 	sf::Sprite mouse;
 	sf::Texture mouse_up, mouse_down;
+
+	sf::View viewL, viewR;
+	float zoom;
+	sf::Vector2f worldCoords, mouseCoords;
 public:
 	EditorState();
 	~EditorState();
