@@ -81,16 +81,16 @@ void EditorState::moveView() {
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		viewL.move(-2.f, 0.f);
+		viewL.move(-2.f * zoom, 0.f);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		viewL.move(2.f, 0.f);
+		viewL.move(2.f * zoom, 0.f);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-		viewL.move(0.f, -2.f);
+		viewL.move(0.f, -2.f * zoom);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		viewL.move(0.f, 2.f);
+		viewL.move(0.f, 2.f * zoom);
 	}
 }
 
