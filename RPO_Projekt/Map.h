@@ -39,6 +39,7 @@ private:
 	sf::RectangleShape floo;
 	sf::RectangleShape ceil;
 	SpriteManager spriteManager;
+	void handleDoor(Player& pInfo);
 public:
 	Map();
 	void draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo);

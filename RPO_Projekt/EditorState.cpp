@@ -4,7 +4,7 @@ void EditorState::initState() {
 	for (int i = 0; i < mapHeight; i++) {
 		tile.push_back(std::vector<MapTile>());
 		for (int j = 0; j < mapWidth; j++) {
-			tile.at(tile.size() - 1).push_back(MapTile(0, sf::Vector2f(17.f * j, 17.f * i)));
+			tile.at(tile.size() - 1).push_back(MapTile(0, sf::Vector2f(19.f * j, 19.f * i)));
 		}
 	}
 
@@ -56,7 +56,7 @@ void EditorState::loadTextures() {
 			}
 		}
 	} else {
-		std::cout << "Folder does not exist or is not a directory." << std::endl;
+		std::cout << "Folder does not exist or is not a directory.\n";
 	}
 }
 
