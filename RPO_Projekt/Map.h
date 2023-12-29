@@ -27,6 +27,7 @@ struct Wall {
 	int texNum;
 	int wallDist1;
 	int wallDist2;
+	int side;
 };
 
 class Map {

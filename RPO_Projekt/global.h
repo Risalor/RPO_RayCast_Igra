@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vector>
 #define mapWidth 24
 #define mapHeight 28
 #define texWidth 64
@@ -10,6 +10,6 @@
 
 namespace glb {
 	namespace consts {
-		extern int worldMap[mapHeight][mapWidth];
+		extern std::vector<std::vector<int>> worldMap;
 	}
 }

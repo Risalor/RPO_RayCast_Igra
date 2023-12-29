@@ -1,9 +1,9 @@
 #include "EditorState.h"
 
 void EditorState::initState() {
-	for (int i = 0; i < mapHeight; i++) {
+	for (int i = 0; i < 200; i++) {
 		tile.push_back(std::vector<MapTile>());
-		for (int j = 0; j < mapWidth; j++) {
+		for (int j = 0; j < 200; j++) {
 			tile.at(tile.size() - 1).push_back(MapTile(0, sf::Vector2f(19.f * j, 19.f * i)));
 		}
 	}
@@ -43,7 +43,7 @@ void EditorState::loadTextures() {
 	std::filesystem::path folder("Assets/WallTex");
 	int offset = 1;
 	sf::Texture texture;
-	selection.push_back(MapTile(0, sf::Vector2f(600, 1), texture));
+	selection.push_back(MapTile(0, sf::Vector2f(413, 1), texture));
 	if (std::filesystem::exists(folder) && std::filesystem::is_directory(folder)) {
 		for (const auto& it : std::filesystem::directory_iterator(folder)) {
 			if (std::filesystem::is_regular_file(it)) {
@@ -51,7 +51,7 @@ void EditorState::loadTextures() {
 					std::cout << "Cannot load texture\n";
 				}
 
-				selection.push_back(MapTile(selection.size(), sf::Vector2f(600, 40 * offset + 1), texture));
+				selection.push_back(MapTile(selection.size(), sf::Vector2f(413, 40 * offset + 1), texture));
 				offset++;
 			}
 		}
@@ -72,12 +72,12 @@ void EditorState::moveView() {
 		viewL.setSize(100 * zoom, 117 * zoom);
 	}
 
-	if (zoom > 5.f) {
-		zoom = 5.f;
+	if (zoom > 10.f) {
+		zoom = 10.f;
 	}
 
-	if (zoom < 0.1f) {
-		zoom = 0.1f;
+	if (zoom < 0.5f) {
+		zoom = 0.5f;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
@@ -92,6 +92,17 @@ void EditorState::moveView() {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 		viewL.move(0.f, 2.f * zoom);
 	}
+}
+
+bool EditorState::isMouseInView() {
+	sf::FloatRect viewBounds(
+		viewL.getCenter().x - viewL.getSize().x / 2.f,
+		viewL.getCenter().y - viewL.getSize().y / 2.f,
+		viewL.getSize().x,
+		viewL.getSize().y
+	);
+
+	return viewBounds.contains(worldCoords);
 }
 
 
@@ -136,23 +147,57 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 	}
 
 	if (buttons.at(1).clicked()) {
-		std::fstream file("Assets/Maps/MapLay.ors", std::ios::out | std::ios::binary);
+
+		int wid = 0, hei = 0;
+
+		for (auto& it : tile.at(0)) {
+			if (it.texNum != 0) {
+				wid++;
+			} else {
+				break;
+			}
+		}
 
 		for (auto& it : tile) {
+			if (it.at(0).texNum != 0) {
+				hei++;
+			} else {
+				break;
+			}
+		}
+
+		std::fstream file("Assets/Maps/MapLay.ors", std::ios::out | std::ios::binary);
+
+		/*for (auto& it : tile) {
 			for (auto& it2 : it) {
 				file.write(reinterpret_cast<const char*>(&it2.texNum), sizeof(it2.texNum));
 			}
+		}*/
+
+		file.write(reinterpret_cast<const char*>(&wid), sizeof(wid));
+		file.write(reinterpret_cast<const char*>(&hei), sizeof(hei));
+
+		for (int i = 0; i < hei; i++) {
+			for (int j = 0; j < wid; j++) {
+				file.write(reinterpret_cast<const char*>(&tile[i][j].texNum), sizeof(tile[i][j].texNum));
+			}
+			std::cout << "\n";
 		}
 
 		file.close();
 	}
 
 	if (buttons.at(2).clicked()) {
+		int wid = 0, hei = 0;
+
 		std::fstream file("Assets/Maps/MapLay.ors", std::ios::in | std::ios::binary);
 
+		file.read(reinterpret_cast<char*>(&wid), sizeof(wid));
+		file.read(reinterpret_cast<char*>(&hei), sizeof(hei));
+
 		if (file.is_open()) {
-			for (int i = 0; i < mapHeight; i++) {
-				for (int j = 0; j < mapWidth; j++) {
+			for (int i = 0; i < hei; i++) {
+				for (int j = 0; j < wid; j++) {
 					int num = 0;
 					file.read(reinterpret_cast<char*>(&num), sizeof(num));
 					tile.at(i).at(j).texNum = num;
@@ -178,7 +223,7 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 
 	for (auto& it : tile) {
 		for (auto& it2 : it) {
-			if (it2.rect.getGlobalBounds().contains(sf::Vector2f(worldCoords)) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			if (it2.rect.getGlobalBounds().contains(sf::Vector2f(worldCoords)) && sf::Mouse::isButtonPressed(sf::Mouse::Left) && isMouseInView()) {
 				it2.texNum = selected;
 				if (selected != 0) {
 					it2.tex = selection.at(selected).tex;
@@ -194,9 +239,18 @@ void EditorState::draw(sf::RenderTarget* window) {
 
 	window->setView(viewL);
 
-	for (auto& it : tile) {
-		for (auto& it2 : it) {
-			window->draw(it2.getRect());
+	sf::Vector2f topLeft = window->mapPixelToCoords(sf::Vector2i(0, 0));
+	sf::Vector2f bottomRight = window->mapPixelToCoords(sf::Vector2i(411, 480));
+
+	int leftTile = static_cast<int>(topLeft.x / 19);
+	int rightTile = static_cast<int>(bottomRight.x / 19);
+	int topTile = static_cast<int>(topLeft.y / 19);
+	int bottomTile = static_cast<int>(bottomRight.y / 19);
+
+	// Draw only the visible tiles
+	for (int i = std::max(0, topTile); i <= std::min(200 - 1, bottomTile); i++) {
+		for (int j = std::max(0, leftTile); j <= std::min(200 - 1, rightTile); j++) {
+			window->draw(tile[i][j].getRect());
 		}
 	}
 

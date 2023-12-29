@@ -209,6 +209,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 			wall.push_back(Wall());
 			wall.at(wall.size() - 1).wallDist1 = (int)wallDist;
+			wall.at(wall.size() - 1).side = side;
 			wall.at(wall.size() - 1).texNum = texNum;
 			wall.at(wall.size() - 1).line.push_back(HorizontalLine());
 			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).end = drawEnd;
@@ -245,7 +246,15 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			for (int u = it2.start; u < it2.end; u++) {
 				int texY = (int)it2.texPos & (texHeight - 1);
 				it2.texPos += it2.texStep;
-				img.setPixel(pos, u, texture[it.texNum][texHeight * texY + it2.texX]);
+				if (it.side == 1) {
+					img.setPixel(pos, u, sf::Color(texture[it.texNum][texHeight * texY + it2.texX].r,
+						texture[it.texNum][texHeight * texY + it2.texX].g,
+						texture[it.texNum][texHeight * texY + it2.texX].b));
+				} else {
+					img.setPixel(pos, u, sf::Color(texture[it.texNum][texHeight * texY + it2.texX].r / 1.7f,
+						texture[it.texNum][texHeight * texY + it2.texX].g / 1.7f,
+						texture[it.texNum][texHeight * texY + it2.texX].b / 1.7f));
+				}
 			}
 
 			pos++;
@@ -357,8 +366,8 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eI
 		}		
 	}
 
-	for (int i = 0; i < mapWidth; i++) {
-		for (int j = 0; j < mapHeight; j++) {
+	for (int i = 0; i < glb::consts::worldMap.at(0).size(); i++) {
+		for (int j = 0; j < glb::consts::worldMap.size(); j++) {
 			sf::Texture tex;
 			sf::RectangleShape rect(sf::Vector2f(17.14f, 17.14f));
 			rect.setOutlineThickness(1.f);
