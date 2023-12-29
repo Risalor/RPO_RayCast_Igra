@@ -38,6 +38,7 @@ private:
 	void initState();
 	void loadTextures();
 	void moveView();
+	bool isMouseInView();
 	sf::SoundBuffer buffer;
 	sf::Sound music;
 	std::vector<std::vector<MapTile>> tile;
