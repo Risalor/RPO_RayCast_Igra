@@ -147,23 +147,57 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 	}
 
 	if (buttons.at(1).clicked()) {
-		std::fstream file("Assets/Maps/MapLay.ors", std::ios::out | std::ios::binary);
+
+		int wid = 0, hei = 0;
+
+		for (auto& it : tile.at(0)) {
+			if (it.texNum != 0) {
+				wid++;
+			} else {
+				break;
+			}
+		}
 
 		for (auto& it : tile) {
+			if (it.at(0).texNum != 0) {
+				hei++;
+			} else {
+				break;
+			}
+		}
+
+		std::fstream file("Assets/Maps/MapLay.ors", std::ios::out | std::ios::binary);
+
+		/*for (auto& it : tile) {
 			for (auto& it2 : it) {
 				file.write(reinterpret_cast<const char*>(&it2.texNum), sizeof(it2.texNum));
 			}
+		}*/
+
+		file.write(reinterpret_cast<const char*>(&wid), sizeof(wid));
+		file.write(reinterpret_cast<const char*>(&hei), sizeof(hei));
+
+		for (int i = 0; i < hei; i++) {
+			for (int j = 0; j < wid; j++) {
+				file.write(reinterpret_cast<const char*>(&tile[i][j].texNum), sizeof(tile[i][j].texNum));
+			}
+			std::cout << "\n";
 		}
 
 		file.close();
 	}
 
 	if (buttons.at(2).clicked()) {
+		int wid = 0, hei = 0;
+
 		std::fstream file("Assets/Maps/MapLay.ors", std::ios::in | std::ios::binary);
 
+		file.read(reinterpret_cast<char*>(&wid), sizeof(wid));
+		file.read(reinterpret_cast<char*>(&hei), sizeof(hei));
+
 		if (file.is_open()) {
-			for (int i = 0; i < mapHeight; i++) {
-				for (int j = 0; j < mapWidth; j++) {
+			for (int i = 0; i < hei; i++) {
+				for (int j = 0; j < wid; j++) {
 					int num = 0;
 					file.read(reinterpret_cast<char*>(&num), sizeof(num));
 					tile.at(i).at(j).texNum = num;
@@ -207,7 +241,6 @@ void EditorState::draw(sf::RenderTarget* window) {
 
 	sf::Vector2f topLeft = window->mapPixelToCoords(sf::Vector2i(0, 0));
 	sf::Vector2f bottomRight = window->mapPixelToCoords(sf::Vector2i(411, 480));
-	std::cout << bottomRight.x << "\n";
 
 	int leftTile = static_cast<int>(topLeft.x / 19);
 	int rightTile = static_cast<int>(bottomRight.x / 19);
@@ -215,8 +248,8 @@ void EditorState::draw(sf::RenderTarget* window) {
 	int bottomTile = static_cast<int>(bottomRight.y / 19);
 
 	// Draw only the visible tiles
-	for (int i = std::max(0, topTile); i <= std::min(200 - 1, bottomTile); ++i) {
-		for (int j = std::max(0, leftTile); j <= std::min(200 - 1, rightTile); ++j) {
+	for (int i = std::max(0, topTile); i <= std::min(200 - 1, bottomTile); i++) {
+		for (int j = std::max(0, leftTile); j <= std::min(200 - 1, rightTile); j++) {
 			window->draw(tile[i][j].getRect());
 		}
 	}

@@ -35,7 +35,7 @@ bool isVisible(const sf::Vector2f& pPos, const sf::Vector2f& ePos) {
 			break;
 		}
 
-		if (pTileX >= 0 && pTileY >= 0 && pTileX < mapWidth && pTileY < mapHeight && glb::consts::worldMap[pTileX][pTileY] > 0) {
+		if (pTileX >= 0 && pTileY >= 0 && pTileX < glb::consts::worldMap[0].size() && pTileY < glb::consts::worldMap.size() && glb::consts::worldMap[pTileX][pTileY] > 0) {
 			return false;
 		}
 

@@ -2,7 +2,7 @@
 
 namespace glb {
 	namespace consts {
-		int worldMap[mapHeight][mapWidth];/* = {
+		std::vector<std::vector<int>> worldMap;/* = {
   {2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2},
   {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
   {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
