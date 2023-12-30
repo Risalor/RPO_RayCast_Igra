@@ -265,25 +265,6 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		rect.setTexture(&tex);
 		window->draw(rect);
 	}
-
-	/*for (auto& it : wall) {
-		for (auto& it2 : it.line) {
-			for (int u = it2.start; u < it2.end; u++) {
-				int texY = (int)it2.texPos & (texHeight - 1);
-				it2.texPos += it2.texStep;
-				buffer.setPixel(it2.x, u, texture[it.texNum][texHeight * texY + it2.texX]);
-			}
-		}
-	}
-
-	sf::Texture tex;
-	tex.loadFromImage(buffer);
-	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
-	shp.setTexture(&tex);
-
-	window->draw(shp);*/
-
-
 	
 	spriteManager.createSprite(0);
 	for (size_t i = 0; i < eInfo.size(); ++i) {

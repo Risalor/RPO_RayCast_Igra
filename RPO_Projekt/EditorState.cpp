@@ -26,9 +26,10 @@ void EditorState::initState() {
 		std::cout << "Cannot load texture\n";
 	}
 
-	buttons.push_back(Button(sf::Vector2f(700.f, 200.f), "Clear"));
-	buttons.push_back(Button(sf::Vector2f(700.f, 100.f), "Save"));
-	buttons.push_back(Button(sf::Vector2f(700.f, 300.f), "Load"));
+	buttons.push_back(Button(sf::Vector2f(500.f, 150.f), "Clear"));
+	buttons.push_back(Button(sf::Vector2f(500.f, 50.f), "Save"));
+	buttons.push_back(Button(sf::Vector2f(500.f, 250.f), "Load"));
+	buttons.push_back(Button(sf::Vector2f(500.f, 350.f), "New"));
 
 	viewL = sf::View(sf::FloatRect(0, 0, 411, screenHeight));
 	viewR = sf::View(sf::FloatRect(411, 0, screenWidth, screenHeight));
@@ -37,6 +38,22 @@ void EditorState::initState() {
 	viewR.setViewport(sf::FloatRect(0.36f, 0.f, 0.64f, 1.f));
 	viewL.setSize(100, 117);
 	zoom = 1.f;
+
+	std::filesystem::path folder("Assets/Maps");
+	int offset = 0;
+
+	if (std::filesystem::exists(folder) && std::filesystem::is_directory(folder)) {
+		for (const auto& it : std::filesystem::directory_iterator(folder)) {
+			if (std::filesystem::is_regular_file(it)) {
+				maps.push_back(MapFileDisplay(offset + 1, "Assets/Maps", it.path().filename().string(), sf::Vector2f(800.f, 100.f + 25.f * offset)));
+				offset++;
+			}
+		}
+	} else {
+		std::cout << "Folder does not exist or is not a directory.\n";
+	}
+
+	dtCounter = 0;
 }
 
 void EditorState::loadTextures() {
@@ -134,6 +151,7 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 	buttons.at(0).update(mousePos);
 	buttons.at(1).update(mousePos);
 	buttons.at(2).update(mousePos);
+	buttons.at(3).update(mousePos);
 
 	moveView();
 
@@ -166,7 +184,9 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 			}
 		}
 
-		std::fstream file("Assets/Maps/MapLay.ors", std::ios::out | std::ios::binary);
+		/*std::fstream file("Assets/Maps/MapLay.ors", std::ios::out | std::ios::binary);*/
+
+		std::fstream file(selectedMap.path + "/" + selectedMap.file, std::ios::out | std::ios::binary);
 
 		/*for (auto& it : tile) {
 			for (auto& it2 : it) {
@@ -190,7 +210,14 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 	if (buttons.at(2).clicked()) {
 		int wid = 0, hei = 0;
 
-		std::fstream file("Assets/Maps/MapLay.ors", std::ios::in | std::ios::binary);
+		for (auto& it : tile) {
+			for (auto& it2 : it) {
+				it2.rect.setTexture(nullptr);
+				it2.texNum = 0;
+			}
+		}
+
+		std::fstream file(selectedMap.path + "/" + selectedMap.file, std::ios::in | std::ios::binary);
 
 		file.read(reinterpret_cast<char*>(&wid), sizeof(wid));
 		file.read(reinterpret_cast<char*>(&hei), sizeof(hei));
@@ -209,12 +236,37 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 		file.close();
 	}
 
+	dtCounter += dt;
+
+	if (buttons.at(3).clicked() && dtCounter > 1.f) {
+		maps.push_back(MapFileDisplay(maps.size() + 1, "Assets/Maps", "MapLay" + std::to_string(maps.size() + 1) + ".ors", sf::Vector2f(800.f, 100.f + 25.f * maps.size())));
+		dtCounter = 0.f;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Delete) && dtCounter > 1.f) {
+		std::remove((selectedMap.path + "/" + selectedMap.file).c_str());
+		maps.erase(maps.begin() + selectedMap.id - 1);
+		dtCounter = 0;
+	}
+
 	for (auto& it : selection) {
 		if (it.rect.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			selected = it.texNum;
 		}
 
 		if (selected == it.texNum) {
+			it.rect.setOutlineColor(sf::Color::Green);
+		} else {
+			it.rect.setOutlineColor(sf::Color::White);
+		}
+	}
+
+	for (auto& it : maps) {
+		if (it.rect.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			selectedMap = it;
+		}
+
+		if (selectedMap.file == it.file) {
 			it.rect.setOutlineColor(sf::Color::Green);
 		} else {
 			it.rect.setOutlineColor(sf::Color::White);
@@ -265,6 +317,11 @@ void EditorState::draw(sf::RenderTarget* window) {
 	buttons.at(0).draw(window);
 	buttons.at(1).draw(window);
 	buttons.at(2).draw(window);
+	buttons.at(3).draw(window);
+
+	for (auto& it : maps) {
+		it.draw(window);
+	}
 
 	window->setView(window->getDefaultView());
 

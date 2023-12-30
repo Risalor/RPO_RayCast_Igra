@@ -32,7 +32,7 @@ void GamePlayState::initState() {
 }
 
 void GamePlayState::initMap() {
-	std::fstream file("Assets/Maps/MapLay.ors", std::ios::in | std::ios::binary);
+	std::fstream file("Assets/Maps/MapLay1.ors", std::ios::in | std::ios::binary);
 
 	glb::consts::worldMap.clear();
 

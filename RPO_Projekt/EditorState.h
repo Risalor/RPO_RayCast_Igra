@@ -33,6 +33,41 @@ struct MapTile {
 	}
 };
 
+struct MapFileDisplay {
+	int id;
+	std::string path;
+	std::string file;
+	sf::RectangleShape rect;
+	sf::Font font;
+	sf::Text text;
+
+	MapFileDisplay(int id, std::string path, std::string file, sf::Vector2f poz) : id(id), path(path), file(file) {
+		rect.setSize(sf::Vector2f(200.f, 20.f));
+		rect.setFillColor(sf::Color::Black);
+		rect.setOutlineColor(sf::Color::White);
+		rect.setOutlineThickness(1.f);
+		rect.setPosition(poz);
+
+		if (!font.loadFromFile("Assets/Fonts/font1.ttf")) {
+			std::cout << "No font";
+		}
+
+		text.setCharacterSize(15.f);
+		text.setString(file);
+		text.setFont(font);
+		text.setPosition(poz);
+	}
+
+	MapFileDisplay() {}
+
+	void draw(sf::RenderTarget* window) {
+		text.setFont(font);
+
+		window->draw(rect);
+		window->draw(text);
+	}
+};
+
 class EditorState : public State {
 private:
 	void initState();
@@ -55,6 +90,10 @@ private:
 	sf::View viewL, viewR;
 	float zoom;
 	sf::Vector2f worldCoords, mouseCoords;
+	std::vector<MapFileDisplay> maps;
+	MapFileDisplay selectedMap;
+
+	float dtCounter;
 public:
 	EditorState();
 	~EditorState();
