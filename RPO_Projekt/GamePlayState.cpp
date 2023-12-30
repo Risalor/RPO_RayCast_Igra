@@ -32,7 +32,20 @@ void GamePlayState::initState() {
 }
 
 void GamePlayState::initMap() {
-	std::fstream file("Assets/Maps/MapLay1.ors", std::ios::in | std::ios::binary);
+
+	std::filesystem::path folder("Assets/Maps");
+
+	if (std::filesystem::exists(folder) && std::filesystem::is_directory(folder)) {
+		for (const auto& it : std::filesystem::directory_iterator(folder)) {
+			if (std::filesystem::is_regular_file(it)) {
+				mapPaths.push_back(it.path().string());
+			}
+		}
+	} else {
+		std::cout << "Folder does not exist or is not a directory.\n";
+	}
+
+	std::fstream file(mapPaths.at(1), std::ios::in | std::ios::binary);
 
 	glb::consts::worldMap.clear();
 

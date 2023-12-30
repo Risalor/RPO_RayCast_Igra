@@ -12,6 +12,7 @@ private:
 
 	sf::Sound music;
 	sf::SoundBuffer buffer;
+	std::vector<std::string> mapPaths;
 public:
 	GamePlayState();
 	~GamePlayState();

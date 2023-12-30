@@ -227,8 +227,13 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 				for (int j = 0; j < wid; j++) {
 					int num = 0;
 					file.read(reinterpret_cast<char*>(&num), sizeof(num));
-					tile.at(i).at(j).texNum = num;
-					tile.at(i).at(j).tex = selection.at(num).tex;
+					if (num < 7) {
+						tile.at(i).at(j).texNum = num;
+						tile.at(i).at(j).tex = selection.at(num).tex;
+					} else {
+						tile.at(i).at(j).texNum = num;
+						tile.at(i).at(j).tex = selection.at(5).tex;
+					}
 				}
 			}
 		}
@@ -264,6 +269,7 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 	for (auto& it : maps) {
 		if (it.rect.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			selectedMap = it;
+			selected = it.id + 6;
 		}
 
 		if (selectedMap.file == it.file) {
@@ -277,9 +283,11 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 		for (auto& it2 : it) {
 			if (it2.rect.getGlobalBounds().contains(sf::Vector2f(worldCoords)) && sf::Mouse::isButtonPressed(sf::Mouse::Left) && isMouseInView()) {
 				it2.texNum = selected;
-				if (selected != 0) {
+				if (selected != 0 && selected < 7) {
 					it2.tex = selection.at(selected).tex;
-				} else {
+				} else if (selected > 6) {
+					it2.tex = selection.at(5).tex;
+				} else if (selected == 0) {
 					it2.rect.setTexture(nullptr);
 				}
 			}

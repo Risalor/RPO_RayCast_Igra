@@ -6,6 +6,8 @@ void Map::handleDoor(Player& pInfo) {
 			glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] = 0;
 		}
 	}
+
+	std::cout << glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] << "\n";
 }
 
 Map::Map() {
@@ -246,12 +248,24 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			for (int u = it2.start; u < it2.end; u++) {
 				int texY = (int)it2.texPos & (texHeight - 1);
 				it2.texPos += it2.texStep;
-				if (it.side == 1) {
-					img.setPixel(pos, u, texture[it.texNum][texHeight * texY + it2.texX]);
+				if (it.texNum < 6) {
+					if (it.side == 1) {
+						img.setPixel(pos, u, texture[it.texNum][texHeight * texY + it2.texX]);
+					}
+					else {
+						img.setPixel(pos, u, sf::Color(texture[it.texNum][texHeight * texY + it2.texX].r / 1.7f,
+							texture[it.texNum][texHeight * texY + it2.texX].g / 1.7f,
+							texture[it.texNum][texHeight * texY + it2.texX].b / 1.7f));
+					}
 				} else {
-					img.setPixel(pos, u, sf::Color(texture[it.texNum][texHeight * texY + it2.texX].r / 1.7f,
-						texture[it.texNum][texHeight * texY + it2.texX].g / 1.7f,
-						texture[it.texNum][texHeight * texY + it2.texX].b / 1.7f));
+					if (it.side == 1) {
+						img.setPixel(pos, u, texture[4][texHeight * texY + it2.texX]);
+					}
+					else {
+						img.setPixel(pos, u, sf::Color(texture[4][texHeight * texY + it2.texX].r / 1.7f,
+							texture[4][texHeight * texY + it2.texX].g / 1.7f,
+							texture[4][texHeight * texY + it2.texX].b / 1.7f));
+					}
 				}
 			}
 
@@ -351,7 +365,7 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eI
 			sf::RectangleShape rect(sf::Vector2f(17.14f, 17.14f));
 			rect.setOutlineThickness(1.f);
 			rect.setOutlineColor(sf::Color::Transparent);
-			if (glb::consts::worldMap[j][i] > 0) {
+			if (glb::consts::worldMap[j][i] > 0 && glb::consts::worldMap[j][i] < 7) {
 				rect.setTexture(&textures.at(glb::consts::worldMap[j][i] - 1));
 			}
 			else {
