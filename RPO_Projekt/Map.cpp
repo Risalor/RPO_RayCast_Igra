@@ -6,6 +6,8 @@ void Map::handleDoor(Player& pInfo) {
 			glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] = 0;
 		}
 	}
+
+	std::cout << glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] << "\n";
 }
 
 Map::Map() {
@@ -246,14 +248,24 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			for (int u = it2.start; u < it2.end; u++) {
 				int texY = (int)it2.texPos & (texHeight - 1);
 				it2.texPos += it2.texStep;
-				if (it.side == 1) {
-					img.setPixel(pos, u, sf::Color(texture[it.texNum][texHeight * texY + it2.texX].r,
-						texture[it.texNum][texHeight * texY + it2.texX].g,
-						texture[it.texNum][texHeight * texY + it2.texX].b));
+				if (it.texNum < 6) {
+					if (it.side == 1) {
+						img.setPixel(pos, u, texture[it.texNum][texHeight * texY + it2.texX]);
+					}
+					else {
+						img.setPixel(pos, u, sf::Color(texture[it.texNum][texHeight * texY + it2.texX].r / 1.7f,
+							texture[it.texNum][texHeight * texY + it2.texX].g / 1.7f,
+							texture[it.texNum][texHeight * texY + it2.texX].b / 1.7f));
+					}
 				} else {
-					img.setPixel(pos, u, sf::Color(texture[it.texNum][texHeight * texY + it2.texX].r / 1.7f,
-						texture[it.texNum][texHeight * texY + it2.texX].g / 1.7f,
-						texture[it.texNum][texHeight * texY + it2.texX].b / 1.7f));
+					if (it.side == 1) {
+						img.setPixel(pos, u, texture[4][texHeight * texY + it2.texX]);
+					}
+					else {
+						img.setPixel(pos, u, sf::Color(texture[4][texHeight * texY + it2.texX].r / 1.7f,
+							texture[4][texHeight * texY + it2.texX].g / 1.7f,
+							texture[4][texHeight * texY + it2.texX].b / 1.7f));
+					}
 				}
 			}
 
@@ -267,25 +279,6 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		rect.setTexture(&tex);
 		window->draw(rect);
 	}
-
-	/*for (auto& it : wall) {
-		for (auto& it2 : it.line) {
-			for (int u = it2.start; u < it2.end; u++) {
-				int texY = (int)it2.texPos & (texHeight - 1);
-				it2.texPos += it2.texStep;
-				buffer.setPixel(it2.x, u, texture[it.texNum][texHeight * texY + it2.texX]);
-			}
-		}
-	}
-
-	sf::Texture tex;
-	tex.loadFromImage(buffer);
-	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
-	shp.setTexture(&tex);
-
-	window->draw(shp);*/
-
-
 	
 	spriteManager.createSprite(0);
 	for (size_t i = 0; i < eInfo.size(); ++i) {
@@ -372,7 +365,7 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eI
 			sf::RectangleShape rect(sf::Vector2f(17.14f, 17.14f));
 			rect.setOutlineThickness(1.f);
 			rect.setOutlineColor(sf::Color::Transparent);
-			if (glb::consts::worldMap[j][i] > 0) {
+			if (glb::consts::worldMap[j][i] > 0 && glb::consts::worldMap[j][i] < 7) {
 				rect.setTexture(&textures.at(glb::consts::worldMap[j][i] - 1));
 			}
 			else {

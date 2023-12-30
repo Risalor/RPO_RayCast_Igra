@@ -4,6 +4,7 @@ class GamePlayState : public State {
 private:
 	void initState();
 	void initMap();
+	void playerMapRelation();
 	Player player;
 
 	std::vector<Enemy*> enemy;
@@ -12,6 +13,7 @@ private:
 
 	sf::Sound music;
 	sf::SoundBuffer buffer;
+	std::vector<std::string> mapPaths;
 public:
 	GamePlayState();
 	~GamePlayState();

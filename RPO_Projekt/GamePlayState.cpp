@@ -32,7 +32,20 @@ void GamePlayState::initState() {
 }
 
 void GamePlayState::initMap() {
-	std::fstream file("Assets/Maps/MapLay.ors", std::ios::in | std::ios::binary);
+
+	std::filesystem::path folder("Assets/Maps");
+
+	if (std::filesystem::exists(folder) && std::filesystem::is_directory(folder)) {
+		for (const auto& it : std::filesystem::directory_iterator(folder)) {
+			if (std::filesystem::is_regular_file(it)) {
+				mapPaths.push_back(it.path().string());
+			}
+		}
+	} else {
+		std::cout << "Folder does not exist or is not a directory.\n";
+	}
+
+	std::fstream file(mapPaths.at(1), std::ios::in | std::ios::binary);
 
 	glb::consts::worldMap.clear();
 
@@ -52,6 +65,33 @@ void GamePlayState::initMap() {
 	}
 
 	file.close();
+}
+
+void GamePlayState::playerMapRelation() {
+	if (glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] > 6) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+			std::fstream file(mapPaths.at(glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] - 7), std::ios::in | std::ios::binary);
+
+			glb::consts::worldMap.clear();
+
+			int wid = 0, hei = 0;
+			file.read(reinterpret_cast<char*>(&wid), sizeof(wid));
+			file.read(reinterpret_cast<char*>(&hei), sizeof(hei));
+
+			if (file.is_open()) {
+				for (int i = 0; i < hei; i++) {
+					glb::consts::worldMap.push_back(std::vector<int>());
+					for (int j = 0; j < wid; j++) {
+						int num = 0;
+						file.read(reinterpret_cast<char*>(&num), sizeof(num));
+						glb::consts::worldMap.at(i).push_back(num);
+					}
+				}
+			}
+
+			file.close();
+		}
+	}
 }
 
 GamePlayState::GamePlayState() : State() {
@@ -78,6 +118,8 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 		music.resetBuffer();
 		State::trigger = StateTrigger::END_STATE;
 	}
+
+	playerMapRelation();
 }
 
 void GamePlayState::addProjectile(Projectile* projectile) {
