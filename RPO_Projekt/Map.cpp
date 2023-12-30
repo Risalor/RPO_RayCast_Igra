@@ -247,9 +247,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 				int texY = (int)it2.texPos & (texHeight - 1);
 				it2.texPos += it2.texStep;
 				if (it.side == 1) {
-					img.setPixel(pos, u, sf::Color(texture[it.texNum][texHeight * texY + it2.texX].r,
-						texture[it.texNum][texHeight * texY + it2.texX].g,
-						texture[it.texNum][texHeight * texY + it2.texX].b));
+					img.setPixel(pos, u, texture[it.texNum][texHeight * texY + it2.texX]);
 				} else {
 					img.setPixel(pos, u, sf::Color(texture[it.texNum][texHeight * texY + it2.texX].r / 1.7f,
 						texture[it.texNum][texHeight * texY + it2.texX].g / 1.7f,
