@@ -4,6 +4,7 @@ class GamePlayState : public State {
 private:
 	void initState();
 	void initMap();
+	void playerMapRelation();
 	Player player;
 
 	std::vector<Enemy*> enemy;
