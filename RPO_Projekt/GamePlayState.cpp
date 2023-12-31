@@ -45,7 +45,7 @@ void GamePlayState::initMap() {
 		std::cout << "Folder does not exist or is not a directory.\n";
 	}
 
-	std::fstream file(mapPaths.at(1), std::ios::in | std::ios::binary);
+	std::fstream file(mapPaths.at(0), std::ios::in | std::ios::binary);
 
 	glb::consts::worldMap.clear();
 

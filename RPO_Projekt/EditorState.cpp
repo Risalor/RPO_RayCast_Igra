@@ -75,6 +75,9 @@ void EditorState::loadTextures() {
 	} else {
 		std::cout << "Folder does not exist or is not a directory.\n";
 	}
+
+	enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * offset + 3), 20, 1));
+	enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * (offset + 1) + 5), 20, 2));
 }
 
 void EditorState::moveView() {
@@ -266,6 +269,34 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 		}
 	}
 
+	for (auto& it : enemySelection) {
+		if (it.shp.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			selectedEnemy = it;
+			it.shp.setOutlineColor(sf::Color::Green);
+			selected = 0;
+		}
+
+		if (it.type != selectedEnemy.type) {
+			it.shp.setOutlineColor(sf::Color::White);
+		}
+
+		if (selected != 0) {
+			it.shp.setOutlineColor(sf::Color::White);
+			selectedEnemy.type = 0;
+		}
+	}
+
+	if (isMouseInView() && sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtCounter > 0.5f && selectedEnemy.type != 0) {
+		enemies.push_back(EnemyObj(worldCoords, 5.f, selectedEnemy.type));
+		dtCounter = 0.f;
+	}
+
+	for (int i = 0; i < enemies.size(); i++) {
+		if (enemies[i].shp.getGlobalBounds().contains(worldCoords) && sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+			enemies.erase(enemies.begin() + i);
+		}
+	}
+
 	for (auto& it : maps) {
 		if (it.rect.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			selectedMap = it;
@@ -314,6 +345,10 @@ void EditorState::draw(sf::RenderTarget* window) {
 		}
 	}
 
+	for (auto& it : enemies) {
+		window->draw(it.shp);
+	}
+
 	worldCoords = window->mapPixelToCoords(sf::Vector2i(mouseCoords));
 
 	window->setView(viewR);
@@ -321,6 +356,9 @@ void EditorState::draw(sf::RenderTarget* window) {
 	for (auto& it : selection) {
 		window->draw(it.getRect());
 	}
+
+	window->draw(enemySelection.at(0).shp);
+	window->draw(enemySelection.at(1).shp);
 
 	buttons.at(0).draw(window);
 	buttons.at(1).draw(window);
