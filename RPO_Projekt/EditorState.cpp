@@ -4,7 +4,7 @@ void EditorState::initState() {
 	for (int i = 0; i < 200; i++) {
 		tile.push_back(std::vector<MapTile>());
 		for (int j = 0; j < 200; j++) {
-			tile.at(tile.size() - 1).push_back(MapTile(0, sf::Vector2f(19.f * j, 19.f * i)));
+			tile.at(tile.size() - 1).push_back(MapTile(0, sf::Vector2f(17.f * j, 17.f * i)));
 		}
 	}
 
@@ -16,7 +16,7 @@ void EditorState::initState() {
 	music.play();
 
 	music.setLoop(true);
-	music.setVolume(35.f);
+	music.setVolume(25.f);
 
 	if (!mouse_up.loadFromFile("Assets/Cursor/cursor.gif")) {
 		std::cout << "Cannot load texture\n";
@@ -26,10 +26,15 @@ void EditorState::initState() {
 		std::cout << "Cannot load texture\n";
 	}
 
-	buttons.push_back(Button(sf::Vector2f(500.f, 150.f), "Clear"));
-	buttons.push_back(Button(sf::Vector2f(500.f, 50.f), "Save"));
-	buttons.push_back(Button(sf::Vector2f(500.f, 250.f), "Load"));
-	buttons.push_back(Button(sf::Vector2f(500.f, 350.f), "New"));
+	buttons.push_back(Button(sf::Vector2f(453.f, 50.f), "Clear"));
+	buttons.push_back(Button(sf::Vector2f(453.f, 0.f), "Save"));
+	buttons.push_back(Button(sf::Vector2f(453.f, 100.f), "Load"));
+	buttons.push_back(Button(sf::Vector2f(453.f, 150.f), "New"));
+	buttons.push_back(Button(sf::Vector2f(453.f, 200.f), "Delete"));
+	
+	for (auto& it : buttons) {
+		it.setScale(0.5f);
+	}
 
 	viewL = sf::View(sf::FloatRect(0, 0, 411, screenHeight));
 	viewR = sf::View(sf::FloatRect(411, 0, screenWidth, screenHeight));
@@ -45,7 +50,7 @@ void EditorState::initState() {
 	if (std::filesystem::exists(folder) && std::filesystem::is_directory(folder)) {
 		for (const auto& it : std::filesystem::directory_iterator(folder)) {
 			if (std::filesystem::is_regular_file(it)) {
-				maps.push_back(MapFileDisplay(offset + 1, "Assets/Maps", it.path().filename().string(), sf::Vector2f(800.f, 100.f + 25.f * offset)));
+				maps.push_back(MapFileDisplay(offset + 1, "Assets/Maps", it.path().filename().string(), sf::Vector2f(600.f, 10.f + 25.f * offset)));
 				offset++;
 			}
 		}
@@ -75,6 +80,9 @@ void EditorState::loadTextures() {
 	} else {
 		std::cout << "Folder does not exist or is not a directory.\n";
 	}
+
+	enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * offset + 3), 20, 1));
+	enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * (offset + 1) + 5), 20, 2));
 }
 
 void EditorState::moveView() {
@@ -152,6 +160,7 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 	buttons.at(1).update(mousePos);
 	buttons.at(2).update(mousePos);
 	buttons.at(3).update(mousePos);
+	buttons.at(4).update(mousePos);
 
 	moveView();
 
@@ -162,6 +171,8 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 				it2.texNum = 0;
 			}
 		}
+
+		enemies.clear();
 	}
 
 	if (buttons.at(1).clicked()) {
@@ -184,24 +195,27 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 			}
 		}
 
-		/*std::fstream file("Assets/Maps/MapLay.ors", std::ios::out | std::ios::binary);*/
-
 		std::fstream file(selectedMap.path + "/" + selectedMap.file, std::ios::out | std::ios::binary);
 
-		/*for (auto& it : tile) {
-			for (auto& it2 : it) {
-				file.write(reinterpret_cast<const char*>(&it2.texNum), sizeof(it2.texNum));
-			}
-		}*/
-
-		file.write(reinterpret_cast<const char*>(&wid), sizeof(wid));
-		file.write(reinterpret_cast<const char*>(&hei), sizeof(hei));
+		file.write(reinterpret_cast<const char*>(&wid), sizeof(int));
+		file.write(reinterpret_cast<const char*>(&hei), sizeof(int));
 
 		for (int i = 0; i < hei; i++) {
 			for (int j = 0; j < wid; j++) {
-				file.write(reinterpret_cast<const char*>(&tile[i][j].texNum), sizeof(tile[i][j].texNum));
+				file.write(reinterpret_cast<const char*>(&tile[i][j].texNum), sizeof(int));
 			}
 			std::cout << "\n";
+		}
+
+		int size = enemies.size();
+		file.write(reinterpret_cast<const char*>(&size), sizeof(int));
+
+		for (auto& it : enemies) {
+			double temp = it.pos.x / 17.f;
+			file.write(reinterpret_cast<const char*>(&temp), sizeof(double));
+			double temp2 = it.pos.y / 17.f;
+			file.write(reinterpret_cast<const char*>(&temp2), sizeof(double));
+			file.write(reinterpret_cast<const char*>(&it.type), sizeof(int));
 		}
 
 		file.close();
@@ -238,6 +252,17 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 			}
 		}
 
+		int size, type;
+		double pozX, pozY;
+		file.read(reinterpret_cast<char*>(&size), sizeof(int));
+		
+		for (int i = 0; i < size; i++) {
+			file.read(reinterpret_cast<char*>(&pozX), sizeof(double));
+			file.read(reinterpret_cast<char*>(&pozY), sizeof(double));
+			file.read(reinterpret_cast<char*>(&type), sizeof(int));
+			enemies.push_back(EnemyObj(sf::Vector2f(pozX * 17.f, pozY * 17.f), 5.f, type));
+		}
+
 		file.close();
 	}
 
@@ -248,7 +273,7 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 		dtCounter = 0.f;
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Delete) && dtCounter > 1.f) {
+	if (buttons.at(4).clicked() && dtCounter > 1.f) {
 		std::remove((selectedMap.path + "/" + selectedMap.file).c_str());
 		maps.erase(maps.begin() + selectedMap.id - 1);
 		dtCounter = 0;
@@ -263,6 +288,34 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 			it.rect.setOutlineColor(sf::Color::Green);
 		} else {
 			it.rect.setOutlineColor(sf::Color::White);
+		}
+	}
+
+	for (auto& it : enemySelection) {
+		if (it.shp.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			selectedEnemy = it;
+			it.shp.setOutlineColor(sf::Color::Green);
+			selected = 0;
+		}
+
+		if (it.type != selectedEnemy.type) {
+			it.shp.setOutlineColor(sf::Color::White);
+		}
+
+		if (selected != 0) {
+			it.shp.setOutlineColor(sf::Color::White);
+			selectedEnemy.type = 0;
+		}
+	}
+
+	if (isMouseInView() && sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtCounter > 0.5f && selectedEnemy.type != 0) {
+		enemies.push_back(EnemyObj(worldCoords, 5.f, selectedEnemy.type));
+		dtCounter = 0.f;
+	}
+
+	for (int i = 0; i < enemies.size(); i++) {
+		if (enemies[i].shp.getGlobalBounds().contains(worldCoords) && sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+			enemies.erase(enemies.begin() + i);
 		}
 	}
 
@@ -302,16 +355,20 @@ void EditorState::draw(sf::RenderTarget* window) {
 	sf::Vector2f topLeft = window->mapPixelToCoords(sf::Vector2i(0, 0));
 	sf::Vector2f bottomRight = window->mapPixelToCoords(sf::Vector2i(411, 480));
 
-	int leftTile = static_cast<int>(topLeft.x / 19);
-	int rightTile = static_cast<int>(bottomRight.x / 19);
-	int topTile = static_cast<int>(topLeft.y / 19);
-	int bottomTile = static_cast<int>(bottomRight.y / 19);
+	int leftTile = static_cast<int>(topLeft.x / 17);
+	int rightTile = static_cast<int>(bottomRight.x / 17);
+	int topTile = static_cast<int>(topLeft.y / 17);
+	int bottomTile = static_cast<int>(bottomRight.y / 17);
 
 	// Draw only the visible tiles
 	for (int i = std::max(0, topTile); i <= std::min(200 - 1, bottomTile); i++) {
 		for (int j = std::max(0, leftTile); j <= std::min(200 - 1, rightTile); j++) {
 			window->draw(tile[i][j].getRect());
 		}
+	}
+
+	for (auto& it : enemies) {
+		window->draw(it.shp);
 	}
 
 	worldCoords = window->mapPixelToCoords(sf::Vector2i(mouseCoords));
@@ -322,10 +379,12 @@ void EditorState::draw(sf::RenderTarget* window) {
 		window->draw(it.getRect());
 	}
 
-	buttons.at(0).draw(window);
-	buttons.at(1).draw(window);
-	buttons.at(2).draw(window);
-	buttons.at(3).draw(window);
+	window->draw(enemySelection.at(0).shp);
+	window->draw(enemySelection.at(1).shp);
+
+	for (auto& it : buttons) {
+		it.draw(window);
+	}
 
 	for (auto& it : maps) {
 		it.draw(window);

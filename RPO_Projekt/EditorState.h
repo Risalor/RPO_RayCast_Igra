@@ -10,9 +10,9 @@ struct MapTile {
 	MapTile(int texNum, sf::Vector2f pos) : texNum(texNum), pos(pos) {
 		rect.setSize(sf::Vector2f(17.f, 17.f));
 		rect.setPosition(pos);
-		rect.setFillColor(sf::Color::Green);
+		rect.setFillColor(sf::Color::White);
 		rect.setOutlineColor(sf::Color::Black);
-		rect.setOutlineThickness(1.f);
+		rect.setOutlineThickness(2.f);
 	}
 
 	MapTile(int texNum, sf::Vector2f pos, sf::Texture tex) : texNum(texNum), pos(pos), tex(tex) {
@@ -68,6 +68,22 @@ struct MapFileDisplay {
 	}
 };
 
+struct EnemyObj {
+	sf::Vector2f pos;
+	int type;
+	sf::CircleShape shp;
+
+	EnemyObj(sf::Vector2f pos, float rad, int type) : pos(pos), type(type) {
+		shp.setFillColor(sf::Color::Red);
+		shp.setOutlineColor(sf::Color::White);
+		shp.setOutlineThickness(1.f);
+		shp.setRadius(rad);
+		shp.setPosition(pos);
+	}
+
+	EnemyObj() {}
+};
+
 class EditorState : public State {
 private:
 	void initState();
@@ -94,6 +110,10 @@ private:
 	MapFileDisplay selectedMap;
 
 	float dtCounter;
+
+	std::vector<EnemyObj> enemySelection;
+	EnemyObj selectedEnemy;
+	std::vector<EnemyObj> enemies;
 public:
 	EditorState();
 	~EditorState();

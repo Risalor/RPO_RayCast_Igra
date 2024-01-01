@@ -22,7 +22,7 @@ void GamePlayState::initState() {
 	music.play();
 
 	music.setLoop(true);
-	music.setVolume(35.f);
+	music.setVolume(15.f);
 
 	/*for (size_t i = 0;i < inv.getSize();i++) {
 		std::cout << inv[i].debugPrint() << std::endl;
@@ -45,7 +45,7 @@ void GamePlayState::initMap() {
 		std::cout << "Folder does not exist or is not a directory.\n";
 	}
 
-	std::fstream file(mapPaths.at(1), std::ios::in | std::ios::binary);
+	std::fstream file(mapPaths.at(0), std::ios::in | std::ios::binary);
 
 	glb::consts::worldMap.clear();
 
