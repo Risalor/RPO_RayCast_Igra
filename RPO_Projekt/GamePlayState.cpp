@@ -22,7 +22,7 @@ void GamePlayState::initState() {
 	music.play();
 
 	music.setLoop(true);
-	music.setVolume(35.f);
+	music.setVolume(15.f);
 
 	/*for (size_t i = 0;i < inv.getSize();i++) {
 		std::cout << inv[i].debugPrint() << std::endl;

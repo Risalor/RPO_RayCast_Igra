@@ -12,7 +12,7 @@ struct MapTile {
 		rect.setPosition(pos);
 		rect.setFillColor(sf::Color::White);
 		rect.setOutlineColor(sf::Color::Black);
-		rect.setOutlineThickness(1.f);
+		rect.setOutlineThickness(2.f);
 	}
 
 	MapTile(int texNum, sf::Vector2f pos, sf::Texture tex) : texNum(texNum), pos(pos), tex(tex) {

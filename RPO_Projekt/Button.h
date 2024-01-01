@@ -22,4 +22,5 @@ public:
 	void draw(sf::RenderTarget* window);
 	void update(sf::Vector2f mouseCoord);
 	bool clicked();
+	void setScale(float scale);
 };

@@ -19,6 +19,12 @@ void Button::initTex() {
 	}
 }
 
+void Button::setScale(float scale) {
+	btn.setScale(sf::Vector2f(btn.getScale().x * scale, btn.getScale().y * scale));
+	text.setCharacterSize(text.getCharacterSize() * scale);
+	text.setPosition(sf::Vector2f(btn.getPosition().x + 92.f * scale, btn.getPosition().y + 40.f * scale));
+}
+
 Button::Button(sf::Vector2f pos, std::string buttonText) {
 
 	if (!hoverBuffer.loadFromFile("Assets/Buttons/button.wav")) {
