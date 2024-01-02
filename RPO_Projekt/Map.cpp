@@ -48,7 +48,7 @@ Map::Map() {
 	}
 }
 
-void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo) {
+void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo, std::vector<Item*> itemStartPos) {
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
 		sf::Vector2f oldPlane(plane);
@@ -63,7 +63,7 @@ void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInf
 	}
 
 	rayCastDraw(window, pInfo, eInfo, prInfo);
-	draw2D(window, pInfo, eInfo, prInfo);
+	draw2D(window, pInfo, eInfo, prInfo, itemStartPos);
 }
 
 void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo) {
@@ -336,7 +336,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 }
 
-void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo) {
+void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo, std::vector<Item*> itemStartPos) {
 	sf::CircleShape pl(5.f);
 	pl.setFillColor(sf::Color::Green);
 	pl.setPosition(sf::Vector2f((pInfo.getPos().y * 17.14f + screenWidth) - 2.5f, (pInfo.getPos().x * 17.14f) - 2.5f));
@@ -348,6 +348,20 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eI
 		en.setPosition(sf::Vector2f((eInfo[i]->getPos().y * 17.14f + screenWidth) - 2.5f, (eInfo[i]->getPos().x * 17.14f) - 2.5f));
 		enCircles.push_back(en);
 	}
+
+	std::vector<sf::CircleShape> ItemCircles;
+	for (int i = 0; i < itemStartPos.size(); i++) {
+		sf::CircleShape item(5.f);
+		if (itemStartPos[i]->getPickedStatus() == false) {
+			item.setFillColor(sf::Color{ 0x87CEEBFF });
+		}
+		else {
+			item.setFillColor(sf::Color(255, 255, 255, 0));
+		}
+		item.setPosition(sf::Vector2f((itemStartPos[i]->getStartPos().y * 17.14f + screenWidth) - 2.5f, (itemStartPos[i]->getStartPos().x * 17.14f) - 2.5f));
+		enCircles.push_back(item);
+	}
+
 
 	std::vector<sf::CircleShape> prCircles;
 	for (int i = 0; i < prInfo.size(); i++) {

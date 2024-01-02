@@ -6,13 +6,12 @@ void GamePlayState::initState() {
 	player = Player(10.f);
 	enemy.push_back(new EnemyMelee(2, 3, 6, 5));
 	enemy.push_back(new EnemyRange(6, 17, 7, 18));
-	Inventory inv;
-	inv.addItem(Weapon(0, 10, "sword"));
-	inv.addItem(Weapon(0, 10, "AK-47"));
-	inv.addItem(Weapon(0, 10, "M4"));
-	inv.addItem(Armor(10, "chest"));
-	inv.addItem(Armor(10, "head"));
-	inv.addItem(Armor(10, "blaa"));
+	
+	
+	items.push_back(new Weapon(20, 15, 2, 10, 0.5, false, "pistol"));
+	items.push_back(new Weapon(25, 15, 2, 10, 0.5, false, "AK-47"));
+	items.push_back(new Weapon(25, 10, 2, 10, 0.5, false, "machinegun"));
+	
 
 	if (!buffer.loadFromFile("Assets/Music/GamePlay.wav")) {
 		std::cout << "Faildes to load soundBuffer\n";
@@ -105,6 +104,11 @@ GamePlayState::~GamePlayState() {
 
 void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 	player.update(dt);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+		player.updateEquipment(items);
+	}
+
+
 	for (int i = 0; i < enemy.size(); i++) {
 		enemy[i]->update(dt, player);
 	}
@@ -138,7 +142,7 @@ void GamePlayState::removeProjectile(Projectile* projectile) {
 
 void GamePlayState::draw(sf::RenderTarget* window) {
 
-	map.draw(window, player, enemy, projectiles);
+	map.draw(window, player, enemy, projectiles,items);
 	player.renderHealthBar(window);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
 		player.showInventory(window);

@@ -16,8 +16,7 @@ private:
     int hp;
     int maxHp;
     Inventory inventory;
-    Weapon weapon;
-    Armor armor;
+   
 
     sf::Sprite inventorySprite;
     sf::Texture inventoryTexture;
@@ -42,6 +41,7 @@ public:
 
 
     void update(float dt);
+    void updateEquipment(std::vector<Item*> item);
     void move(float dt);
 
     const int& getHp() const { return this->hp;}

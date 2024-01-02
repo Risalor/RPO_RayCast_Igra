@@ -34,7 +34,7 @@ class Map {
 private:
 	sf::Vector2f plane;
 	void rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo);
-	void draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo);
+	void draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo, std::vector<Item*> itemStartPos);
 	std::vector<sf::Texture> textures;
 	std::vector<std::vector<sf::Color>> texture;
 	sf::RectangleShape floo;
@@ -43,6 +43,6 @@ private:
 	void handleDoor(Player& pInfo);
 public:
 	Map();
-	void draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo);
+	void draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo, std::vector<Item*> itemStartPos);
 };
 

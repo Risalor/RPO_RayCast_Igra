@@ -4,11 +4,14 @@
 class Weapon : public Item
 {
 private:
-	int damageMin;
-	int damageMax;
+	int damage;
+	float range;
+	float coolDown;
+	
 public:
 	virtual Weapon* clone() const; //class se klonira za dodajanje v inventory
-	Weapon(int damageMin = 0, int damageMax = 0, std::string name = "Weapon name");
+	Weapon(int startPosX, int startPosY, int damage = 0, float range = 0, float coolDown = 0, bool picked = false, bool equiped = false, std::string name = "Weapon name");
+	
 	virtual ~Weapon();
 	std::string toString();
 };

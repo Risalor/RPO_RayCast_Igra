@@ -2,10 +2,12 @@
 
 
 
-Weapon::Weapon(int damageMin, int damageMax, std::string name) : Item(name)
+Weapon::Weapon(int startPosX, int startPosY, int damage,float range,float coolDown, bool picked, bool equiped, std::string name)
+	: Item( startPosX, startPosY, picked, equiped, name)
 {
-	 this->damageMin = damageMin;
-	 this->damageMax = damageMax;
+	this->damage = damage;
+	this->range = range;
+	this->coolDown = coolDown;
 }
 
 Weapon::~Weapon()
@@ -14,7 +16,7 @@ Weapon::~Weapon()
 
 std::string Weapon::toString()
 {
-	return std::to_string(this->damageMin) + " " + std::to_string(this->damageMax);
+	return std::to_string(this->damage) + " " + std::to_string(this->range);
 }
 
 Weapon* Weapon::clone() const

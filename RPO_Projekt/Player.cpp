@@ -35,10 +35,32 @@ Player::~Player() {
 void Player::update(float dt) {
 	move(dt);
 	updateHealthBar();
-
 	if (this->hp <= 0) {
 		std::cout << "player DEAD\n";
 	}
+}
+
+void Player::updateEquipment(std::vector<Item*> item)
+{
+
+
+	for (int i = 0; i < item.size(); i++) {
+		/*std::cout << "X: " << item[i]->getStartPos().x << "   Y: " << item[i]->getStartPos().y << std::endl;
+		std::cout << "XX: " << getPos().x << "   YY: " << getPos().y << std::endl;*/
+		
+		if ((getPos().x <=item[i]->getStartPos().x + 0.5 && getPos().x >= item[i]->getStartPos().x - 0.5)
+			&& (getPos().y <= item[i]->getStartPos().y + 0.5 && getPos().y >= item[i]->getStartPos().y - 0.5)) {
+		
+
+			if (item[i]->getPickedStatus() == false) {
+				inventory.addItem(*item[i]);
+				item[i]->setPicked(true);
+				for(int j=0;j<inventory.getSize();j++)
+				std::cout << "Items in inventory : " << inventory[j].debugPrint() << std::endl;
+			}
+		}
+	}
+
 }
 
 

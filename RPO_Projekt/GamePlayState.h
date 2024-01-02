@@ -8,6 +8,8 @@ private:
 	Player player;
 
 	std::vector<Enemy*> enemy;
+	std::vector<Weapon*> weapon;
+	std::vector<Item*> items;
 	static std::vector<Projectile*> projectiles;
 	Map map;
 
