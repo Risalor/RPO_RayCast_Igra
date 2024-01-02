@@ -139,5 +139,8 @@ void GamePlayState::removeProjectile(Projectile* projectile) {
 void GamePlayState::draw(sf::RenderTarget* window) {
 
 	map.draw(window, player, enemy, projectiles);
-
+	player.renderHealthBar(window);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+		player.showInventory(window);
+	}
 }

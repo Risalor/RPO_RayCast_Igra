@@ -14,9 +14,17 @@ private:
     float shiftDelayTime;
     float shiftTimeCount;
     int hp;
+    int maxHp;
     Inventory inventory;
     Weapon weapon;
     Armor armor;
+
+    sf::Sprite inventorySprite;
+    sf::Texture inventoryTexture;
+    bool isInventoryVisible;
+
+    sf::RectangleShape healthBar;
+    sf::RectangleShape healthBarBackground;
 
 
 public:
@@ -26,6 +34,12 @@ public:
 
     sf::Vector2f getPos() const { return playerPos; }
     sf::Vector2f getDir() const { return playerDir; }
+
+
+    void updateHealthBar();
+    void renderHealthBar(sf::RenderTarget* window);
+    void showInventory(sf::RenderTarget* window);
+
 
     void update(float dt);
     void move(float dt);

@@ -11,6 +11,6 @@ public:
 	Item(std::string name);
 	virtual ~Item();
 	inline std::string debugPrint() const { return this->name; }
-
+	std::string getName() const { return this->name; }
 };
 

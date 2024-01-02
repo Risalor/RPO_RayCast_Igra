@@ -40,9 +40,7 @@ void Inventory::addItem(const Item& item)
 	this->itemArray[this->numOfItems++] = item.clone();//nova kopija itema, nerabimo preverjat ali je Weapon ali Armor, naredimo kopijo inn vstavimo
 }
 
-void Inventory::removeItem(int index)
-{
-}
+
 void Inventory::expand()
 {
 	this->capacity *= 2; //podvojimo kapaciteto
@@ -59,4 +57,23 @@ void Inventory::expand()
 	this->itemArray = tmpArray;//ker smo stari array zbrisali mora kazat na tmpArray v katerega smo vse prekopirali
 
 	this->initialize(this->numOfItems);
+}
+
+void Inventory::removeItem(int index)
+{
+	if (index >= 0 && index < numOfItems && itemArray[index] != nullptr) {
+		delete itemArray[index];
+		itemArray[index] = nullptr;
+
+	}
+
+}
+
+int Inventory::findItem(const std::string& itemName) const {
+	for (size_t i = 0; i < numOfItems; ++i) {
+		if (itemArray[i] != nullptr && itemArray[i]->getName() == itemName) {
+			return i;
+		}
+	}
+	return -1; // Predmet ni najden
 }

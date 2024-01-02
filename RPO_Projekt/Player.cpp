@@ -14,7 +14,18 @@ Player::Player(float speed) :movementSpeed(movementSpeed), rotationSpeed(rotatio
 	this->shiftPressed = false;
 	this->shiftDelayTime = 1.4f;
 	this->shiftTimeCount = 0.f;
-	this->hp = 20;
+	this->maxHp = 10;
+	this->hp = maxHp;
+
+
+	this->isInventoryVisible = false;
+	healthBar.setSize(sf::Vector2f(100.0, 10.0)); // Dolžina 100, višina 10
+	healthBar.setFillColor(sf::Color::Green);
+
+	healthBarBackground.setSize(sf::Vector2f(100.0, 10.0));
+	healthBarBackground.setFillColor(sf::Color(128, 128, 128)); // Siva barva
+
+
 }
 
 Player::~Player() {
@@ -23,6 +34,7 @@ Player::~Player() {
 
 void Player::update(float dt) {
 	move(dt);
+	updateHealthBar();
 
 	if (this->hp <= 0) {
 		std::cout << "player DEAD\n";
@@ -89,6 +101,57 @@ void Player::move(float dt)
 
 	}
 	}
+
+
+
+
+
+void Player::renderHealthBar(sf::RenderTarget* window) {
+	// Pridobi trenutno velikost okna
+	sf::Vector2u windowSize = window->getSize();
+
+	float margin = 10;
+
+	// Nastavi x pozicijo na levi rob z nekim robom
+	float xPosition = margin;
+
+	float yPosition = windowSize.y - windowSize.y + 10;
+
+	healthBar.setPosition(xPosition, yPosition);
+	healthBarBackground.setPosition(xPosition, yPosition);
+	// Nariši healthbar
+	window->draw(healthBarBackground);
+	window->draw(healthBar);
+
+}
+
+void Player::showInventory(sf::RenderTarget* window)
+{
+	isInventoryVisible = !isInventoryVisible;
+	if (!inventoryTexture.loadFromFile("Assets/Inventory/inventory.png")) {
+		std::cout << "Napaka pri odpiranju!" << std::endl;
+	}
+	else {
+
+		inventorySprite.setTexture(inventoryTexture);
+		inventorySprite.setPosition(0, 10);
+		window->draw(inventorySprite);
+
+	}
+}
+
+
+
+void Player::updateHealthBar() {
+
+	// Posodobi dolžino zdravstvene vrstice glede na trenutno hp
+
+	float hpPercent = hp / maxHp * 100;
+
+	healthBar.setSize(sf::Vector2f(hpPercent, 10.0));
+
+
+}
 
 
 
