@@ -1,17 +1,22 @@
 #include "GamePlayState.h"
 
 std::vector<Projectile*> GamePlayState::projectiles;
-
+Player player(Player(10.0f));
 void GamePlayState::initState() {
-	player = Player(10.f);
+	
 	enemy.push_back(new EnemyMelee(2, 3, 6, 5));
 	enemy.push_back(new EnemyRange(6, 17, 7, 18));
 	
 	
-	items.push_back(new Weapon(20, 15, 2, 10, 0.5, false, "pistol"));
-	items.push_back(new Weapon(25, 15, 2, 10, 0.5, false, "AK-47"));
-	items.push_back(new Weapon(25, 10, 2, 10, 0.5, false, "machinegun"));
+	items.push_back(new Weapon(20, 15, 2, 10, 0.5, false,false, "pistol"));
+	items.push_back(new Weapon(25, 15, 2, 10, 0.5, false,false, "AK-47"));
+	items.push_back(new Weapon(25, 10, 2, 10, 0.5, false,false, "machinegun"));
+
 	
+	for (int i = 0;i < weapons.size();i++) {
+
+		std::cout << "OROŽJE: " << weapons[i]->getName() << weapons[i]->getPickedStatus() <<  std::endl;
+	}
 
 	if (!buffer.loadFromFile("Assets/Music/GamePlay.wav")) {
 		std::cout << "Faildes to load soundBuffer\n";
@@ -100,12 +105,21 @@ GamePlayState::GamePlayState() : State() {
 
 GamePlayState::~GamePlayState() {
 
+	for (Item* item : items) {
+        delete item;
+    }
+    items.clear();
+
 }
 
 void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 	player.update(dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
 		player.updateEquipment(items);
+	}
+	
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		player.attack();
 	}
 
 

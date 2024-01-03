@@ -42,7 +42,11 @@ public:
 
     void update(float dt);
     void updateEquipment(std::vector<Item*> item);
+    void equipItem(int itemIndex);
     void move(float dt);
+    void attack();
+    void unequipOthers(const std::string& name);
+    bool checkBounds(int number);
 
     const int& getHp() const { return this->hp;}
     void setHp(int amount) { this->hp = amount;}

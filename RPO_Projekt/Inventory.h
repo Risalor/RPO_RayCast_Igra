@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "Weapon.h"
 #include "Armor.h"
 
@@ -8,7 +9,7 @@ class Inventory
 private:
 	int capacity;
 	int numOfItems;
-	Item** itemArray;
+	std::unique_ptr<Item* []> itemArray;
 	void expand();
 	void initialize(const int from = 0);
 public:

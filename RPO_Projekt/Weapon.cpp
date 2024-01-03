@@ -10,6 +10,31 @@ Weapon::Weapon(int startPosX, int startPosY, int damage,float range,float coolDo
 	this->coolDown = coolDown;
 }
 
+bool Weapon::getPickedStatus() const
+{
+	return Item::getPickedStatus();
+}
+
+void Weapon::setPicked(bool status)
+{
+	Item::setPicked(status);
+}
+
+bool Weapon::getEquiped() const
+{
+	return Item::getEquiped();
+}
+
+void Weapon::setEquiped(bool status)
+{
+	Item::setEquiped(status);
+}
+
+std::string Weapon::getName() const
+{
+	return Item::getName();
+}
+
 Weapon::~Weapon()
 {
 }

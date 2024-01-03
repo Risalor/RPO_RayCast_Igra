@@ -28,6 +28,7 @@ Player::Player(float speed) :movementSpeed(movementSpeed), rotationSpeed(rotatio
 
 }
 
+
 Player::~Player() {
 
 }
@@ -38,29 +39,99 @@ void Player::update(float dt) {
 	if (this->hp <= 0) {
 		std::cout << "player DEAD\n";
 	}
+
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
+		if(checkBounds(1))
+		equipItem(0);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+		if (checkBounds(2))
+		equipItem(1);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
+		if (checkBounds(3))
+		equipItem(2);
+	}
+
 }
 
 void Player::updateEquipment(std::vector<Item*> item)
 {
-
-
 	for (int i = 0; i < item.size(); i++) {
-		/*std::cout << "X: " << item[i]->getStartPos().x << "   Y: " << item[i]->getStartPos().y << std::endl;
-		std::cout << "XX: " << getPos().x << "   YY: " << getPos().y << std::endl;*/
-		
-		if ((getPos().x <=item[i]->getStartPos().x + 0.5 && getPos().x >= item[i]->getStartPos().x - 0.5)
-			&& (getPos().y <= item[i]->getStartPos().y + 0.5 && getPos().y >= item[i]->getStartPos().y - 0.5)) {
-		
+		if (item[i] != nullptr) {
+			//std::cout <<i<< ": " << item[i]->getName() << " " << item[i]->getPickedStatus() <<" " << item[i]->getEquiped() << std::endl;
 
-			if (item[i]->getPickedStatus() == false) {
-				inventory.addItem(*item[i]);
-				item[i]->setPicked(true);
-				for(int j=0;j<inventory.getSize();j++)
-				std::cout << "Items in inventory : " << inventory[j].debugPrint() << std::endl;
+			if ((getPos().x <= item[i]->getStartPos().x + 0.5 && getPos().x >= item[i]->getStartPos().x - 0.5)
+				&& (getPos().y <= item[i]->getStartPos().y + 0.5 && getPos().y >= item[i]->getStartPos().y - 0.5)) {
+
+
+				if (item[i]->getPickedStatus() == false) {
+					item[i]->setPicked(true);
+					item[i]->setEquiped(true);
+					inventory.addItem(*item[i]);
+					std::cout << "Dodan v inventory : " << item[i]->getName() << " Status equiped:  " << item[i]->getEquiped() << std::endl;
+
+					std::cout << i << ": " << item[i]->getName() << " " << item[i]->getPickedStatus() << " " << item[i]->getEquiped() << std::endl;
+					unequipOthers(item[i]->getName());
+
+				}
 			}
+		}
+		else {
+			std::cout <<  "Neveljaven dostop " << std::endl;
+
 		}
 	}
 
+}
+
+void Player::equipItem(int itemIndex)
+{
+	
+	if (itemIndex >= 0 && itemIndex <= inventory.getSize()) {
+		std::cout << "Equipan item:  " << inventory[itemIndex].getName() << " Status e:  " << inventory[itemIndex].getEquiped() << std::endl;
+
+		inventory[itemIndex].setEquiped(true);
+		unequipOthers(inventory[itemIndex].getName());
+		
+	}
+	
+}
+
+void Player::attack()
+{
+
+
+	std::cout << "napadam!!!" << std::endl;
+
+}
+
+void Player::unequipOthers(const std::string& name)
+{
+	std::cout << "Velikost: " << inventory.getSize() << std::endl;
+	for (int j = 0; j < inventory.getSize(); j++) {
+		try {
+			Item& item = inventory[j];
+			if (item.getName() != name) {
+				item.setEquiped(false);
+				std::cout << "Unequipani itemi:  " << item.getName() << std::endl;
+			}
+		}
+		catch (const char* msg) {
+			std::cerr << "Exception caught in unequipOthers: " << msg << std::endl;
+		}
+	}
+}
+
+bool Player::checkBounds(int number)
+{
+	if (number <= inventory.getSize()) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 
@@ -165,8 +236,6 @@ void Player::showInventory(sf::RenderTarget* window)
 
 
 void Player::updateHealthBar() {
-
-	// Posodobi dolžino zdravstvene vrstice glede na trenutno hp
 
 	float hpPercent = hp / maxHp * 100;
 
