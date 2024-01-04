@@ -2,12 +2,13 @@
 
 
 
-Weapon::Weapon(int startPosX, int startPosY, int damage,float range,float coolDown, bool picked, bool equiped, std::string name)
+Weapon::Weapon(int startPosX, int startPosY, int damage,float range,float coolDown, bool picked, bool equiped, bool valid, std::string name)
 	: Item( startPosX, startPosY, picked, equiped, name)
 {
 	this->damage = damage;
 	this->range = range;
 	this->coolDown = coolDown;
+	this->valid = false;
 }
 
 bool Weapon::getPickedStatus() const

@@ -99,11 +99,24 @@ void Player::equipItem(int itemIndex)
 	
 }
 
-void Player::attack()
+Weapon Player::getItem()
 {
 
+	Weapon* weapon = nullptr;
+	for (int i = 0; i < inventory.getSize(); i++) {
+		if (inventory[i].getEquiped()) {
+			weapon = dynamic_cast<Weapon*>(&inventory[i]);
+			if (weapon != nullptr) {
+				break;
+			}
+		}
+	}
+	if (weapon != nullptr) {
+		weapon->setValid(true);
+		return *weapon;
+	} else 
+		throw std::runtime_error("No weapon equipped");
 
-	std::cout << "napadam!!!" << std::endl;
 
 }
 
@@ -132,6 +145,15 @@ bool Player::checkBounds(int number)
 	else {
 		return false;
 	}
+}
+
+bool Player::inventoryEmpty()
+{
+
+	if (inventory.getSize() > 0)
+		return true;
+	else
+		return false;
 }
 
 

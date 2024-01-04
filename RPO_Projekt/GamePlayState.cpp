@@ -1,6 +1,7 @@
-#include "GamePlayState.h"
+﻿#include "GamePlayState.h"
 
 std::vector<Projectile*> GamePlayState::projectiles;
+const float PI = 3.14159265358979323846f;
 Player player(Player(10.0f));
 void GamePlayState::initState() {
 	
@@ -8,15 +9,11 @@ void GamePlayState::initState() {
 	enemy.push_back(new EnemyRange(6, 17, 7, 18));
 	
 	
-	items.push_back(new Weapon(20, 15, 2, 10, 0.5, false,false, "pistol"));
-	items.push_back(new Weapon(25, 15, 2, 10, 0.5, false,false, "AK-47"));
-	items.push_back(new Weapon(25, 10, 2, 10, 0.5, false,false, "machinegun"));
+	items.push_back(new Weapon(20, 15, 2, 10, 0.5, false,false,false, "pistol"));
+	items.push_back(new Weapon(25, 15, 2, 10, 0.5, false,false,false, "AK-47"));
+	items.push_back(new Weapon(25, 10, 2, 10, 0.5, false,false,false, "machinegun"));
 
 	
-	for (int i = 0;i < weapons.size();i++) {
-
-		std::cout << "ORO�JE: " << weapons[i]->getName() << weapons[i]->getPickedStatus() <<  std::endl;
-	}
 
 	if (!buffer.loadFromFile("Assets/Music/GamePlay.wav")) {
 		std::cout << "Faildes to load soundBuffer\n";
@@ -118,9 +115,45 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 		player.updateEquipment(items);
 	}
 	
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-		player.attack();
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) { //tukaj izvajanje napadanja, ker v player razredu to ni mogoče-> če Player razred includan v Enemy in Enemy v Player-> ne deluje
+
+		if (player.inventoryEmpty()) {
+
+			Weapon weapon = player.getItem();
+
+			
+			for (auto& enemy : enemy) {
+				float distanceToEnemy = calculateDistance(player.getPos(), enemy->getPos());
+				if (distanceToEnemy <= weapon.getRange()) {
+
+
+					sf::Vector2f directionToEnemy = enemy->getPos() - player.getPos();
+					normalizeVector(directionToEnemy);
+
+					float dotProduct = player.getDir().x * directionToEnemy.x + player.getDir().y * directionToEnemy.y;
+					float angle = std::acos(dotProduct) * 180.0f / PI; // Pretvorba v stopinje
+
+					if (angle < 20.0f) { // Možna napaka 20 stopinj
+						float distanceToEnemy = calculateDistance(player.getPos(), enemy->getPos());
+						if (distanceToEnemy <= weapon.getRange()) {
+							//enemy->takeDamage(damage);
+							std::cout << "SOVRAZNIK ZADET, oddaljenost: " << distanceToEnemy << std::endl;
+						}
+					}
+				}
+			}
+		}
+		else {
+			std::cout << "Inventory empty!" << std::endl;
+		}
 	}
+
+
+
+
+
+
 
 
 	for (int i = 0; i < enemy.size(); i++) {
@@ -154,11 +187,26 @@ void GamePlayState::removeProjectile(Projectile* projectile) {
 	}
 }
 
+float GamePlayState::calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2)
+{
+	sf::Vector2f diff = pos1 - pos2;
+	return std::sqrt(diff.x * diff.x + diff.y * diff.y);
+}
+
 void GamePlayState::draw(sf::RenderTarget* window) {
 
 	map.draw(window, player, enemy, projectiles,items);
 	player.renderHealthBar(window);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
 		player.showInventory(window);
+	}
+}
+
+
+void GamePlayState::normalizeVector(sf::Vector2f& vector) {
+	float length = std::sqrt(vector.x * vector.x + vector.y * vector.y);
+	if (length != 0) {
+		vector.x /= length;
+		vector.y /= length;
 	}
 }

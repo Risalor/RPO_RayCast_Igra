@@ -13,3 +13,16 @@ EnemyRange::~EnemyRange() {}
 void EnemyRange::attack(Player& player) {
 	Projectile* p = new Projectile(ePos, eDir, eDamage);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

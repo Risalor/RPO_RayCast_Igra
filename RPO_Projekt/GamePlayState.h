@@ -24,5 +24,8 @@ public:
 
 	static void addProjectile(Projectile* projectile);
 	static void removeProjectile(Projectile* projectile);
+
+	float calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2);
+	void normalizeVector(sf::Vector2f& vector);
 };
 
