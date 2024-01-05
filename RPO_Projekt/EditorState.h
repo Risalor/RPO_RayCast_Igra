@@ -84,6 +84,21 @@ struct EnemyObj {
 	EnemyObj() {}
 };
 
+struct PlayerObj {
+	sf::Vector2f pos;
+	sf::CircleShape shp;
+
+	PlayerObj(sf::Vector2f pos, float rad) : pos(pos) {
+		shp.setFillColor(sf::Color::Green);
+		shp.setOutlineColor(sf::Color::White);
+		shp.setOutlineThickness(1.f);
+		shp.setRadius(rad);
+		shp.setPosition(pos);
+	}
+
+	PlayerObj() {}
+};
+
 class EditorState : public State {
 private:
 	void initState();
@@ -114,6 +129,9 @@ private:
 	std::vector<EnemyObj> enemySelection;
 	EnemyObj selectedEnemy;
 	std::vector<EnemyObj> enemies;
+
+	PlayerObj playerSelect;
+	PlayerObj player;
 public:
 	EditorState();
 	~EditorState();
