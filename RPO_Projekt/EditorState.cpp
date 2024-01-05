@@ -83,6 +83,8 @@ void EditorState::loadTextures() {
 
 	enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * offset + 3), 20, 1));
 	enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * (offset + 1) + 5), 20, 2));
+
+	playerSelect = PlayerObj(sf::Vector2f(413.f, 40 * (offset + 2) + 7), 20);
 }
 
 void EditorState::moveView() {
@@ -218,11 +220,17 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 			file.write(reinterpret_cast<const char*>(&it.type), sizeof(int));
 		}
 
+		double temp = player.pos.x / 17.f;
+		file.write(reinterpret_cast<const char*>(&temp), sizeof(double));
+		double temp2 = player.pos.y / 17.f;
+		file.write(reinterpret_cast<const char*>(&temp2), sizeof(double));
+
 		file.close();
 	}
 
 	if (buttons.at(2).clicked()) {
 		int wid = 0, hei = 0;
+		enemies.clear();
 
 		for (auto& it : tile) {
 			for (auto& it2 : it) {
@@ -262,6 +270,11 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 			file.read(reinterpret_cast<char*>(&type), sizeof(int));
 			enemies.push_back(EnemyObj(sf::Vector2f(pozX * 17.f, pozY * 17.f), 5.f, type));
 		}
+
+		file.read(reinterpret_cast<char*>(&pozX), sizeof(double));
+		file.read(reinterpret_cast<char*>(&pozY), sizeof(double));
+
+		player = PlayerObj(sf::Vector2f(pozX * 17.f, pozY * 17.f), 5.f);
 
 		file.close();
 	}
@@ -313,6 +326,21 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 		dtCounter = 0.f;
 	}
 
+	if (playerSelect.shp.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		playerSelect.shp.setOutlineColor(sf::Color::Green);
+		selected = 0;
+		selectedEnemy.type = 0;
+	}
+
+	if (selectedEnemy.type != 0 || selected != 0) {
+		playerSelect.shp.setOutlineColor(sf::Color::White);
+	}
+
+	if (isMouseInView() && sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtCounter > 0.5f && selectedEnemy.type == 0 && selected == 0) {
+		player = PlayerObj(sf::Vector2f(worldCoords), 5.f);
+		dtCounter = 0.f;
+	}
+
 	for (int i = 0; i < enemies.size(); i++) {
 		if (enemies[i].shp.getGlobalBounds().contains(worldCoords) && sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 			enemies.erase(enemies.begin() + i);
@@ -355,10 +383,10 @@ void EditorState::draw(sf::RenderTarget* window) {
 	sf::Vector2f topLeft = window->mapPixelToCoords(sf::Vector2i(0, 0));
 	sf::Vector2f bottomRight = window->mapPixelToCoords(sf::Vector2i(411, 480));
 
-	int leftTile = static_cast<int>(topLeft.x / 17);
-	int rightTile = static_cast<int>(bottomRight.x / 17);
-	int topTile = static_cast<int>(topLeft.y / 17);
-	int bottomTile = static_cast<int>(bottomRight.y / 17);
+	int leftTile = (int)(topLeft.x / 17);
+	int rightTile = (int)(bottomRight.x / 17);
+	int topTile = (int)(topLeft.y / 17);
+	int bottomTile = (int)(bottomRight.y / 17);
 
 	// Draw only the visible tiles
 	for (int i = std::max(0, topTile); i <= std::min(200 - 1, bottomTile); i++) {
@@ -371,6 +399,8 @@ void EditorState::draw(sf::RenderTarget* window) {
 		window->draw(it.shp);
 	}
 
+	window->draw(player.shp);
+
 	worldCoords = window->mapPixelToCoords(sf::Vector2i(mouseCoords));
 
 	window->setView(viewR);
@@ -381,6 +411,7 @@ void EditorState::draw(sf::RenderTarget* window) {
 
 	window->draw(enemySelection.at(0).shp);
 	window->draw(enemySelection.at(1).shp);
+	window->draw(playerSelect.shp);
 
 	for (auto& it : buttons) {
 		it.draw(window);
