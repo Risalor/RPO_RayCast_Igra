@@ -7,7 +7,7 @@ void Map::handleDoor(Player& pInfo) {
 		}
 	}
 
-	std::cout << glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] << "\n";
+	//std::cout << glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] << "\n";
 }
 
 Map::Map() {
@@ -72,17 +72,11 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 	handleDoor(pInfo);
 
-	for (int i = 0; i < screenHeight - 1; i++) {
-		sf::Vector2f rayL, rayR;
-		rayL.x = pInfo.getDir().x - plane.x;
-		rayL.y = pInfo.getDir().y - plane.y;
+	sf::Vector2f rayL(pInfo.getDir().x - plane.x, pInfo.getDir().y - plane.y), rayR(pInfo.getDir().x + plane.x, pInfo.getDir().y + plane.y);
+	float vertPoz = screenHeight / 2;
+	for (int i = screenHeight / 2; i < screenHeight - 1; i++) {
 
-		rayR.x = pInfo.getDir().x + plane.x;
-		rayR.y = pInfo.getDir().y + plane.y;
-
-		int centerPoz = i - screenHeight / 2;
-
-		float vertPoz = 0.5f * screenHeight;
+		int centerPoz = i - vertPoz;
 
 		float camPoz = vertPoz / centerPoz;
 
@@ -99,6 +93,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 			buffer.setPixel(j, i, texture[3][texWidth * tex.y + tex.x]);
 			buffer.setPixel(j, screenHeight - i - 1, texture[1][texWidth * tex.y + tex.x]);
+
 		}
 	}
 
