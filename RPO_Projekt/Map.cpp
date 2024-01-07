@@ -102,7 +102,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 	int wallDistMem = 0;
 	sf::Vector2i mapMem(-1, -1);
 
-	for (int i = 0; i < 720; i++) {
+	for (int i = 0; i < 720; i = i + 10) {
 		double cameraX = 2 * i / 720.0 - 1;
 		sf::Vector2f rayDir;
 		rayDir.x = pInfo.getDir().x + plane.x * cameraX;
@@ -226,6 +226,14 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).x = i;
 			wallDistMem = (int)wallDist;
 		}
+
+		double stepi = 1.0 * texHeight / lineHeight;
+		double texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * stepi;
+		for (int u = drawStart; u < drawEnd; u++) {
+			int texY = (int)texPos & (texHeight - 1);
+			texPos += stepi;
+			buffer.setPixel(i, u, sf::Color::Green);
+		}
 	}
 
 	sf::Texture tex;
@@ -235,7 +243,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 	window->draw(shp);
 
-	for (auto& it : wall) {
+	/*for (auto& it : wall) {
 		sf::Image img;
 		img.create(it.line.size(), screenHeight, sf::Color::Transparent);
 		int pos = 0;
@@ -273,7 +281,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		tex.loadFromImage(img);
 		rect.setTexture(&tex);
 		window->draw(rect);
-	}
+	}*/
 	
 	spriteManager.createSprite(0);
 	for (size_t i = 0; i < eInfo.size(); ++i) {
