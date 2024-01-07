@@ -17,7 +17,7 @@ protected:
 
 protected:
 
-	int eHealth = 10;
+	int eHealth;
 
 	float eSpeed;
 	float eVision;
@@ -30,11 +30,12 @@ public:
 	~Enemy();
 
 	sf::Vector2f getPos() const { return ePos; }
+	int getHealth() { return eHealth; }
+	void takeDamage(int damage);
 
 	void update(float dt, Player& player);
 
 	void patrol(float dt);
 	void aggro(float dt, Player& player);
-
 	virtual void attack(Player& player);
 };

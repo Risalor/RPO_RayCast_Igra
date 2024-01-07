@@ -1,19 +1,22 @@
 ﻿#include "GamePlayState.h"
 
-std::vector<Projectile*> GamePlayState::projectiles;
 const float PI = 3.14159265358979323846f;
-Player player(Player(10.0f));
-void GamePlayState::initState() {
-	
-	enemy.push_back(new EnemyMelee(2, 3, 6, 5));
-	enemy.push_back(new EnemyRange(6, 17, 7, 18));
-	
-	
-	items.push_back(new Weapon(20, 15, 2, 10, 0.5, false,false,false, "pistol"));
-	items.push_back(new Weapon(25, 15, 2, 10, 0.5, false,false,false, "AK-47"));
-	items.push_back(new Weapon(25, 10, 2, 10, 0.5, false,false,false, "machinegun"));
 
-	
+Player player(Player(10.0f));
+std::vector<Projectile*> GamePlayState::projectiles;
+std::vector<Enemy*> GamePlayState::enemies;
+
+void GamePlayState::initState() {
+
+	enemies.push_back(new EnemyMelee(2, 3, 6, 5));
+	enemies.push_back(new EnemyRange(6, 17, 7, 18));
+
+
+	items.push_back(new Weapon(20, 15, 2, 10, 0.5, false, false, false, "pistol"));
+	items.push_back(new Weapon(25, 15, 2, 10, 0.5, false, false, false, "AK-47"));
+	items.push_back(new Weapon(25, 10, 2, 10, 0.5, false, false, false, "machinegun"));
+
+
 
 	if (!buffer.loadFromFile("Assets/Music/GamePlay.wav")) {
 		std::cout << "Faildes to load soundBuffer\n";
@@ -42,7 +45,8 @@ void GamePlayState::initMap() {
 				mapPaths.push_back(it.path().string());
 			}
 		}
-	} else {
+	}
+	else {
 		std::cout << "Folder does not exist or is not a directory.\n";
 	}
 
@@ -103,9 +107,9 @@ GamePlayState::GamePlayState() : State() {
 GamePlayState::~GamePlayState() {
 
 	for (Item* item : items) {
-        delete item;
-    }
-    items.clear();
+		delete item;
+	}
+	items.clear();
 
 }
 
@@ -114,7 +118,7 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
 		player.updateEquipment(items);
 	}
-	
+
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) { //tukaj izvajanje napadanja, ker v player razredu to ni mogoče-> če Player razred includan v Enemy in Enemy v Player-> ne deluje
 
@@ -122,8 +126,8 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 
 			Weapon weapon = player.getItem();
 
-			
-			for (auto& enemy : enemy) {
+
+			for (auto& enemy : enemies) {
 				float distanceToEnemy = calculateDistance(player.getPos(), enemy->getPos());
 				if (distanceToEnemy <= weapon.getRange()) {
 
@@ -137,7 +141,7 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 					if (angle < 20.0f) { // Možna napaka 20 stopinj
 						float distanceToEnemy = calculateDistance(player.getPos(), enemy->getPos());
 						if (distanceToEnemy <= weapon.getRange()) {
-							//enemy->takeDamage(damage);
+							enemy->takeDamage(1);
 							std::cout << "SOVRAZNIK ZADET, oddaljenost: " << distanceToEnemy << std::endl;
 						}
 					}
@@ -156,8 +160,8 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 
 
 
-	for (int i = 0; i < enemy.size(); i++) {
-		enemy[i]->update(dt, player);
+	for (int i = 0; i < enemies.size(); i++) {
+		enemies[i]->update(dt, player);
 	}
 
 	for (auto& projectile : projectiles) {
@@ -177,15 +181,26 @@ void GamePlayState::addProjectile(Projectile* projectile) {
 	projectiles.push_back(projectile);
 }
 
-void GamePlayState::removeProjectile(Projectile* projectile) {	
+void GamePlayState::removeProjectile(Projectile* projectile) {
 	for (auto it = projectiles.begin(); it != projectiles.end(); ++it) {
 		if (*it == projectile) {
-			
-			projectiles.erase(it);			
+
+			projectiles.erase(it);
 			break;
 		}
 	}
 }
+
+void GamePlayState::removeEnemy(Enemy* enemy) {
+	for (auto it = enemies.begin(); it != enemies.end(); ++it) {
+		if (*it == enemy) {
+
+			enemies.erase(it);
+			break;
+		}
+	}
+}
+
 
 float GamePlayState::calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2)
 {
@@ -195,13 +210,12 @@ float GamePlayState::calculateDistance(const sf::Vector2f& pos1, const sf::Vecto
 
 void GamePlayState::draw(sf::RenderTarget* window) {
 
-	map.draw(window, player, enemy, projectiles,items);
+	map.draw(window, player, enemies, projectiles, items);
 	player.renderHealthBar(window);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
 		player.showInventory(window);
 	}
 }
-
 
 void GamePlayState::normalizeVector(sf::Vector2f& vector) {
 	float length = std::sqrt(vector.x * vector.x + vector.y * vector.y);

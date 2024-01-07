@@ -5,12 +5,13 @@ private:
 	void initState();
 	void initMap();
 	void playerMapRelation();
-	
 
-	std::vector<Enemy*> enemy;
+
 	std::vector<Weapon*> weapons;
 	std::vector<Item*> items;
+	static std::vector<Enemy*> enemies;
 	static std::vector<Projectile*> projectiles;
+
 	Map map;
 
 	sf::Sound music;
@@ -24,6 +25,7 @@ public:
 
 	static void addProjectile(Projectile* projectile);
 	static void removeProjectile(Projectile* projectile);
+	static void removeEnemy(Enemy* enemy);
 
 	float calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2);
 	void normalizeVector(sf::Vector2f& vector);

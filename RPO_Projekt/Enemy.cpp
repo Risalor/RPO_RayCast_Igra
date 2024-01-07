@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "GamePlayState.h"
 
 Enemy::Enemy(int spx, int spy, int tpx, int tpy) {
 	eStartPos.x = spx;
@@ -10,12 +11,23 @@ Enemy::Enemy(int spx, int spy, int tpx, int tpy) {
 	eDir.x = 0;
 	eDir.y = 1;
 
+	eHealth = 10;
 	eSpeed = 3.f;
 	eVision = 12.f;
 	eRange = 1.f;
 }
 
-Enemy::~Enemy() {}
+Enemy::~Enemy() {
+	GamePlayState::removeEnemy(this);
+}
+
+void Enemy::takeDamage(int damage) {
+	this->eHealth -= damage;
+
+	if (this->eHealth <= 0) {
+		delete this;
+	}
+}
 
 bool isVisible(const sf::Vector2f& pPos, const sf::Vector2f& ePos) {
 	int pTileX = int(pPos.x);
