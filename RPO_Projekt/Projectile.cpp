@@ -22,10 +22,11 @@ void Projectile::update(float dt, Player& player) {
 		player.takeDamage(damage);
 		delete this;
 		return;
-	}
-
-	if (timer.getElapsedTime().asSeconds() > 5) {
+	}else if (timer.getElapsedTime().asSeconds() > 7) {
 		delete this; 
+		return;
+	}else if (glb::consts::worldMap[int(prPos.x)][int(prPos.y)] > 0) {
+		delete this;
 		return;
 	}
 }

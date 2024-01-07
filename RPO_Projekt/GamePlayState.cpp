@@ -114,6 +114,7 @@ GamePlayState::~GamePlayState() {
 }
 
 void GamePlayState::update(float dt, sf::Vector2f mousePos) {
+
 	player.update(dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
 		player.updateEquipment(items);
