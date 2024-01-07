@@ -30,6 +30,11 @@ struct Wall {
 	int side;
 };
 
+struct Entity {
+	sf::Sprite* sprite;
+	float distance;
+};
+
 class Map {
 private:
 	sf::Vector2f plane;

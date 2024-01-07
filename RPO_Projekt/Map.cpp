@@ -1,5 +1,25 @@
 ﻿#include "Map.h"
 
+
+bool hasLineOfSight(const sf::Vector2f& start, const sf::Vector2f& end) {
+	sf::Vector2f direction = end - start;
+	float distance = sqrt(direction.x * direction.x + direction.y * direction.y);
+	direction /= distance;
+
+	float increment = 0.5f;
+
+	for (float t = 0.0f; t < distance; t += increment) {
+		int mapX = static_cast<int>(start.x + direction.x * t);
+		int mapY = static_cast<int>(start.y + direction.y * t);
+
+		if (glb::consts::worldMap[mapX][mapY] > 0) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void Map::handleDoor(Player& pInfo) {
 	if (glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] == 5) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
@@ -14,7 +34,7 @@ Map::Map() {
 	plane.x = 0.66f;
 	plane.y = 0.f;
 
-	spriteManager.addNewTexture("Assets/WallTex/ztroll-face-meme-png_64x64.png");
+	spriteManager.addNewTexture("Assets/Enemy/Enemy.png");
 	spriteManager.addNewTexture("Assets/Projectile/projectile.png");
 
 	std::filesystem::path folder("Assets/WallTex");
@@ -288,6 +308,10 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			continue;
 		}
 
+		if (!hasLineOfSight(pInfo.getPos(), enemyPos)) {
+			continue;
+		}
+
 		int spriteScreenX = static_cast<int>((screenWidth / 2) * (1 + transformX / transformY));
 
 		int spriteHeight = std::abs(static_cast<int>(screenHeight / transformY));
@@ -320,13 +344,13 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		int spriteHeight = std::abs(static_cast<int>(screenHeight / transformY));
 		int spriteScreenY = screenHeight / 2 - spriteHeight / 2 + 20; 
 
-		sf::Sprite* enemySprite = spriteManager.getSprite(1);
-		enemySprite->setPosition(spriteScreenX, spriteScreenY);
+		sf::Sprite* projectileSprite = spriteManager.getSprite(1);
+		projectileSprite->setPosition(spriteScreenX, spriteScreenY);
 
-		float scale = static_cast<float>(spriteHeight) / enemySprite->getTextureRect().width;
-		enemySprite->setScale(scale / 4, scale / 4);
+		float scale = static_cast<float>(spriteHeight) / projectileSprite->getTextureRect().width;
+		projectileSprite->setScale(scale / 4, scale / 4);
 
-		window->draw(*enemySprite);
+		window->draw(*projectileSprite);
 	}
 
 }
@@ -393,3 +417,4 @@ void Map::draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eI
 		window->draw(prCircles[i]);
 	}
 }
+
