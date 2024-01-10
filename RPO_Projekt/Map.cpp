@@ -104,12 +104,12 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 	window->draw(shp);
 
-	std::vector<Wall> wall;
+	/*std::vector<Wall> wall;
 	int hitSide = -1;
 	int wallDistMem = 0;
-	sf::Vector2i mapMem(-1, -1);
+	sf::Vector2i mapMem(-1, -1);*/
 
-	for (int i = 0; i < 720; i = i + 5) {
+	for (int i = 0; i < 720; i = i + 1) {
 		double cameraX = 2 * i / 720.0 - 1;
 		sf::Vector2f rayDir;
 		rayDir.x = pInfo.getDir().x + plane.x * cameraX;
@@ -203,7 +203,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			texHit = texWidth - texHit - 1;
 		}
 		
-		if (map.x != mapMem.x || map.y != mapMem.y || side != hitSide) {
+		/*if (map.x != mapMem.x || map.y != mapMem.y || side != hitSide) {
 			mapMem = map;
 			hitSide = side;
 
@@ -232,38 +232,30 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texX = texHit;
 			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).x = i;
 			wallDistMem = (int)wallDist;
-		}
-
-		/*double stepi = 1.0 * texHeight / lineHeight;
-		double texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * stepi;
-		for (int u = drawStart; u < drawEnd; u++) {
-			int texY = (int)texPos & (texHeight - 1);
-			texPos += stepi;
-			buffer.setPixel(i, u, sf::Color::Green);
 		}*/
 
-		/*sf::VertexArray verArray(sf::Quads, 4);
-		verArray[0].position = sf::Vector2f(i, drawStart);
-		verArray[1].position = sf::Vector2f(i + 5, drawStart);
-		verArray[2].position = sf::Vector2f(i + 5, drawEnd);
-		verArray[3].position = sf::Vector2f(i, drawEnd);
+		double texStep = 1.f * texHeight / lineHeight;
+		double texPos = (double)(drawStart - screenHeight / 2 + lineHeight / 2) * texStep;
+		int texY1 = (int)texPos & (texHeight - 1);
+		texPos += (abs(drawStart - drawEnd) - 2)*texStep;
 
-		verArray[0].color = sf::Color::Green;
-		verArray[1].color = sf::Color::Red;
-		verArray[2].color = sf::Color::Blue;
-		verArray[3].color = sf::Color::Yellow;*/
-		sf::Sprite sp(textures.at(3));
-		sp.setScale(5.f / sp.getGlobalBounds().width, abs(drawStart - drawEnd) / sp.getGlobalBounds().height);
-		//sp.setTextureRect(sf::IntRect(10, 10, 5, 64));
+		int texY2 = (int)texPos & (texHeight - 1);
+
+		if (texNum > 6) {
+			sf::Sprite sp(textures.at(4));
+			sp.setTextureRect(sf::IntRect(texHit, texY1, 1, abs(texY1 - texY2)));
+			sp.setScale(1.f / sp.getGlobalBounds().width, (abs(drawStart - drawEnd) - 1) / sp.getGlobalBounds().height);
+			sp.setPosition(i, drawStart);
+			window->draw(sp);
+			continue;
+		}
+
+
+		sf::Sprite sp(textures.at(texNum));
+		sp.setTextureRect(sf::IntRect(texHit, texY1, 1, abs(texY1 - texY2)));
+		sp.setScale(1.f / sp.getGlobalBounds().width, (abs(drawStart - drawEnd) - 1) / sp.getGlobalBounds().height);
 		sp.setPosition(i, drawStart);
 		window->draw(sp);
-
-		//sf::RectangleShape stripe(sf::Vector2f(5.f, abs(drawStart - drawEnd)));
-		//stripe.setPosition(i, drawStart);
-		////stripe.setFillColor(sf::Color::Green);
-		//sf::Texture textureTemp = textures.at(3);
-		//stripe.setTextureRect(sf::IntRect(0, 0, 5.f, abs(drawStart - drawEnd)));
-		//stripe.setTexture(&textureTemp);
 	}
 
 	/*sf::Texture tex;
