@@ -6,7 +6,7 @@ void Game::initWindow() {
 	std::string windowTitle = "RPO Igra";
 
 	window = new sf::RenderWindow(videoMode, windowTitle, windowStyle);
-	window->setFramerateLimit(60);
+	//window->setFramerateLimit(60);
 	window->setMouseCursorVisible(false);
 
 	states.push(new MainMenuState());

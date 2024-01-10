@@ -97,12 +97,19 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		}
 	}
 
+	sf::Texture tex;
+	tex.loadFromImage(buffer);
+	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
+	shp.setTexture(&tex);
+
+	window->draw(shp);
+
 	std::vector<Wall> wall;
 	int hitSide = -1;
 	int wallDistMem = 0;
 	sf::Vector2i mapMem(-1, -1);
 
-	for (int i = 0; i < 720; i = i + 10) {
+	for (int i = 0; i < 720; i = i + 5) {
 		double cameraX = 2 * i / 720.0 - 1;
 		sf::Vector2f rayDir;
 		rayDir.x = pInfo.getDir().x + plane.x * cameraX;
@@ -227,21 +234,44 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			wallDistMem = (int)wallDist;
 		}
 
-		double stepi = 1.0 * texHeight / lineHeight;
+		/*double stepi = 1.0 * texHeight / lineHeight;
 		double texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * stepi;
 		for (int u = drawStart; u < drawEnd; u++) {
 			int texY = (int)texPos & (texHeight - 1);
 			texPos += stepi;
 			buffer.setPixel(i, u, sf::Color::Green);
-		}
+		}*/
+
+		/*sf::VertexArray verArray(sf::Quads, 4);
+		verArray[0].position = sf::Vector2f(i, drawStart);
+		verArray[1].position = sf::Vector2f(i + 5, drawStart);
+		verArray[2].position = sf::Vector2f(i + 5, drawEnd);
+		verArray[3].position = sf::Vector2f(i, drawEnd);
+
+		verArray[0].color = sf::Color::Green;
+		verArray[1].color = sf::Color::Red;
+		verArray[2].color = sf::Color::Blue;
+		verArray[3].color = sf::Color::Yellow;*/
+		sf::Sprite sp(textures.at(3));
+		sp.setScale(5.f / sp.getGlobalBounds().width, abs(drawStart - drawEnd) / sp.getGlobalBounds().height);
+		//sp.setTextureRect(sf::IntRect(10, 10, 5, 64));
+		sp.setPosition(i, drawStart);
+		window->draw(sp);
+
+		//sf::RectangleShape stripe(sf::Vector2f(5.f, abs(drawStart - drawEnd)));
+		//stripe.setPosition(i, drawStart);
+		////stripe.setFillColor(sf::Color::Green);
+		//sf::Texture textureTemp = textures.at(3);
+		//stripe.setTextureRect(sf::IntRect(0, 0, 5.f, abs(drawStart - drawEnd)));
+		//stripe.setTexture(&textureTemp);
 	}
 
-	sf::Texture tex;
+	/*sf::Texture tex;
 	tex.loadFromImage(buffer);
 	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
 	shp.setTexture(&tex);
 
-	window->draw(shp);
+	window->draw(shp);*/
 
 	/*for (auto& it : wall) {
 		sf::Image img;
