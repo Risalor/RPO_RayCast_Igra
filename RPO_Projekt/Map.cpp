@@ -243,8 +243,8 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 		if (texNum > 6) {
 			sf::Sprite sp(textures.at(4));
-			sp.setTextureRect(sf::IntRect(texHit, texY1, 1, abs(texY1 - texY2)));
-			sp.setScale(1.f / sp.getGlobalBounds().width, (abs(drawStart - drawEnd) - 1) / sp.getGlobalBounds().height);
+			sp.setTextureRect(sf::IntRect(texHit, /*texY1*/0, 1, /*abs(texY1 - texY2)*/64));
+			sp.setScale(1.f / sp.getGlobalBounds().width, abs(drawStart - drawEnd) / sp.getGlobalBounds().height);
 			sp.setPosition(i, drawStart);
 			window->draw(sp);
 			continue;
@@ -252,8 +252,8 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 
 		sf::Sprite sp(textures.at(texNum));
-		sp.setTextureRect(sf::IntRect(texHit, texY1, 1, abs(texY1 - texY2)));
-		sp.setScale(1.f / sp.getGlobalBounds().width, (abs(drawStart - drawEnd) - 1) / sp.getGlobalBounds().height);
+		sp.setTextureRect(sf::IntRect(texHit, /*texY1*/0, 1, /*abs(texY1 - texY2)*/64));
+		sp.setScale(1.f / sp.getGlobalBounds().width, abs(drawStart - drawEnd) / sp.getGlobalBounds().height);
 		sp.setPosition(i, drawStart);
 		window->draw(sp);
 	}
