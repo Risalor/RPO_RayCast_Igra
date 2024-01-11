@@ -26,8 +26,6 @@ void Map::handleDoor(Player& pInfo) {
 			glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] = 0;
 		}
 	}
-
-	//std::cout << glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] << "\n";
 }
 
 Map::Map() {
@@ -46,6 +44,8 @@ Map::Map() {
 				textures.push_back(sf::Texture());
 				textures.at(textures.size() - 1).loadFromFile(it.path().string());
 				if (img.loadFromFile(it.path().string())) {
+					sf::Image darkImg;
+					darkImg.create(64, 64, sf::Color::Transparent);
 					texture.push_back(std::vector<sf::Color>());
 					texture[texture.size() - 1].resize(texHeight * texWidth);
 
@@ -53,9 +53,13 @@ Map::Map() {
 					for (int i = 0; i < texWidth; i++) {
 						for (int j = 0; j < texHeight; j++) {
 							texture[texture.size() - 1][x] = img.getPixel(j, i);
+							darkImg.setPixel(j, i, sf::Color(img.getPixel(j, i).r / 1.7f, img.getPixel(j, i).g / 1.7f, img.getPixel(j, i).b / 1.7f));
 							x++;
 						}
 					}
+
+					darkTextures.push_back(sf::Texture());
+					darkTextures.at(darkTextures.size() - 1).loadFromImage(darkImg);
 				}
 				else {
 					std::cout << "Failed to load image: " << it.path().string() << std::endl;
@@ -117,10 +121,12 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		}
 	}
 
-	std::vector<Wall> wall;
-	int hitSide = -1;
-	int wallDistMem = 0;
-	sf::Vector2i mapMem(-1, -1);
+	sf::Texture tex;
+	tex.loadFromImage(buffer);
+	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
+	shp.setTexture(&tex);
+
+	window->draw(shp);
 
 	for (int i = 0; i < 720; i++) {
 		double cameraX = 2 * i / 720.0 - 1;
@@ -215,84 +221,34 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		if (side == 1 && rayDir.y < 0) {
 			texHit = texWidth - texHit - 1;
 		}
+
+		sf::Sprite sp;
+
+		if (side == 0) {
+			if (texNum > 6) {
+				sp.setTexture(textures.at(4));
+			} else {
+				sp.setTexture(textures.at(texNum));
+			}
+		} else {
+			if (texNum > 6) {
+				sp.setTexture(darkTextures.at(4));
+			} else {
+				sp.setTexture(darkTextures.at(texNum));
+			}
+		}
 		
-		if (map.x != mapMem.x || map.y != mapMem.y || side != hitSide) {
-			mapMem = map;
-			hitSide = side;
-
-			if (!wall.empty()) {
-				wall.at(wall.size() - 1).wallDist2 = wallDistMem;
-			}
-
-			wall.push_back(Wall());
-			wall.at(wall.size() - 1).wallDist1 = (int)wallDist;
-			wall.at(wall.size() - 1).side = side;
-			wall.at(wall.size() - 1).texNum = texNum;
-			wall.at(wall.size() - 1).line.push_back(HorizontalLine());
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).end = drawEnd;
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).start = drawStart;
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texStep = 1.f * texHeight / lineHeight;
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texStep;
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texX = texHit;
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).x = i;
+		if (lineHeight <= screenHeight) {
+			sp.setTextureRect(sf::IntRect(texHit, 0, 1, 64));
+			sp.setScale(1.f / sp.getGlobalBounds().width, lineHeight / sp.getGlobalBounds().height);
+			sp.setPosition(i, drawStart);
+			window->draw(sp);
+		} else {
+			sp.setTextureRect(sf::IntRect(texHit, 0, 1, 64));
+			sp.setScale(1.f / sp.getGlobalBounds().width, lineHeight / sp.getGlobalBounds().height);
+			sp.setPosition(i, -(lineHeight - screenHeight) / 2.f);
+			window->draw(sp);
 		}
-		else {
-			wall.at(wall.size() - 1).line.push_back(HorizontalLine());
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).end = drawEnd;
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).start = drawStart;
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texStep = 1.f * texHeight / lineHeight;
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texPos = (drawStart - screenHeight / 2 + lineHeight / 2) * wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texStep;
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).texX = texHit;
-			wall.at(wall.size() - 1).line.at(wall.at(wall.size() - 1).line.size() - 1).x = i;
-			wallDistMem = (int)wallDist;
-		}
-	}
-
-	sf::Texture tex;
-	tex.loadFromImage(buffer);
-	sf::RectangleShape shp(sf::Vector2f(screenWidth, screenHeight));
-	shp.setTexture(&tex);
-
-	window->draw(shp);
-
-	for (auto& it : wall) {
-		sf::Image img;
-		img.create(it.line.size(), screenHeight, sf::Color::Transparent);
-		int pos = 0;
-		for (auto& it2 : it.line) {
-			for (int u = it2.start; u < it2.end; u++) {
-				int texY = (int)it2.texPos & (texHeight - 1);
-				it2.texPos += it2.texStep;
-				if (it.texNum < 6) {
-					if (it.side == 1) {
-						img.setPixel(pos, u, texture[it.texNum][texHeight * texY + it2.texX]);
-					}
-					else {
-						img.setPixel(pos, u, sf::Color(texture[it.texNum][texHeight * texY + it2.texX].r / 1.7f,
-							texture[it.texNum][texHeight * texY + it2.texX].g / 1.7f,
-							texture[it.texNum][texHeight * texY + it2.texX].b / 1.7f));
-					}
-				} else {
-					if (it.side == 1) {
-						img.setPixel(pos, u, texture[4][texHeight * texY + it2.texX]);
-					}
-					else {
-						img.setPixel(pos, u, sf::Color(texture[4][texHeight * texY + it2.texX].r / 1.7f,
-							texture[4][texHeight * texY + it2.texX].g / 1.7f,
-							texture[4][texHeight * texY + it2.texX].b / 1.7f));
-					}
-				}
-			}
-
-			pos++;
-		}
-
-		sf::RectangleShape rect(sf::Vector2f(it.line.size(), screenHeight));
-		rect.setPosition(sf::Vector2f(it.line.at(0).x, 0));
-		sf::Texture tex;
-		tex.loadFromImage(img);
-		rect.setTexture(&tex);
-		window->draw(rect);
 	}
 	
 	spriteManager.createSprite(0);
