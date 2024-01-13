@@ -31,6 +31,14 @@ void GamePlayState::initState() {
 	playerDeadVar = false;
 	stageCleared = false;
 
+	if (!mouse_up.loadFromFile("Assets/Cursor/cursor.gif")) {
+		std::cout << "Cannot load texture\n";
+	}
+
+	if (!mouse_down.loadFromFile("Assets/Cursor/cursor_down.gif")) {
+		std::cout << "Cannot load texture\n";
+	}
+
 	/*for (size_t i = 0;i < inv.getSize();i++) {
 		std::cout << inv[i].debugPrint() << std::endl;
 	}*/
@@ -123,6 +131,19 @@ GamePlayState::~GamePlayState() {
 }
 
 void GamePlayState::update(float dt, sf::Vector2f mousePos) {
+	if (playerDeadVar) {
+		mouse.setPosition(mousePos);
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			mouse.setTexture(mouse_down);
+		}
+		else {
+			mouse.setTexture(mouse_up);
+		}
+
+		gameOver.restart.update(mousePos);
+	}
+
 	playerDead();
 	player.update(dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
@@ -163,8 +184,8 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 		}
 	}
 
-	//V tem if stavku se more vse resetirati po tem ko se space gumb stisne
-	if (playerDeadVar && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+	//V tem if stavku se more vse resetirati po tem ko se restart klikne
+	if (playerDeadVar && gameOver.restart.clicked()) {
 		playerDeadVar = false;
 		player.setHp(10.f);
 	}
@@ -230,6 +251,9 @@ void GamePlayState::draw(sf::RenderTarget* window) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
 			player.showInventory(window);
 		}
+	} else {
+		gameOver.draw(window);
+		window->draw(mouse);
 	}
 }
 

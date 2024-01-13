@@ -14,7 +14,7 @@ void Button::initTex() {
 	tex_def.setSmooth(true);
 	btn.setTexture(tex_def);
 
-	if (!font.loadFromFile("Assets/Fonts/font1.ttf")) {
+	if (!font.loadFromFile("Assets/Fonts/font1.otf")) {
 		std::cout << "No font";
 	}
 }
@@ -46,6 +46,8 @@ Button::Button(sf::Vector2f pos, std::string buttonText) {
 	state = btnState::DEFAULT;
 	playSound = false;
 }
+
+Button::Button() { }
 
 Button::~Button() {
 }
@@ -85,6 +87,7 @@ void Button::update(sf::Vector2f mouseCoord) {
 
 bool Button::clicked() {
 	if (state == btnState::CLICKED) {
+		state = btnState::DEFAULT;
 		return true;
 	} 
 	
