@@ -8,8 +8,8 @@ std::vector<Enemy*> GamePlayState::enemies;
 
 void GamePlayState::initState() {
 
-	enemies.push_back(new EnemyMelee(2, 3, 6, 5));
-	enemies.push_back(new EnemyRange(6, 17, 7, 18));
+	//enemies.push_back(new EnemyMelee(2, 3, 6, 5));
+	//enemies.push_back(new EnemyRange(6, 17, 7, 18));
 
 
 	items.push_back(new Weapon(20, 15, 2, 10, 0.5, false, false, false, "pistol"));
@@ -76,6 +76,29 @@ void GamePlayState::initMap() {
 				glb::consts::worldMap.at(i).push_back(num);
 			}
 		}
+
+		for (auto& it : enemies) {
+			delete it;
+		}
+
+		enemies.clear();
+
+		int size;
+		file.read(reinterpret_cast<char*>(&size), sizeof(size));
+
+		for (int i = 0; i < size; i++) {
+			int type;
+			double x, y;
+			file.read(reinterpret_cast<char*>(&y), sizeof(y));
+			file.read(reinterpret_cast<char*>(&x), sizeof(x));
+			file.read(reinterpret_cast<char*>(&type), sizeof(type));
+
+			if (type == 1) {
+				enemies.push_back(new EnemyMelee(int(x), int(y), int(x) - 2, int(y) - 2));
+			} else {
+				enemies.push_back(new EnemyRange(int(x), int(y), int(x) - 2, int(y) - 2));
+			}
+		}
 	}
 
 	file.close();
@@ -100,6 +123,30 @@ void GamePlayState::playerMapRelation() {
 						int num = 0;
 						file.read(reinterpret_cast<char*>(&num), sizeof(num));
 						glb::consts::worldMap.at(i).push_back(num);
+					}
+				}
+
+				for (auto& it : enemies) {
+					delete it;
+				}
+
+				enemies.clear();
+
+				int size;
+				file.read(reinterpret_cast<char*>(&size), sizeof(size));
+
+				for (int i = 0; i < size; i++) {
+					int type;
+					double x, y;
+					file.read(reinterpret_cast<char*>(&y), sizeof(y));
+					file.read(reinterpret_cast<char*>(&x), sizeof(x));
+					file.read(reinterpret_cast<char*>(&type), sizeof(type));
+
+					if (type == 1) {
+						enemies.push_back(new EnemyMelee(int(x), int(y), int(x) - 1, int(y) - 1));
+					}
+					else {
+						enemies.push_back(new EnemyRange(int(x), int(y), int(x) - 1, int(y) - 1));
 					}
 				}
 			}
@@ -187,7 +234,7 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 	//V tem if stavku se more vse resetirati po tem ko se restart klikne
 	if (playerDeadVar && gameOver.restart.clicked()) {
 		playerDeadVar = false;
-		player.setHp(10.f);
+		player.setHp(10);
 	}
 
 	//Spremenjivka s katero preverimo če lahko igralec gre v naslednjo mapo. Lahko gre ko so vsi sovražniki premagani.

@@ -206,7 +206,6 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 			for (int j = 0; j < wid; j++) {
 				file.write(reinterpret_cast<const char*>(&tile[i][j].texNum), sizeof(int));
 			}
-			std::cout << "\n";
 		}
 
 		int size = enemies.size();
