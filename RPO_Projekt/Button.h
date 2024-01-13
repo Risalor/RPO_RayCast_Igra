@@ -18,6 +18,7 @@ private:
 	void initTex();
 public:
 	Button(sf::Vector2f pos, std::string text);
+	Button();
 	~Button();
 	void draw(sf::RenderTarget* window);
 	void update(sf::Vector2f mouseCoord);

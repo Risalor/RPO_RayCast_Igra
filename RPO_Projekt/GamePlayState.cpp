@@ -8,8 +8,8 @@ std::vector<Enemy*> GamePlayState::enemies;
 
 void GamePlayState::initState() {
 
-	enemies.push_back(new EnemyMelee(2, 3, 6, 5));
-	enemies.push_back(new EnemyRange(6, 17, 7, 18));
+	//enemies.push_back(new EnemyMelee(2, 3, 6, 5));
+	//enemies.push_back(new EnemyRange(6, 17, 7, 18));
 
 
 	items.push_back(new Weapon(20, 15, 2, 10, 0.5, false, false, false, "pistol"));
@@ -28,11 +28,20 @@ void GamePlayState::initState() {
 	music.setLoop(true);
 	music.setVolume(15.f);
 
+	playerDeadVar = false;
+	stageCleared = false;
+
+	if (!mouse_up.loadFromFile("Assets/Cursor/cursor.gif")) {
+		std::cout << "Cannot load texture\n";
+	}
+
+	if (!mouse_down.loadFromFile("Assets/Cursor/cursor_down.gif")) {
+		std::cout << "Cannot load texture\n";
+	}
+
 	/*for (size_t i = 0;i < inv.getSize();i++) {
 		std::cout << inv[i].debugPrint() << std::endl;
 	}*/
-
-
 }
 
 void GamePlayState::initMap() {
@@ -67,14 +76,38 @@ void GamePlayState::initMap() {
 				glb::consts::worldMap.at(i).push_back(num);
 			}
 		}
+
+		for (auto& it : enemies) {
+			delete it;
+		}
+
+		enemies.clear();
+
+		int size;
+		file.read(reinterpret_cast<char*>(&size), sizeof(size));
+
+		for (int i = 0; i < size; i++) {
+			int type;
+			double x, y;
+			file.read(reinterpret_cast<char*>(&y), sizeof(y));
+			file.read(reinterpret_cast<char*>(&x), sizeof(x));
+			file.read(reinterpret_cast<char*>(&type), sizeof(type));
+
+			if (type == 1) {
+				enemies.push_back(new EnemyMelee(int(x), int(y), int(x) - 2, int(y) - 2));
+			} else {
+				enemies.push_back(new EnemyRange(int(x), int(y), int(x) - 2, int(y) - 2));
+			}
+		}
 	}
 
 	file.close();
 }
 
 void GamePlayState::playerMapRelation() {
-	if (glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] > 6) {
+	if (glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] > 6 && stageCleared) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+			stageCleared = false;
 			std::fstream file(mapPaths.at(glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] - 7), std::ios::in | std::ios::binary);
 
 			glb::consts::worldMap.clear();
@@ -92,10 +125,41 @@ void GamePlayState::playerMapRelation() {
 						glb::consts::worldMap.at(i).push_back(num);
 					}
 				}
+
+				for (auto& it : enemies) {
+					delete it;
+				}
+
+				enemies.clear();
+
+				int size;
+				file.read(reinterpret_cast<char*>(&size), sizeof(size));
+
+				for (int i = 0; i < size; i++) {
+					int type;
+					double x, y;
+					file.read(reinterpret_cast<char*>(&y), sizeof(y));
+					file.read(reinterpret_cast<char*>(&x), sizeof(x));
+					file.read(reinterpret_cast<char*>(&type), sizeof(type));
+
+					if (type == 1) {
+						enemies.push_back(new EnemyMelee(int(x), int(y), int(x) - 1, int(y) - 1));
+					}
+					else {
+						enemies.push_back(new EnemyRange(int(x), int(y), int(x) - 1, int(y) - 1));
+					}
+				}
 			}
 
 			file.close();
 		}
+	}
+}
+
+//Funkcija ki preverja če je player umrl
+void GamePlayState::playerDead() {
+	if (player.getHp() < 1) {
+		playerDeadVar = true;
 	}
 }
 
@@ -114,7 +178,20 @@ GamePlayState::~GamePlayState() {
 }
 
 void GamePlayState::update(float dt, sf::Vector2f mousePos) {
+	if (playerDeadVar) {
+		mouse.setPosition(mousePos);
 
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			mouse.setTexture(mouse_down);
+		}
+		else {
+			mouse.setTexture(mouse_up);
+		}
+
+		gameOver.restart.update(mousePos);
+	}
+
+	playerDead();
 	player.update(dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
 		player.updateEquipment(items);
@@ -154,11 +231,16 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 		}
 	}
 
+	//V tem if stavku se more vse resetirati po tem ko se restart klikne
+	if (playerDeadVar && gameOver.restart.clicked()) {
+		playerDeadVar = false;
+		player.setHp(10);
+	}
 
-
-
-
-
+	//Spremenjivka s katero preverimo če lahko igralec gre v naslednjo mapo. Lahko gre ko so vsi sovražniki premagani.
+	if (enemies.empty()) {
+		stageCleared = true;
+	}
 
 
 	for (int i = 0; i < enemies.size(); i++) {
@@ -203,18 +285,22 @@ void GamePlayState::removeEnemy(Enemy* enemy) {
 }
 
 
-float GamePlayState::calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2)
-{
+float GamePlayState::calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2) {
 	sf::Vector2f diff = pos1 - pos2;
 	return std::sqrt(diff.x * diff.x + diff.y * diff.y);
 }
 
 void GamePlayState::draw(sf::RenderTarget* window) {
 
-	map.draw(window, player, enemies, projectiles, items);
-	player.renderHealthBar(window);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
-		player.showInventory(window);
+	if (!playerDeadVar) {//Če player živi se vse izrisuje če pa ne živi pa se nič ne izrisuje.
+		map.draw(window, player, enemies, projectiles, items);
+		player.renderHealthBar(window);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+			player.showInventory(window);
+		}
+	} else {
+		gameOver.draw(window);
+		window->draw(mouse);
 	}
 }
 
