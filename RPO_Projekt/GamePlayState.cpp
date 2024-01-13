@@ -28,11 +28,12 @@ void GamePlayState::initState() {
 	music.setLoop(true);
 	music.setVolume(15.f);
 
+	playerDeadVar = false;
+	stageCleared = false;
+
 	/*for (size_t i = 0;i < inv.getSize();i++) {
 		std::cout << inv[i].debugPrint() << std::endl;
 	}*/
-
-
 }
 
 void GamePlayState::initMap() {
@@ -73,8 +74,9 @@ void GamePlayState::initMap() {
 }
 
 void GamePlayState::playerMapRelation() {
-	if (glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] > 6) {
+	if (glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] > 6 && stageCleared) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+			stageCleared = false;
 			std::fstream file(mapPaths.at(glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] - 7), std::ios::in | std::ios::binary);
 
 			glb::consts::worldMap.clear();
@@ -99,6 +101,13 @@ void GamePlayState::playerMapRelation() {
 	}
 }
 
+//Funkcija ki preverja če je player umrl
+void GamePlayState::playerDead() {
+	if (player.getHp() < 1) {
+		playerDeadVar = true;
+	}
+}
+
 GamePlayState::GamePlayState() : State() {
 	initMap();
 	initState();
@@ -114,7 +123,7 @@ GamePlayState::~GamePlayState() {
 }
 
 void GamePlayState::update(float dt, sf::Vector2f mousePos) {
-
+	playerDead();
 	player.update(dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
 		player.updateEquipment(items);
@@ -154,11 +163,16 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 		}
 	}
 
+	//V tem if stavku se more vse resetirati po tem ko se space gumb stisne
+	if (playerDeadVar && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+		playerDeadVar = false;
+		player.setHp(10.f);
+	}
 
-
-
-
-
+	//Spremenjivka s katero preverimo če lahko igralec gre v naslednjo mapo. Lahko gre ko so vsi sovražniki premagani.
+	if (enemies.empty()) {
+		stageCleared = true;
+	}
 
 
 	for (int i = 0; i < enemies.size(); i++) {
@@ -203,18 +217,19 @@ void GamePlayState::removeEnemy(Enemy* enemy) {
 }
 
 
-float GamePlayState::calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2)
-{
+float GamePlayState::calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2) {
 	sf::Vector2f diff = pos1 - pos2;
 	return std::sqrt(diff.x * diff.x + diff.y * diff.y);
 }
 
 void GamePlayState::draw(sf::RenderTarget* window) {
 
-	map.draw(window, player, enemies, projectiles, items);
-	player.renderHealthBar(window);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
-		player.showInventory(window);
+	if (!playerDeadVar) {//Če player živi se vse izrisuje če pa ne živi pa se nič ne izrisuje.
+		map.draw(window, player, enemies, projectiles, items);
+		player.renderHealthBar(window);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+			player.showInventory(window);
+		}
 	}
 }
 

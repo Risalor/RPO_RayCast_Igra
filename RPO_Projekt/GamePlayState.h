@@ -1,16 +1,26 @@
 #pragma once
 #include "State.h"
+
+struct GameOverBanner {
+	sf::RectangleShape shp;
+	sf::Texture tex;
+};
+
 class GamePlayState : public State {
 private:
 	void initState();
 	void initMap();
 	void playerMapRelation();
+	void playerDead();
 
 
 	std::vector<Weapon*> weapons;
 	std::vector<Item*> items;
 	static std::vector<Enemy*> enemies;
 	static std::vector<Projectile*> projectiles;
+
+	bool playerDeadVar;
+	bool stageCleared;
 
 	Map map;
 
