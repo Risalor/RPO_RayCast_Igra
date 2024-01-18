@@ -35,7 +35,13 @@ void GamePlayState::initState() {
 	music.play();
 
 	music.setLoop(true);
-	music.setVolume(15.f);
+
+	std::fstream file("Assets/conf.bin", std::ios::in | std::ios::binary);
+	int temp;
+	file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+	file.close();
+
+	music.setVolume(temp);
 
 	playerDeadVar = false;
 	stageCleared = false;
