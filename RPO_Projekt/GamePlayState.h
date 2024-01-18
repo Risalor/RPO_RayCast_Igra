@@ -4,10 +4,12 @@
 struct GameOverBanner {
 	sf::RectangleShape shp;
 	sf::Texture tex;
-	Button restart;
+	Button button;
+	Button button2;
 
 	GameOverBanner() {
-		restart = Button(sf::Vector2f(screenWidth / 2 + 100, screenHeight / 2), "Restart");
+		button = Button(sf::Vector2f(screenWidth / 2 + 100, screenHeight / 2), "Restart");
+		button2 = Button(sf::Vector2f(screenWidth / 2 + 100, screenHeight / 2 + 100), "Title screen");
 		if (!tex.loadFromFile("Assets/Backgrounds/gameover.png")) {
 			std::cout << "File cannot be loaded";
 		}
@@ -18,7 +20,33 @@ struct GameOverBanner {
 
 	void draw(sf::RenderTarget* window) {
 		window->draw(shp);
-		restart.draw(window);
+		button.draw(window);
+		button2.draw(window);
+	}
+};
+
+struct StageClearedBanner {
+	sf::RectangleShape shp;
+	sf::Texture tex;
+	Button button;
+	bool usedOnce;
+
+	StageClearedBanner() {
+		button = Button(sf::Vector2f(screenWidth / 2 + 100, screenHeight / 2 + 100), "Close");
+		if (!tex.loadFromFile("Assets/Backgrounds/victory.png")) {
+			std::cout << "File cannot be loaded";
+		}
+
+		shp.setSize(sf::Vector2f(screenHeight + 300, screenHeight));
+		shp.setPosition((screenWidth) / 2 - 170, 0.f);
+		shp.setTexture(&tex);
+
+		usedOnce = false;
+	}
+
+	void draw(sf::RenderTarget* window) {
+		window->draw(shp);
+		button.draw(window);
 	}
 };
 
@@ -28,7 +56,8 @@ private:
 	void initMap();
 	void playerMapRelation();
 	void playerDead();
-
+	void loadmap(int mapNum);
+	void mouseUpdate(sf::Vector2f mousePos);
 
 	std::vector<Weapon*> weapons;
 	std::vector<Item*> items;
@@ -38,14 +67,18 @@ private:
 	bool playerDeadVar;
 	bool stageCleared;
 	GameOverBanner gameOver;
+	StageClearedBanner stageClearedB;
 
 	sf::Sprite mouse;
 	sf::Texture mouse_up, mouse_down;
 
 	Map map;
+	int currentMapNum;
 
-	sf::Sound music;
-	sf::SoundBuffer buffer;
+	sf::Sound music, vicMusic, deaMusic;
+	sf::SoundBuffer buffer, vicBuffer, deaBuffer;
+	bool vicPlayedOnce;
+	bool deaPlayedOnce;
 	std::vector<std::string> mapPaths;
 public:
 	GamePlayState();

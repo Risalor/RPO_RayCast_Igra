@@ -18,7 +18,8 @@ private:
     int hp;
     int maxHp;
     Inventory inventory;
-   
+
+    sf::Vector2f plane;
 
     sf::Sprite inventorySprite;
     sf::Texture inventoryTexture;
@@ -35,6 +36,7 @@ public:
 
     sf::Vector2f getPos() const { return playerPos; }
     sf::Vector2f getDir() const { return playerDir; }
+    sf::Vector2f getPlane() const { return plane; }
 
 
     void updateHealthBar();

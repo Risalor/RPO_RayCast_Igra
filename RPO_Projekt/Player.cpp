@@ -17,6 +17,9 @@ Player::Player(float speed) :movementSpeed(movementSpeed), rotationSpeed(rotatio
 	this->maxHp = 10;
 	this->hp = maxHp;
 
+	plane.x = 0.66f;
+	plane.y = 0.f;
+
 
 	this->isInventoryVisible = false;
 	healthBar.setSize(sf::Vector2f(100.0, 10.0)); // Dolžina 100, višina 10
@@ -196,6 +199,18 @@ void Player::move(float dt)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 		if (glb::consts::worldMap[int(playerPos.x - playerDir.x)][int(playerPos.y)] == false) playerPos.x -= playerDir.x * movementSpeed;
 		if (glb::consts::worldMap[int(playerPos.x)][int(playerPos.y - playerDir.y)] == false) playerPos.y -= playerDir.y * movementSpeed;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+		sf::Vector2f oldPlane(plane);
+		plane.x = plane.x * cos(-0.1f) - plane.y * sin(-0.1f);
+		plane.y = oldPlane.x * sin(-0.1f) + plane.y * cos(-0.1f);
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+		sf::Vector2f oldPlane(plane);
+		plane.x = plane.x * cos(0.1f) - plane.y * sin(0.1f);
+		plane.y = oldPlane.x * sin(0.1f) + plane.y * cos(0.1f);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
