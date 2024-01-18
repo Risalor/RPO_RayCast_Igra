@@ -16,7 +16,14 @@ void EditorState::initState() {
 	music.play();
 
 	music.setLoop(true);
-	music.setVolume(25.f);
+
+	std::fstream file("Assets/conf.bin", std::ios::in | std::ios::binary);
+	int temp;
+	file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+	file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+	file.close();
+
+	music.setVolume(temp);
 
 	if (!mouse_up.loadFromFile("Assets/Cursor/cursor.gif")) {
 		std::cout << "Cannot load texture\n";
