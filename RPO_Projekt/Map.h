@@ -37,7 +37,6 @@ struct Entity {
 
 class Map {
 private:
-	sf::Vector2f plane;
 	void rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo);
 	void draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo, std::vector<Item*> itemStartPos);
 	std::vector<sf::Texture> textures;

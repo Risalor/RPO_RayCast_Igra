@@ -29,8 +29,6 @@ void Map::handleDoor(Player& pInfo) {
 }
 
 Map::Map() {
-	plane.x = 0.66f;
-	plane.y = 0.f;
 
 	spriteManager.addNewTexture("Assets/Enemy/Enemy.png");
 	spriteManager.addNewTexture("Assets/Projectile/projectile.png");
@@ -74,18 +72,6 @@ Map::Map() {
 
 void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo, std::vector<Item*> itemStartPos) {
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		sf::Vector2f oldPlane(plane);
-		plane.x = plane.x * cos(-0.1f) - plane.y * sin(-0.1f);
-		plane.y = oldPlane.x * sin(-0.1f) + plane.y * cos(-0.1f);
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		sf::Vector2f oldPlane(plane);
-		plane.x = plane.x * cos(0.1f) - plane.y * sin(0.1f);
-		plane.y = oldPlane.x * sin(0.1f) + plane.y * cos(0.1f);
-	}
-
 	rayCastDraw(window, pInfo, eInfo, prInfo);
 	draw2D(window, pInfo, eInfo, prInfo, itemStartPos);
 }
@@ -96,7 +82,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 
 	handleDoor(pInfo);
 
-	sf::Vector2f rayL(pInfo.getDir().x - plane.x, pInfo.getDir().y - plane.y), rayR(pInfo.getDir().x + plane.x, pInfo.getDir().y + plane.y);
+	sf::Vector2f rayL(pInfo.getDir().x - pInfo.getPlane().x, pInfo.getDir().y - pInfo.getPlane().y), rayR(pInfo.getDir().x + pInfo.getPlane().x, pInfo.getDir().y + pInfo.getPlane().y);
 	float vertPoz = screenHeight / 2;
 	for (int i = screenHeight / 2; i < screenHeight - 1; i++) {
 
@@ -131,8 +117,8 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 	for (int i = 0; i < 720; i++) {
 		double cameraX = 2 * i / 720.0 - 1;
 		sf::Vector2f rayDir;
-		rayDir.x = pInfo.getDir().x + plane.x * cameraX;
-		rayDir.y = pInfo.getDir().y + plane.y * cameraX;
+		rayDir.x = pInfo.getDir().x + pInfo.getPlane().x * cameraX;
+		rayDir.y = pInfo.getDir().y + pInfo.getPlane().y * cameraX;
 
 		sf::Vector2i map;
 		map.x = static_cast<int>(pInfo.getPos().x);
@@ -256,9 +242,9 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		sf::Vector2f enemyPos = eInfo[i]->getPos();
 		sf::Vector2f relativePos = enemyPos - pInfo.getPos();
 
-		float invDet = 1.0f / (plane.x * pInfo.getDir().y - pInfo.getDir().x * plane.y);
+		float invDet = 1.0f / (pInfo.getPlane().x * pInfo.getDir().y - pInfo.getDir().x * pInfo.getPlane().y);
 		float transformX = invDet * (pInfo.getDir().y * relativePos.x - pInfo.getDir().x * relativePos.y);
-		float transformY = invDet * (-plane.y * relativePos.x + plane.x * relativePos.y);
+		float transformY = invDet * (-pInfo.getPlane().y * relativePos.x + pInfo.getPlane().x * relativePos.y);
 
 		if (transformY <= 0) {
 			continue;
@@ -287,9 +273,9 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		sf::Vector2f prPos = prInfo[i]->getPos();
 		sf::Vector2f relativePos = prPos - pInfo.getPos();
 
-		float invDet = 1.0f / (plane.x * pInfo.getDir().y - pInfo.getDir().x * plane.y);
+		float invDet = 1.0f / (pInfo.getPlane().x * pInfo.getDir().y - pInfo.getDir().x * pInfo.getPlane().y);
 		float transformX = invDet * (pInfo.getDir().y * relativePos.x - pInfo.getDir().x * relativePos.y);
-		float transformY = invDet * (-plane.y * relativePos.x + plane.x * relativePos.y);
+		float transformY = invDet * (-pInfo.getPlane().y * relativePos.x + pInfo.getPlane().x * relativePos.y);
 
 		if (transformY <= 0) {
 			continue;

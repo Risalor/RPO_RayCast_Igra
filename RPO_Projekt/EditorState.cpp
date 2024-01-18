@@ -335,7 +335,7 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 		playerSelect.shp.setOutlineColor(sf::Color::White);
 	}
 
-	if (isMouseInView() && sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtCounter > 0.5f && selectedEnemy.type == 0 && selected == 0) {
+	if (isMouseInView() && sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtCounter > 0.5f && selectedEnemy.type == 0 && selected == 0 && playerSelect.shp.getOutlineColor() == sf::Color::Green) {
 		player = PlayerObj(sf::Vector2f(worldCoords), 5.f);
 		dtCounter = 0.f;
 	}
