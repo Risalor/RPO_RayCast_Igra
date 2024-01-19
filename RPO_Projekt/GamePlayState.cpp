@@ -8,31 +8,55 @@ std::vector<Enemy*> GamePlayState::enemies;
 
 void GamePlayState::initState() {
 
-	enemies.push_back(new EnemyMelee(2, 3, 6, 5));
-	enemies.push_back(new EnemyRange(6, 17, 7, 18));
-
 
 	items.push_back(new Weapon(20, 15, 2, 10, 0.5, false, false, false, "pistol"));
 	items.push_back(new Weapon(25, 15, 2, 10, 0.5, false, false, false, "AK-47"));
 	items.push_back(new Weapon(25, 10, 2, 10, 0.5, false, false, false, "machinegun"));
 
 
-
 	if (!buffer.loadFromFile("Assets/Music/GamePlay.wav")) {
 		std::cout << "Faildes to load soundBuffer\n";
 	}
+
+	if (!vicBuffer.loadFromFile("Assets/Music/victory.wav")) {
+		std::cout << "Faildes to load soundBuffer\n";
+	}
+
+	if (!deaBuffer.loadFromFile("Assets/Music/death.wav")) {
+		std::cout << "Faildes to load soundBuffer\n";
+	}
+
+	vicMusic.setBuffer(vicBuffer);
+	deaMusic.setBuffer(deaBuffer);
+	vicPlayedOnce = false;
+	deaPlayedOnce = false;
 
 	music.setBuffer(buffer);
 	music.play();
 
 	music.setLoop(true);
-	music.setVolume(15.f);
+
+	std::fstream file("Assets/conf.bin", std::ios::in | std::ios::binary);
+	int temp;
+	file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+	file.close();
+
+	music.setVolume(temp);
+
+	playerDeadVar = false;
+	stageCleared = false;
+
+	if (!mouse_up.loadFromFile("Assets/Cursor/cursor.gif")) {
+		std::cout << "Cannot load texture\n";
+	}
+
+	if (!mouse_down.loadFromFile("Assets/Cursor/cursor_down.gif")) {
+		std::cout << "Cannot load texture\n";
+	}
 
 	/*for (size_t i = 0;i < inv.getSize();i++) {
 		std::cout << inv[i].debugPrint() << std::endl;
 	}*/
-
-
 }
 
 void GamePlayState::initMap() {
@@ -50,7 +74,32 @@ void GamePlayState::initMap() {
 		std::cout << "Folder does not exist or is not a directory.\n";
 	}
 
-	std::fstream file(mapPaths.at(0), std::ios::in | std::ios::binary);
+	currentMapNum = 0;
+
+	loadmap(currentMapNum);
+}
+
+void GamePlayState::playerMapRelation() {
+	if (glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] > 6 && stageCleared) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+			stageCleared = false;
+			stageClearedB.usedOnce = false;
+			vicPlayedOnce = false;
+			currentMapNum = glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] - 7;
+			loadmap(currentMapNum);
+		}
+	}
+}
+
+//Funkcija ki preverja če je player umrl
+void GamePlayState::playerDead() {
+	if (player.getHp() < 1) {
+		playerDeadVar = true;
+	}
+}
+
+void GamePlayState::loadmap(int mapNum) {
+	std::fstream file(mapPaths.at(mapNum), std::ios::in | std::ios::binary);
 
 	glb::consts::worldMap.clear();
 
@@ -67,35 +116,44 @@ void GamePlayState::initMap() {
 				glb::consts::worldMap.at(i).push_back(num);
 			}
 		}
+
+		//Memory leaks, memory leaks everywhere
+		/*for (auto& it : enemies) {
+			delete it;
+		}*/
+
+		enemies.clear();
+
+		int size;
+		file.read(reinterpret_cast<char*>(&size), sizeof(size));
+
+		for (int i = 0; i < size; i++) {
+			int type;
+			double x, y;
+			file.read(reinterpret_cast<char*>(&y), sizeof(y));
+			file.read(reinterpret_cast<char*>(&x), sizeof(x));
+			file.read(reinterpret_cast<char*>(&type), sizeof(type));
+
+			if (type == 1) {
+				enemies.push_back(new EnemyMelee(int(x), int(y), int(x) - 1, int(y) - 1));
+			}
+			else {
+				enemies.push_back(new EnemyRange(int(x), int(y), int(x) - 1, int(y) - 1));
+			}
+		}
 	}
 
 	file.close();
 }
 
-void GamePlayState::playerMapRelation() {
-	if (glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] > 6) {
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-			std::fstream file(mapPaths.at(glb::consts::worldMap[int(player.getPos().x + player.getDir().x)][int(player.getPos().y + player.getDir().y)] - 7), std::ios::in | std::ios::binary);
+void GamePlayState::mouseUpdate(sf::Vector2f mousePos) {
+	mouse.setPosition(mousePos);
 
-			glb::consts::worldMap.clear();
-
-			int wid = 0, hei = 0;
-			file.read(reinterpret_cast<char*>(&wid), sizeof(wid));
-			file.read(reinterpret_cast<char*>(&hei), sizeof(hei));
-
-			if (file.is_open()) {
-				for (int i = 0; i < hei; i++) {
-					glb::consts::worldMap.push_back(std::vector<int>());
-					for (int j = 0; j < wid; j++) {
-						int num = 0;
-						file.read(reinterpret_cast<char*>(&num), sizeof(num));
-						glb::consts::worldMap.at(i).push_back(num);
-					}
-				}
-			}
-
-			file.close();
-		}
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		mouse.setTexture(mouse_down);
+	}
+	else {
+		mouse.setTexture(mouse_up);
 	}
 }
 
@@ -114,7 +172,28 @@ GamePlayState::~GamePlayState() {
 }
 
 void GamePlayState::update(float dt, sf::Vector2f mousePos) {
+	if (playerDeadVar) {
+		mouseUpdate(mousePos);
+		gameOver.button.update(mousePos);
+		gameOver.button2.update(mousePos);
+		if (!deaPlayedOnce) {
+			music.stop();
+			deaMusic.play();
+			deaPlayedOnce = true;
+		}
+	}
 
+	if (stageCleared) {
+		mouseUpdate(mousePos);
+		stageClearedB.button.update(mousePos);
+		if (!vicPlayedOnce) {
+			music.stop();
+			vicMusic.play();
+			vicPlayedOnce = true;
+		}
+	}
+
+	playerDead();
 	player.update(dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
 		player.updateEquipment(items);
@@ -151,17 +230,15 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			std::cout << "Inventory empty!" << std::endl;
 		}
 	}
 
-
-
-
-
-
+	//Spremenjivka s katero preverimo če lahko igralec gre v naslednjo mapo. Lahko gre ko so vsi sovražniki premagani.
+	if (enemies.empty()) {
+		stageCleared = true;
+	}
 
 
 	for (int i = 0; i < enemies.size(); i++) {
@@ -178,6 +255,35 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 		State::trigger = StateTrigger::END_STATE;
 	}
 
+	//V tem if stavku se more vse resetirati po tem ko se restart klikne
+	if (playerDeadVar) {
+		if (gameOver.button.clicked()) {
+			music.play();
+			deaPlayedOnce = false;
+			playerDeadVar = false;
+			player.setHp(10);
+			loadmap(currentMapNum);
+		}
+
+		if (gameOver.button2.clicked()) {
+			player.setHp(10);
+			music.stop();
+			music.resetBuffer();
+			State::trigger = StateTrigger::END_STATE;
+		}
+	}
+
+	if (stageCleared && stageClearedB.button.clicked()) {
+		stageClearedB.usedOnce = true;
+		music.play();
+
+		if (currentMapNum == 2) {
+			music.stop();
+			music.resetBuffer();
+			State::trigger = StateTrigger::END_STATE;
+		}
+	}
+
 	playerMapRelation();
 }
 
@@ -186,6 +292,7 @@ void GamePlayState::addProjectile(Projectile* projectile) {
 }
 
 void GamePlayState::removeProjectile(Projectile* projectile) {
+	//Memory leaks, memory leaks everywhere
 	for (auto it = projectiles.begin(); it != projectiles.end(); ++it) {
 		if (*it == projectile) {
 
@@ -196,6 +303,7 @@ void GamePlayState::removeProjectile(Projectile* projectile) {
 }
 
 void GamePlayState::removeEnemy(Enemy* enemy) {
+	//Memory leaks, memory leaks everywhere
 	for (auto it = enemies.begin(); it != enemies.end(); ++it) {
 		if (*it == enemy) {
 
@@ -206,18 +314,25 @@ void GamePlayState::removeEnemy(Enemy* enemy) {
 }
 
 
-float GamePlayState::calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2)
-{
+float GamePlayState::calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2) {
 	sf::Vector2f diff = pos1 - pos2;
 	return std::sqrt(diff.x * diff.x + diff.y * diff.y);
 }
 
 void GamePlayState::draw(sf::RenderTarget* window) {
 
-	map.draw(window, player, enemies, projectiles, items);
-	player.renderHealthBar(window);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
-		player.showInventory(window);
+	if (playerDeadVar) {//Če player živi se vse izrisuje če pa ne živi pa se nič ne izrisuje.
+		gameOver.draw(window);
+		window->draw(mouse);
+	} else if (stageCleared && !stageClearedB.usedOnce) {
+		stageClearedB.draw(window);
+		window->draw(mouse);
+	} else {
+		map.draw(window, player, enemies, projectiles, items);
+		player.renderHealthBar(window);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+			player.showInventory(window);
+		}
 	}
 }
 

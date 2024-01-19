@@ -56,6 +56,10 @@ void Game::manageStates() {
 		states.top()->setTrigger(StateTrigger::NO_TRIGGER);
 		states.push(new EditorState());
 		break;
+	case StateTrigger::START_OPTIONS:
+		states.top()->setTrigger(StateTrigger::NO_TRIGGER);
+		states.push(new OptionsState());
+		break;
 	default:
 		break;
 	}
@@ -78,6 +82,6 @@ void Game::run() {
 		draw();
 		deltaTime = cl.restart().asSeconds();
 		manageStates();
-		std::cout << deltaTime << "\n";
+		//std::cout << deltaTime << "\n";
 	}
 }

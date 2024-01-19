@@ -48,7 +48,7 @@ struct MapFileDisplay {
 		rect.setOutlineThickness(1.f);
 		rect.setPosition(poz);
 
-		if (!font.loadFromFile("Assets/Fonts/font1.ttf")) {
+		if (!font.loadFromFile("Assets/Fonts/font1.otf")) {
 			std::cout << "No font";
 		}
 

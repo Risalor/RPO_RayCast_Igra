@@ -16,7 +16,14 @@ void EditorState::initState() {
 	music.play();
 
 	music.setLoop(true);
-	music.setVolume(25.f);
+
+	std::fstream file("Assets/conf.bin", std::ios::in | std::ios::binary);
+	int temp;
+	file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+	file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+	file.close();
+
+	music.setVolume(temp);
 
 	if (!mouse_up.loadFromFile("Assets/Cursor/cursor.gif")) {
 		std::cout << "Cannot load texture\n";
@@ -206,7 +213,6 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 			for (int j = 0; j < wid; j++) {
 				file.write(reinterpret_cast<const char*>(&tile[i][j].texNum), sizeof(int));
 			}
-			std::cout << "\n";
 		}
 
 		int size = enemies.size();
@@ -336,7 +342,7 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 		playerSelect.shp.setOutlineColor(sf::Color::White);
 	}
 
-	if (isMouseInView() && sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtCounter > 0.5f && selectedEnemy.type == 0 && selected == 0) {
+	if (isMouseInView() && sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtCounter > 0.5f && selectedEnemy.type == 0 && selected == 0 && playerSelect.shp.getOutlineColor() == sf::Color::Green) {
 		player = PlayerObj(sf::Vector2f(worldCoords), 5.f);
 		dtCounter = 0.f;
 	}

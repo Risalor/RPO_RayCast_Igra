@@ -1,15 +1,26 @@
 #include "MainMenuState.h"
 
 void MainMenuState::initState() {
-	buttons.push_back(Button(sf::Vector2f(150.f, 150.f), "Start"));
-	buttons.push_back(Button(sf::Vector2f(150.f, 250.f), "Editor"));
+	buttons.push_back(Button(sf::Vector2f(150.f, 50.f), "Start"));
+	buttons.push_back(Button(sf::Vector2f(150.f, 150.f), "Editor"));
 	buttons.push_back(Button(sf::Vector2f(150.f, 350.f), "Quit"));
+	buttons.push_back(Button(sf::Vector2f(150.f, 250.f), "Options"));
 
 	if (!buffer.loadFromFile("Assets/Music/MainMenu.wav")) {
 		std::cout << "Cannot load music\n";
 	}
 
 	menuMusic.setBuffer(buffer);
+
+	std::fstream file("Assets/conf.bin", std::ios::in | std::ios::binary);
+	int temp;
+	file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+	file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+	file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+	file.close();
+
+	menuMusic.setVolume(temp);
+
 	menuMusic.play();
 
 	background.setSize(sf::Vector2f(screenWidth + 411.42f, screenHeight));
@@ -37,6 +48,7 @@ void MainMenuState::update(float dt, sf::Vector2f mousePos) {
 	buttons[0].update(mousePos);
 	buttons[1].update(mousePos);
 	buttons[2].update(mousePos);
+	buttons[3].update(mousePos);
 
 	mouse.setPosition(mousePos);
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
@@ -49,6 +61,15 @@ void MainMenuState::update(float dt, sf::Vector2f mousePos) {
 		if (!buffer.loadFromFile("Assets/Music/MainMenu.wav")) {
 			std::cout << "Cannot load music\n";
 		}
+
+		std::fstream file("Assets/conf.bin", std::ios::in | std::ios::binary);
+		int temp;
+		file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+		file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+		file.read(reinterpret_cast<char*>(&temp), sizeof(int));
+		file.close();
+
+		menuMusic.setVolume(temp);
 
 		menuMusic.setBuffer(buffer);
 		menuMusic.play();
@@ -68,6 +89,11 @@ void MainMenuState::update(float dt, sf::Vector2f mousePos) {
 		State::trigger = StateTrigger::END_GAME;
 		menuMusic.stop();
 	}
+
+	if (buttons[3].clicked()) {
+		State::trigger = StateTrigger::START_OPTIONS;
+		menuMusic.stop();
+	}
 }
 
 void MainMenuState::draw(sf::RenderTarget* window) {
@@ -75,5 +101,6 @@ void MainMenuState::draw(sf::RenderTarget* window) {
 	buttons[0].draw(window);
 	buttons[1].draw(window);
 	buttons[2].draw(window);
+	buttons[3].draw(window);
 	window->draw(mouse);
 }

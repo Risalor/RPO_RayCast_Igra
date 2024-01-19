@@ -37,13 +37,11 @@ struct Entity {
 
 class Map {
 private:
-	sf::Vector2f plane;
 	void rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo);
 	void draw2D(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo, std::vector<Item*> itemStartPos);
 	std::vector<sf::Texture> textures;
+	std::vector<sf::Texture> darkTextures;
 	std::vector<std::vector<sf::Color>> texture;
-	sf::RectangleShape floo;
-	sf::RectangleShape ceil;
 	SpriteManager spriteManager;
 	void handleDoor(Player& pInfo);
 public:
