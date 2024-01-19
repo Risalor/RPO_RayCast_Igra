@@ -122,11 +122,11 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) { //tukaj izvajanje napadanja, ker v player razredu to ni mogoče-> če Player razred includan v Enemy in Enemy v Player-> ne deluje
-
+		sf::Clock attackTimer;
 		if (player.inventoryEmpty()) {
 
 			Weapon weapon = player.getItem();
-
+			
 
 			for (auto& enemy : enemies) {
 				float distanceToEnemy = calculateDistance(player.getPos(), enemy->getPos());
@@ -140,10 +140,13 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 					float angle = std::acos(dotProduct) * 180.0f / PI; // Pretvorba v stopinje
 
 					if (angle < 20.0f) { // Možna napaka 20 stopinj
-						float distanceToEnemy = calculateDistance(player.getPos(), enemy->getPos());
-						if (distanceToEnemy <= weapon.getRange()) {
-							enemy->takeDamage(1);
-							std::cout << "SOVRAZNIK ZADET, oddaljenost: " << distanceToEnemy << std::endl;
+						if (attackTimer.getElapsedTime().asSeconds() >= weapon.getCoolDown()) {
+							float distanceToEnemy = calculateDistance(player.getPos(), enemy->getPos());
+							if (distanceToEnemy <= weapon.getRange()) {
+								enemy->takeDamage(1);
+								std::cout << "SOVRAZNIK ZADET, oddaljenost: " << distanceToEnemy << std::endl;
+							}
+							attackTimer.restart();
 						}
 					}
 				}

@@ -90,7 +90,8 @@ void Player::equipItem(int itemIndex)
 {
 	
 	if (itemIndex >= 0 && itemIndex <= inventory.getSize()) {
-		std::cout << "Equipan item:  " << inventory[itemIndex].getName() << " Status e:  " << inventory[itemIndex].getEquiped() << std::endl;
+		std::cout << "Equipan item:  " << inventory[itemIndex].getName() << " Status e:  "
+			<< inventory[itemIndex].getEquiped() << std::endl;
 
 		inventory[itemIndex].setEquiped(true);
 		unequipOthers(inventory[itemIndex].getName());
