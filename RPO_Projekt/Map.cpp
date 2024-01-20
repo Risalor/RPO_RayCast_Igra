@@ -72,11 +72,11 @@ Map::Map() {
 
 void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo, std::vector<Item*> itemStartPos) {
 
-	rayCastDraw(window, pInfo, eInfo, prInfo);
+	rayCastDraw(window, pInfo, eInfo, prInfo, itemStartPos);
 	draw2D(window, pInfo, eInfo, prInfo, itemStartPos);
 }
 
-void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo) {
+void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo, std::vector<Item*> itemStartPos) {
 	sf::Image buffer;
 	buffer.create(screenWidth, screenHeight, sf::Color::Transparent);
 
@@ -293,6 +293,60 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		projectileSprite->setScale(scale / 4, scale / 4);
 
 		window->draw(*projectileSprite);
+	}
+
+
+	sf::Texture pistolTexture;
+	sf::Texture shotgunTexture;
+	sf::Texture machinegunTexture;
+	if (!pistolTexture.loadFromFile("Assets/Weapon_icons/pistol.png") ||
+		!shotgunTexture.loadFromFile("Assets/Weapon_icons/shotgun.png") ||
+		!machinegunTexture.loadFromFile("Assets/Weapon_icons/machinegun.png")) {
+		std::cout << "Napaka pri nalaganju tekstur orožij!" << std::endl;
+	}
+
+	
+	int baseOffset = 0; // Osnovna višina nad tlemi za vse ikone.
+
+	// ... [prejšnja koda] ...
+
+	for (auto& item : itemStartPos) {
+		if (item->getPickedStatus()) continue; // Preskoči, če je predmet že pobran
+
+		sf::Sprite itemSprite;
+		if (item->getName() == "pistol1") {
+			itemSprite.setTexture(pistolTexture);
+		}
+		else if (item->getName() == "shotgun") {
+			itemSprite.setTexture(shotgunTexture);
+		}
+		else if (item->getName() == "machinegun") {
+			itemSprite.setTexture(machinegunTexture);
+		}
+		else {
+			continue; // Preskoči, če predmet ni orožje
+		}
+
+		// Izračunaj transformacijo pozicije predmeta glede na igralčevo perspektivo
+		sf::Vector2f relativePos = item->getStartPos() - pInfo.getPos();
+		float invDet = 1.0f / (pInfo.getPlane().x * pInfo.getDir().y - pInfo.getDir().x * pInfo.getPlane().y);
+		float transformX = invDet * (pInfo.getDir().y * relativePos.x - pInfo.getDir().x * relativePos.y);
+		float transformY = invDet * (-pInfo.getPlane().y * relativePos.x + pInfo.getPlane().x * relativePos.y);
+
+		// Preskoči, če predmet ni znotraj vidnega polja
+		if (transformY <= 0) continue;
+
+		// Izračunaj pravilno velikost in položaj za izris predmeta
+		int itemScreenX = int((screenWidth / 2) * (1 + transformX / transformY));
+		int itemScreenY = int((screenHeight / 2) - (baseOffset / transformY));
+
+		// Nastavi položaj in velikost sprite-a
+		itemSprite.setPosition(itemScreenX, itemScreenY);
+		itemSprite.setOrigin(itemSprite.getGlobalBounds().width / 2, itemSprite.getGlobalBounds().height / 2); // Origin na sredini
+		itemSprite.setScale(1 / transformY, 1 / transformY); // Skaliraj glede na razdaljo od igralca
+
+		// Izris sprite-a
+		window->draw(itemSprite);
 	}
 
 }
