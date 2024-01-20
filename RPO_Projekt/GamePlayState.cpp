@@ -171,6 +171,16 @@ GamePlayState::~GamePlayState() {
 	}
 	items.clear();
 
+	for (Enemy* e : enemies) {
+		delete e;
+	}
+	enemies.clear();
+
+	for (Projectile* p : projectiles) {
+		delete p;
+	}
+	projectiles.clear();
+
 }
 
 void GamePlayState::update(float dt, sf::Vector2f mousePos) {
@@ -266,26 +276,27 @@ void GamePlayState::addProjectile(Projectile* projectile) {
 }
 
 void GamePlayState::removeProjectile(Projectile* projectile) {
-	//Memory leaks, memory leaks everywhere
-	for (auto it = projectiles.begin(); it != projectiles.end(); ++it) {
+	for (auto it = projectiles.begin(); it != projectiles.end(); ) {
 		if (*it == projectile) {
-
-			projectiles.erase(it);
-			break;
+			it = projectiles.erase(it);
+		}
+		else {
+			++it;
 		}
 	}
 }
 
 void GamePlayState::removeEnemy(Enemy* enemy) {
-	//Memory leaks, memory leaks everywhere
-	for (auto it = enemies.begin(); it != enemies.end(); ++it) {
+	for (auto it = enemies.begin(); it != enemies.end(); ) {
 		if (*it == enemy) {
-
-			enemies.erase(it);
-			break;
+			it = enemies.erase(it);
+		}
+		else {
+			++it;
 		}
 	}
 }
+
 
 
 
