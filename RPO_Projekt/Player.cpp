@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-
+sf::Clock shootTimer;
 Player::Player(float speed) :movementSpeed(movementSpeed), rotationSpeed(rotationSpeed) {
 	
     this->playerPos.x = 22;
@@ -14,9 +14,8 @@ Player::Player(float speed) :movementSpeed(movementSpeed), rotationSpeed(rotatio
 	this->shiftPressed = false;
 	this->shiftDelayTime = 1.4f;
 	this->shiftTimeCount = 0.f;
-	this->maxHp = 10;
+	this->maxHp = 20;
 	this->hp = maxHp;
-
 	plane.x = 0.66f;
 	plane.y = 0.f;
 
@@ -103,7 +102,7 @@ void Player::equipItem(int itemIndex)
 	
 }
 
-Weapon Player::getItem()
+Weapon* Player::getItem()
 {
 
 	Weapon* weapon = nullptr;
@@ -117,11 +116,9 @@ Weapon Player::getItem()
 	}
 	if (weapon != nullptr) {
 		weapon->setValid(true);
-		return *weapon;
+		return weapon;
 	} else 
-		throw std::runtime_error("No weapon equipped");
-
-
+		return nullptr;
 }
 
 void Player::unequipOthers(const std::string& name)
@@ -159,6 +156,70 @@ bool Player::inventoryEmpty()
 	else
 		return false;
 }
+
+void Player::drawWeapons(sf::RenderTarget* window)
+{
+//	for (int i = 0;i < inventory.getSize();i++) {
+//		if (inventory[i].getEquiped()) {
+//			
+//			std::string textureName = inventory[i].getName();
+//			std::string fullPath = "Assets/Weapons/" + textureName + ".png";
+//			sf::Texture weaponTexture;
+//			if (!weaponTexture.loadFromFile(fullPath)) {
+//				std::cout << "Napaka pri odpiranju!" << std::endl;
+//			}
+//			AnimationManager animManager(
+//				inventory[i].getSpriteSheetWidth(),
+//				inventory[i].getSpriteSheetHeight(),
+//				inventory[i].getNumFramesVertical(),
+//				inventory[i].getNumFramesHorizontal()
+//			);
+//
+//			sf::Sprite weaponSprite;
+//			weaponSprite.setTexture(weaponTexture);
+//			weaponSprite.setPosition(450, 280); // Prilagodite te vrednosti glede na vašo igro
+//
+//			float scaleX = 500 / inventory[i].getSpriteSheetWidth();
+//			float scaleY = 500 / inventory[i].getSpriteSheetHeight();
+//			weaponSprite.setScale(scaleX, scaleY);
+//
+//			const float animationDuration = 1.0f;
+//			if (isShooting) {
+//				
+//
+//				weaponSprite.setTextureRect(animManager.getFrameByIndex(1));
+//			}
+//			else {
+//				// Če igralec ne strelja, prikažemo prvi okvir
+//				weaponSprite.setTextureRect(animManager.getFrameByIndex(0));
+//			}
+//
+//
+//
+//			window->draw(weaponSprite);
+//			break; 
+//		}
+//	}
+	
+	
+
+}
+
+//Weapon Player::getWeapon(int index)
+//{
+//	
+//	Weapon* weapon = nullptr;
+//	
+//	weapon = dynamic_cast<Weapon*>(&inventory[index]);
+//
+//
+//	if (weapon != nullptr) {
+//		weapon->setValid(true);
+//		return *weapon;
+//	}
+//	
+//}
+
 
 
 

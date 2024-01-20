@@ -6,8 +6,8 @@ Armor* Armor::clone() const
 	return new Armor(*this);
 }
 
-Armor::Armor(int startPosX, int startPosY, int defence, bool picked, bool equiped, std::string name)
-	: Item(startPosX, startPosY, picked, equiped, name)
+Armor::Armor(int startPosX, int startPosY, int defence, bool picked, bool equiped, std::string name, int sShWidth, int sSHeight, int numFramesHor, int numFramesVer)
+	: Item(startPosX, startPosY, picked, equiped, name,  sShWidth,  sSHeight,  numFramesHor,  numFramesVer)
 {
 	this->defence = defence;
 }

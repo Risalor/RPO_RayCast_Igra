@@ -2,8 +2,8 @@
 
 
 
-Weapon::Weapon(int startPosX, int startPosY, int damage,float range,float coolDown, bool picked, bool equiped, bool valid, std::string name)
-	: Item( startPosX, startPosY, picked, equiped, name)
+Weapon::Weapon(int startPosX, int startPosY, int damage,float range,float coolDown, bool picked, bool equiped, bool valid, std::string name, int sShWidth, int sSHeight, int numFramesHor, int numFramesVer)
+	: Item( startPosX, startPosY, picked, equiped, name, sShWidth, sSHeight, numFramesHor, numFramesVer)
 {
 	this->damage = damage;
 	this->range = range;

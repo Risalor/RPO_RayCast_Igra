@@ -6,7 +6,7 @@ private:
 	int defence;
 public:
 	virtual Armor* clone() const;
-	Armor(int startPosX, int startPosY, int defence = 0, bool picked = false , bool equiped = false, std::string name= "Armor name");
+	Armor(int startPosX, int startPosY, int defence , bool picked , bool equiped , std::string name , int sShWidth, int sSHeight, int numFramesHor, int numFramesVer);
 	virtual ~Armor();
 	std::string toString();
 };

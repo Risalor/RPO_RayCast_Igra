@@ -1,8 +1,5 @@
 ﻿#include "Map.h"
-//player.  pred vsak plane 
 
-//plane.x = 0.66f;
-//plane.y = 0.f;
 
 bool hasLineOfSight(const sf::Vector2f& start, const sf::Vector2f& end) {
 	sf::Vector2f direction = end - start;

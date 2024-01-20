@@ -11,7 +11,7 @@ private:
 	
 public:
 	virtual Weapon* clone() const; //class se klonira za dodajanje v inventory
-	Weapon(int startPosX, int startPosY, int damage, float range, float coolDown, bool picked, bool equiped, bool valid, std::string name);
+	Weapon(int startPosX, int startPosY, int damage, float range, float coolDown, bool picked, bool equiped, bool valid, std::string name, int sShWidth, int sSHeight, int numFramesHor, int numFramesVer);
 	int getDamage() const { return this->damage; };
 	float getRange() const { return this->range; };
 	float getCoolDown() const { return this->coolDown; };

@@ -80,6 +80,9 @@ private:
 	bool vicPlayedOnce;
 	bool deaPlayedOnce;
 	std::vector<std::string> mapPaths;
+	bool isShooting;
+	const float shootingAnimationDuration = 0.2f;
+	bool isShootingAnimation = false;
 public:
 	GamePlayState();
 	~GamePlayState();
@@ -90,7 +93,10 @@ public:
 	static void removeProjectile(Projectile* projectile);
 	static void removeEnemy(Enemy* enemy);
 
+	void attack();
 	float calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2);
 	void normalizeVector(sf::Vector2f& vector);
+	bool lineOfSightToEnemy(const sf::Vector2f& playerPos, const sf::Vector2f& enemyPos);
+	void drawWeapons(sf::RenderTarget* window);
 };
 

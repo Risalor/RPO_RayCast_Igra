@@ -5,14 +5,16 @@ const float PI = 3.14159265358979323846f;
 Player player(Player(10.0f));
 std::vector<Projectile*> GamePlayState::projectiles;
 std::vector<Enemy*> GamePlayState::enemies;
-
+sf::Clock attackTimer;
+sf::Clock shootingAnimationTimer;
 void GamePlayState::initState() {
 
-
-	items.push_back(new Weapon(20, 15, 2, 10, 0.5, false, false, false, "pistol"));
-	items.push_back(new Weapon(25, 15, 2, 10, 0.5, false, false, false, "AK-47"));
-	items.push_back(new Weapon(25, 10, 2, 10, 0.5, false, false, false, "machinegun"));
-
+	//289, 291
+	items.push_back(new Weapon(20, 15, 10, 10, 0.5, false, false, false, "pistol1", 200, 200, 2, 2));
+	items.push_back(new Weapon(25, 15, 20, 10, 1, false, false, false, "shotgun", 200, 200, 2, 2));
+	items.push_back(new Weapon(25, 10, 5, 10, 0.2, false, false, false, "machinegun", 470, 300, 2, 2));
+	
+	this->isShooting = false;
 
 	if (!buffer.loadFromFile("Assets/Music/GamePlay.wav")) {
 		std::cout << "Faildes to load soundBuffer\n";
@@ -201,38 +203,10 @@ void GamePlayState::update(float dt, sf::Vector2f mousePos) {
 
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) { //tukaj izvajanje napadanja, ker v player razredu to ni mogoče-> če Player razred includan v Enemy in Enemy v Player-> ne deluje
-		sf::Clock attackTimer;
-		if (player.inventoryEmpty()) {
-
-			Weapon weapon = player.getItem();
-			
-
-			for (auto& enemy : enemies) {
-				float distanceToEnemy = calculateDistance(player.getPos(), enemy->getPos());
-				if (distanceToEnemy <= weapon.getRange()) {
-
-
-					sf::Vector2f directionToEnemy = enemy->getPos() - player.getPos();
-					normalizeVector(directionToEnemy);
-
-					float dotProduct = player.getDir().x * directionToEnemy.x + player.getDir().y * directionToEnemy.y;
-					float angle = std::acos(dotProduct) * 180.0f / PI; // Pretvorba v stopinje
-
-					if (angle < 20.0f) { // Možna napaka 20 stopinj
-						if (attackTimer.getElapsedTime().asSeconds() >= weapon.getCoolDown()) {
-							float distanceToEnemy = calculateDistance(player.getPos(), enemy->getPos());
-							if (distanceToEnemy <= weapon.getRange()) {
-								enemy->takeDamage(1);
-								std::cout << "SOVRAZNIK ZADET, oddaljenost: " << distanceToEnemy << std::endl;
-							}
-							attackTimer.restart();
-						}
-					}
-				}
-			}
-		} else {
-			std::cout << "Inventory empty!" << std::endl;
-		}
+		attack();
+	}
+	if (!sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		isShooting = false;
 	}
 
 	//Spremenjivka s katero preverimo če lahko igralec gre v naslednjo mapo. Lahko gre ko so vsi sovražniki premagani.
@@ -314,6 +288,8 @@ void GamePlayState::removeEnemy(Enemy* enemy) {
 }
 
 
+
+
 float GamePlayState::calculateDistance(const sf::Vector2f& pos1, const sf::Vector2f& pos2) {
 	sf::Vector2f diff = pos1 - pos2;
 	return std::sqrt(diff.x * diff.x + diff.y * diff.y);
@@ -333,7 +309,9 @@ void GamePlayState::draw(sf::RenderTarget* window) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
 			player.showInventory(window);
 		}
+		drawWeapons(window);
 	}
+	
 }
 
 void GamePlayState::normalizeVector(sf::Vector2f& vector) {
@@ -342,4 +320,126 @@ void GamePlayState::normalizeVector(sf::Vector2f& vector) {
 		vector.x /= length;
 		vector.y /= length;
 	}
+}
+
+bool GamePlayState::lineOfSightToEnemy(const sf::Vector2f& playerPos, const sf::Vector2f& enemyPos) {
+	sf::Vector2f direction = enemyPos - playerPos;
+	normalizeVector(direction);
+
+	float distance = calculateDistance(playerPos, enemyPos);
+	float stepSize = 1.0f; // Nastavi korak, s katerim se premika po liniji
+
+	// Preveri vsako točko na liniji od igralca do sovražnika
+	for (float t = 0.0f; t < distance; t += stepSize) {
+		sf::Vector2f currentPoint = playerPos + direction * t;
+		if (glb::consts::worldMap[int(currentPoint.x)][int(currentPoint.y)]) {
+			// Našli smo steno, ni vidne linije do sovražnika
+			return false;
+		}
+	}
+
+	// Ni sten na poti do sovražnika, igralec ima vidno linijo
+	return true;
+}
+
+void GamePlayState::drawWeapons(sf::RenderTarget* window)
+{
+
+	Weapon* weapon = player.getItem();
+	
+	if (weapon != nullptr) {
+		std::string textureName = weapon->getName();
+		std::string fullPath = "Assets/Weapons/" + textureName + ".png";
+		sf::Texture weaponTexture;
+		if (!weaponTexture.loadFromFile(fullPath)) {
+			std::cout << "Napaka pri odpiranju!" << std::endl;
+		}
+		AnimationManager animManager(
+			weapon->getSpriteSheetWidth(),
+			weapon->getSpriteSheetHeight(),
+			weapon->getNumFramesVertical(),
+			weapon->getNumFramesHorizontal()
+		);
+
+		sf::Sprite weaponSprite;
+		weaponSprite.setTexture(weaponTexture);
+		weaponSprite.setPosition(450, 280); // Prilagodite te vrednosti glede na vašo igro
+		float scaleX = 0;
+		float scaleY = 0;
+		if(weapon->getName() == "machinegun"){
+			weaponSprite.setPosition(250, 355);
+			 scaleX = 580 / weapon->getSpriteSheetWidth();
+			 scaleY = 580 / weapon->getSpriteSheetHeight();
+		}
+		else {
+			 scaleX = 500 / weapon->getSpriteSheetWidth();
+			 scaleY = 500 / weapon->getSpriteSheetHeight();
+		}
+			
+		weaponSprite.setScale(scaleX, scaleY);
+
+
+		if (isShootingAnimation) {
+			if (shootingAnimationTimer.getElapsedTime().asSeconds() < shootingAnimationDuration) {
+				weaponSprite.setTextureRect(animManager.getFrameByIndex(1)); // Drugi okvir med animacijo streljanja
+			}
+			else {
+				isShootingAnimation = false;
+			}
+		}
+		if (!isShootingAnimation) {
+			weaponSprite.setTextureRect(animManager.getFrameByIndex(0)); // Nazaj na prvi okvir
+		}
+		window->draw(weaponSprite);
+	}
+}
+
+
+
+
+void GamePlayState::attack()
+{
+	
+	if (player.inventoryEmpty()) {
+		
+			isShooting = true;
+		Weapon* weapon = player.getItem();
+
+		if (attackTimer.getElapsedTime().asSeconds() >= weapon->getCoolDown()) {
+			isShootingAnimation = true;
+			shootingAnimationTimer.restart();
+			attackTimer.restart();
+		for (auto& enemy : enemies) {
+			float distanceToEnemy = calculateDistance(player.getPos(), enemy->getPos());
+			if (distanceToEnemy <= weapon->getRange()) {
+
+
+				sf::Vector2f directionToEnemy = enemy->getPos() - player.getPos();
+				normalizeVector(directionToEnemy);
+
+				float dotProduct = player.getDir().x * directionToEnemy.x + player.getDir().y * directionToEnemy.y;
+				float angle = std::acos(dotProduct) * 180.0f / PI; // Pretvorba v stopinje
+
+				if (angle < 20.0f) { // Možna napaka 20 stopinj
+					
+						if (lineOfSightToEnemy(player.getPos(), enemy->getPos())) { // Preverimo, ali je vidna linija
+						float distanceToEnemy = calculateDistance(player.getPos(), enemy->getPos());
+						if (distanceToEnemy <= weapon->getRange()) {
+							enemy->takeDamage(weapon->getDamage());
+							std::cout << "SOVRAZNIK ZADET, oddaljenost: " << distanceToEnemy << std::endl;
+						}
+						}
+						else {
+							std::cout << "Napad blokiran s steno" << std::endl;
+						}
+						
+					}
+				}
+			}
+		}
+	}
+	else {
+		std::cout << "Inventory empty!" << std::endl;
+	}
+	
 }

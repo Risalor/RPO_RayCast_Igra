@@ -13,6 +13,7 @@ public:
 
 	sf::IntRect nextFrame(sf::IntRect rectSourceSprite, const int vrstica, const int stevilo, bool& premik);
 
+	sf::IntRect getFrameByIndex(int index);
 	//void delete Animation(sf::Sprite* spriteSheet);
 	//sf::Animation* getAnimation(const int index);
 

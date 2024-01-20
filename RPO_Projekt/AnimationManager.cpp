@@ -65,6 +65,13 @@ sf::IntRect AnimationManager::nextFrame(sf::IntRect rectSourceSprite, const int 
 	return rectSourceSprite;
 }
 
+sf::IntRect AnimationManager::getFrameByIndex(int index)
+{
+	int column = index % st_stolpcev;
+	int row = index / st_stolpcev;
+	return sf::IntRect(column * sirina_okvirja, row * visina_okvirja, sirina_okvirja, visina_okvirja);
+}
+
 sf::Sprite* AnimationManager::createAnimation(sf::Texture* texture, const int vrstica, const int stevilo) {
 	sf::Texture* spriteSheet = texture;
 

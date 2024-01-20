@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "global.h"
 #include "Inventory.h"
+#include "AnimationManager.h"
 
 
 
@@ -48,10 +49,15 @@ public:
     void updateEquipment(std::vector<Item*> item);
     void equipItem(int itemIndex);
     void move(float dt);
-    Weapon getItem();
+    Weapon* getItem();
     void unequipOthers(const std::string& name);
     bool checkBounds(int number);
     bool inventoryEmpty();
+    int getInventorySize() const { return inventory.getSize();}
+    void drawWeapons(sf::RenderTarget* window);
+  
+    //Weapon getWeapon(int index);
+
 
     const int& getHp() const { return this->hp;}
     void setHp(int amount) { this->hp = amount;}
