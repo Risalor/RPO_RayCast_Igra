@@ -278,6 +278,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 	}
 
 	spriteManager.createSprite(1);
+	spriteManager.createSprite(2);
 	AnimationManager animManager(800, 900, 8, 9);
 
 	for (size_t i = 0; i < eInfo.size(); ++i) {
