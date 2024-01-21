@@ -26,13 +26,15 @@ Player::Player(float speed) :movementSpeed(movementSpeed), rotationSpeed(rotatio
 
 	healthBarBackground.setSize(sf::Vector2f(100.0, 10.0));
 	healthBarBackground.setFillColor(sf::Color(128, 128, 128)); // Siva barva
-
-
 }
-
 
 Player::~Player() {
 
+}
+
+void Player::setPos(int spx, int spy) {
+	this->playerPos.x = spx;
+	this->playerPos.y = spy;
 }
 
 void Player::update(float dt) {

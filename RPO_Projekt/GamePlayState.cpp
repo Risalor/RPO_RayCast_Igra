@@ -125,6 +125,7 @@ void GamePlayState::loadmap(int mapNum) {
 		}*/
 
 		enemies.clear();
+		projectiles.clear();
 
 		int size;
 		file.read(reinterpret_cast<char*>(&size), sizeof(size));
@@ -137,12 +138,14 @@ void GamePlayState::loadmap(int mapNum) {
 			file.read(reinterpret_cast<char*>(&type), sizeof(type));
 
 			if (type == 1) {
-				enemies.push_back(new EnemyMelee(int(x), int(y), int(x) - 1, int(y) - 1));
+				enemies.push_back(new EnemyMelee(int(x), int(y), int(x) - 2, int(y) - 2));
 			}
 			else {
-				enemies.push_back(new EnemyRange(int(x), int(y), int(x) - 1, int(y) - 1));
+				enemies.push_back(new EnemyRange(int(x), int(y), int(x) - 1, int(y) - 2));
 			}
 		}
+
+		player.setPos(6, 6);
 
 		/*int x, y;
 

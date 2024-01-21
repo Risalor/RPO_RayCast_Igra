@@ -38,7 +38,7 @@ public:
     sf::Vector2f getPos() const { return playerPos; }
     sf::Vector2f getDir() const { return playerDir; }
     sf::Vector2f getPlane() const { return plane; }
-
+    void setPos(int spx, int spy);
 
     void updateHealthBar();
     void renderHealthBar(sf::RenderTarget* window);
