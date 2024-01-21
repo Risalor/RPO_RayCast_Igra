@@ -8,13 +8,13 @@ struct GameOverBanner {
 	Button button2;
 
 	GameOverBanner() {
-		button = Button(sf::Vector2f(screenWidth / 2 + 100, screenHeight / 2), "Restart");
-		button2 = Button(sf::Vector2f(screenWidth / 2 + 100, screenHeight / 2 + 100), "Title screen");
+		button = Button(sf::Vector2f(240.f, screenHeight / 2), "Restart");
+		button2 = Button(sf::Vector2f(240.f, screenHeight / 2 + 100), "Title screen");
 		if (!tex.loadFromFile("Assets/Backgrounds/gameover.png")) {
 			std::cout << "File cannot be loaded";
 		}
 		shp.setSize(sf::Vector2f(screenHeight, screenHeight));
-		shp.setPosition((screenWidth)/2 - 20, 0.f);
+		shp.setPosition(120.f, 0.f);
 		shp.setTexture(&tex);
 	}
 
@@ -32,13 +32,14 @@ struct StageClearedBanner {
 	bool usedOnce;
 
 	StageClearedBanner() {
-		button = Button(sf::Vector2f(screenWidth / 2 + 100, screenHeight / 2 + 100), "Close");
+		button = Button(sf::Vector2f(270, screenHeight / 2 + 100), "Close");
 		if (!tex.loadFromFile("Assets/Backgrounds/victory.png")) {
 			std::cout << "File cannot be loaded";
 		}
 
 		shp.setSize(sf::Vector2f(screenHeight + 300, screenHeight));
-		shp.setPosition((screenWidth) / 2 - 170, 0.f);
+		/*shp.setPosition((screenWidth) / 2 - 170, 0.f);*/
+		shp.setPosition(0, 0.f);
 		shp.setTexture(&tex);
 
 		usedOnce = false;

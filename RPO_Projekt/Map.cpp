@@ -73,7 +73,7 @@ Map::Map() {
 void Map::draw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo, std::vector<Item*> itemStartPos) {
 
 	rayCastDraw(window, pInfo, eInfo, prInfo, itemStartPos);
-	draw2D(window, pInfo, eInfo, prInfo, itemStartPos);
+	/*draw2D(window, pInfo, eInfo, prInfo, itemStartPos);*/
 }
 
 void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy*> eInfo, std::vector<Projectile*> prInfo, std::vector<Item*> itemStartPos) {
@@ -101,7 +101,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			floor.x += step.x;
 			floor.y += step.y;
 
-			buffer.setPixel(j, i, texture[3][texWidth * tex.y + tex.x]);
+			buffer.setPixel(j, i, texture[0][texWidth * tex.y + tex.x]);
 			buffer.setPixel(j, screenHeight - i - 1, texture[1][texWidth * tex.y + tex.x]);
 
 		}

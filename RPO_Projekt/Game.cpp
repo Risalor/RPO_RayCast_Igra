@@ -33,6 +33,12 @@ void Game::update() {
 }
 
 void Game::manageStates() {
+	std::string windowTitle = "RPO Igra";
+	sf::VideoMode videoMode1 = sf::VideoMode(screenWidth + 411.42f, screenHeight);
+	sf::VideoMode videoMode2 = sf::VideoMode(screenWidth, screenHeight);
+	auto windowStyle = sf::Style::Default;
+
+
 	switch (states.top()->getTrigger()) {
 	case StateTrigger::END_GAME:
 		while (states.empty()) {
@@ -43,9 +49,22 @@ void Game::manageStates() {
 		break;
 	case StateTrigger::START_GAME:
 		states.top()->setTrigger(StateTrigger::NO_TRIGGER);
+		delete window;
+
+		window = new sf::RenderWindow(videoMode2, windowTitle, windowStyle);
+		window->setFramerateLimit(60);
+		window->setMouseCursorVisible(false);
+
 		states.push(new GamePlayState());
 		break;
 	case StateTrigger::END_STATE:
+
+		delete window;
+
+		window = new sf::RenderWindow(videoMode1, windowTitle, windowStyle);
+		window->setFramerateLimit(60);
+		window->setMouseCursorVisible(false);
+
 		delete states.top();
 		states.pop();
 		if (states.empty()) {
@@ -82,6 +101,6 @@ void Game::run() {
 		draw();
 		deltaTime = cl.restart().asSeconds();
 		manageStates();
-		//std::cout << deltaTime << "\n";
+		std::cout << deltaTime << "\n";
 	}
 }
