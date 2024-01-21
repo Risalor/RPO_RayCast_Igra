@@ -2,7 +2,7 @@
 
 EnemyMelee::EnemyMelee(int spx, int spy, int tpx, int tpy) : Enemy(spx, spy, tpx, tpy) {
 	eHealth = 12;
-	eSpeed = 4.f;
+	eSpeed = 3.2f;
 	eVision = 10.f;
 
 	eRange = 1;

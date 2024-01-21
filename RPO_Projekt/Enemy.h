@@ -24,6 +24,9 @@ protected:
 	float eRange;
 	float eCooldown;
 
+	float patrolPauseDuration;
+	sf::Clock patrolTimer;
+
 public:
 
 	Enemy(int spx, int spy, int tpx, int tpy);
