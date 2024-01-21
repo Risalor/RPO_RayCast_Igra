@@ -30,8 +30,8 @@ void Map::handleDoor(Player& pInfo) {
 
 Map::Map() {
 
-	spriteManager.addNewTexture("Assets/Enemy/Enemy.png");
 	spriteManager.addNewTexture("Assets/Projectile/projectile.png");
+	spriteManager.addNewTexture("Assets/Enemy/Enemy.png");
 
 	std::filesystem::path folder("Assets/WallTex");
 
@@ -237,7 +237,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		}
 	}
 	
-	spriteManager.createSprite(0);
+	spriteManager.createSprite(1);
 	for (size_t i = 0; i < eInfo.size(); ++i) {
 		sf::Vector2f enemyPos = eInfo[i]->getPos();
 		sf::Vector2f relativePos = enemyPos - pInfo.getPos();
@@ -268,7 +268,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		window->draw(*enemySprite);
 	}
 
-	spriteManager.createSprite(1);
+	spriteManager.createSprite(0);
 	for (size_t i = 0; i < prInfo.size(); ++i) {
 		sf::Vector2f prPos = prInfo[i]->getPos();
 		sf::Vector2f relativePos = prPos - pInfo.getPos();

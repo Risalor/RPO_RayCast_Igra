@@ -9,11 +9,13 @@ EnemyMelee::EnemyMelee(int spx, int spy, int tpx, int tpy) : Enemy(spx, spy, tpx
 	eDamage = 2;
 
 	eCooldown = 1.2f;
+	eType = 0;
 }
 
 EnemyMelee::~EnemyMelee() {}
 
 void EnemyMelee::attack(Player& player) {
+	eState = 3;
 
 	player.takeDamage(eDamage);
 }

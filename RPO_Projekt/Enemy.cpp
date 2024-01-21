@@ -16,7 +16,8 @@ Enemy::Enemy(int spx, int spy, int tpx, int tpy) {
 	eVision = 12.f;
 	eRange = 1.f;
 
-    patrolPauseDuration = 0.1f;
+    ePatrolPause = 0.1f;
+    eState = 0;
 }
 
 Enemy::~Enemy() {
@@ -84,6 +85,8 @@ void Enemy::update(float dt, Player& player) {
 }
 
 void Enemy::patrol(float dt) {
+    eState = 0;
+
     eDir = eTargetPos - ePos;
     float length = std::sqrt(eDir.x * eDir.x + eDir.y * eDir.y);
 
@@ -93,7 +96,7 @@ void Enemy::patrol(float dt) {
         float nextX = (ePos.x + eDir.x + 0.5f);
         float nextY = (ePos.y + eDir.y + 0.5f);
 
-        if (patrolTimer.getElapsedTime().asSeconds() < patrolPauseDuration) {
+        if (patrolTimer.getElapsedTime().asSeconds() < ePatrolPause) {
             return;
         }
 
@@ -114,6 +117,8 @@ void Enemy::patrol(float dt) {
 
 
 void Enemy::aggro(float dt, Player& player) {
+    eState = 1;
+
     eDir = eTargetPos - ePos;
     float length = std::sqrt(eDir.x * eDir.x + eDir.y * eDir.y);
 
@@ -138,5 +143,5 @@ void Enemy::aggro(float dt, Player& player) {
 }
 
 void Enemy::attack(Player& player) {
-	
+    eState = 3;
 }

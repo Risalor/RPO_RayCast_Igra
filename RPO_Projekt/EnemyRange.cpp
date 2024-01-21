@@ -9,11 +9,15 @@ EnemyRange::EnemyRange(int spx, int spy, int tpx, int tpy) : Enemy(spx, spy, tpx
 	eDamage = 3;
 
 	eCooldown = 0.7f;
+
+	eType = 1;
 }
 
 EnemyRange::~EnemyRange() {}
 
 void EnemyRange::attack(Player& player) {
+	eState = 3;
+
 	Projectile* p = new Projectile(ePos, eDir, eDamage);
 }
 

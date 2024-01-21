@@ -14,18 +14,19 @@ protected:
 	sf::Vector2f eTargetPos;
 
 	sf::Clock attackTimer;
-
-protected:
+	sf::Clock patrolTimer;
 
 	int eHealth;
+
+	int eState;
+	int eType;
 
 	float eSpeed;
 	float eVision;
 	float eRange;
 	float eCooldown;
 
-	float patrolPauseDuration;
-	sf::Clock patrolTimer;
+	float ePatrolPause;
 
 public:
 
@@ -33,7 +34,10 @@ public:
 	~Enemy();
 
 	sf::Vector2f getPos() const { return ePos; }
+	sf::Vector2f getDir() const { return eDir; }
 	int getHealth() { return eHealth; }
+	int getState() { return eState; }
+	int getType() { return eType; }
 	void takeDamage(int damage);
 
 	void update(float dt, Player& player);
