@@ -11,8 +11,8 @@ void GamePlayState::initState() {
 
 	//289, 291
 	items.push_back(new Weapon(9, 5, 5, 10, 0.5, false, false, false, "pistol1", 200, 200, 2, 2));
-	items.push_back(new Weapon(25, 15, 10, 10, 1, false, false, false, "shotgun", 200, 200, 2, 2));
-	items.push_back(new Weapon(25, 10, 2, 10, 0.2, false, false, false, "machinegun", 470, 300, 2, 2));
+	items.push_back(new Weapon(20, 17, 10, 10, 1, false, false, false, "shotgun", 200, 200, 2, 2));
+	items.push_back(new Weapon(18, 9, 2, 10, 0.2, false, false, false, "machinegun", 470, 300, 2, 2));
 	
 	this->isShooting = false;
 
