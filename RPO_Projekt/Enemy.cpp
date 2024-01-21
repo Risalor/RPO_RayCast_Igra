@@ -14,9 +14,10 @@ Enemy::Enemy(int spx, int spy, int tpx, int tpy) {
 	eHealth = 10;
 	eSpeed = 3.f;
 	eVision = 12.f;
-	eRange = 1.f;
+	eRange = 0.7f;
 
     ePatrolPause = 0.1f;
+    eFrame = 0;
     eState = 0;
 }
 
@@ -28,7 +29,10 @@ void Enemy::takeDamage(int damage) {
 	this->eHealth -= damage;
 
 	if (this->eHealth <= 0) {
-		delete this;
+        eState = 4;
+
+
+        deletionTimer.restart();
 	}
 }
 
@@ -69,20 +73,41 @@ bool isVisible(const sf::Vector2f& pPos, const sf::Vector2f& ePos) {
 }
 
 void Enemy::update(float dt, Player& player) {
+    if (eState != 4) {
+        sf::Vector2f pPos = player.getPos();
+        sf::Vector2f pDistanceVector = pPos - ePos;
+        float pDistance = std::sqrt(pDistanceVector.x * pDistanceVector.x + pDistanceVector.y * pDistanceVector.y);
 
-    sf::Vector2f pPos = player.getPos();
+        if (pDistance < eVision && isVisible(pPos, ePos)) {
+            eTargetPos = pPos;
+            aggro(dt, player);
+        }
+        else {
+            patrol(dt);
+        }
 
-    sf::Vector2f pDistanceVector = pPos - ePos;
-    float pDistance = std::sqrt(pDistanceVector.x * pDistanceVector.x + pDistanceVector.y * pDistanceVector.y);
+        if (frameTimer.getElapsedTime().asSeconds() >= 0.15f) {
+            frameTimer.restart();
 
-    if (pDistance < eVision && isVisible(pPos, ePos)) {
-        eTargetPos = pPos;
-        aggro(dt, player);
+            if (eFrame < 3) {
+                eFrame++;
+            }
+            else {
+                eFrame = 0;
+            }
+        }
+    }
+    else if (deletionTimer.getElapsedTime().asSeconds() >= 0.8f) {
+        delete this;
     }
     else {
-        patrol(dt);
+        if (frameTimer.getElapsedTime().asSeconds() >= 0.35f) {
+            frameTimer.restart();
+            eFrame++;
+        }
     }
 }
+
 
 void Enemy::patrol(float dt) {
     eState = 0;
@@ -117,7 +142,9 @@ void Enemy::patrol(float dt) {
 
 
 void Enemy::aggro(float dt, Player& player) {
-    eState = 1;
+    if (frameTimer.getElapsedTime().asSeconds() >= 1.2f) {
+        eState = 1;
+    }
 
     eDir = eTargetPos - ePos;
     float length = std::sqrt(eDir.x * eDir.x + eDir.y * eDir.y);

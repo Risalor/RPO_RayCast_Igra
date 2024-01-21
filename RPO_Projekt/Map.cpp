@@ -20,6 +20,19 @@ bool hasLineOfSight(const sf::Vector2f& start, const sf::Vector2f& end) {
 	return true;
 }
 
+int relativeAngle(const sf::Vector2f& pDir, const sf::Vector2f& eDir) {
+	float angle = std::atan2(eDir.y, eDir.x) - std::atan2(pDir.y, pDir.x);
+
+	angle = fmod(angle + 2 * M_PI, 2 * M_PI);
+	angle = angle * (180.0f / M_PI);
+
+	int frame = static_cast<int>((angle / 45.0f) + 0.5f) % 8;
+	frame = (8 - frame) % 8;
+
+	return frame;
+}
+
+
 void Map::handleDoor(Player& pInfo) {
 	if (glb::consts::worldMap[int(pInfo.getPos().x + pInfo.getDir().x)][int(pInfo.getPos().y + pInfo.getDir().y)] == 5) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
@@ -29,9 +42,9 @@ void Map::handleDoor(Player& pInfo) {
 }
 
 Map::Map() {
-
 	spriteManager.addNewTexture("Assets/Projectile/projectile.png");
-	spriteManager.addNewTexture("Assets/Enemy/Enemy.png");
+	spriteManager.addNewTexture("Assets/Enemy/em.png");
+	spriteManager.addNewTexture("Assets/Enemy/er.png");
 
 	std::filesystem::path folder("Assets/WallTex");
 
@@ -235,38 +248,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 			sp.setPosition(i, -(lineHeight - screenHeight) / 2.f);
 			window->draw(sp);
 		}
-	}
-	
-	spriteManager.createSprite(1);
-	for (size_t i = 0; i < eInfo.size(); ++i) {
-		sf::Vector2f enemyPos = eInfo[i]->getPos();
-		sf::Vector2f relativePos = enemyPos - pInfo.getPos();
-
-		float invDet = 1.0f / (pInfo.getPlane().x * pInfo.getDir().y - pInfo.getDir().x * pInfo.getPlane().y);
-		float transformX = invDet * (pInfo.getDir().y * relativePos.x - pInfo.getDir().x * relativePos.y);
-		float transformY = invDet * (-pInfo.getPlane().y * relativePos.x + pInfo.getPlane().x * relativePos.y);
-
-		if (transformY <= 0) {
-			continue;
-		}
-
-		if (!hasLineOfSight(pInfo.getPos(), enemyPos)) {
-			continue;
-		}
-
-		int spriteScreenX = static_cast<int>((screenWidth / 2) * (1 + transformX / transformY));
-
-		int spriteHeight = std::abs(static_cast<int>(screenHeight / transformY));
-		int spriteScreenY = screenHeight / 2 - spriteHeight / 2;
-
-		sf::Sprite* enemySprite = spriteManager.getSprite(0);
-		enemySprite->setPosition(spriteScreenX, spriteScreenY);
-
-		float scale = static_cast<float>(spriteHeight) / enemySprite->getTextureRect().width;
-		enemySprite->setScale(scale, scale);
-
-		window->draw(*enemySprite);
-	}
+	}	
 
 	spriteManager.createSprite(0);
 	for (size_t i = 0; i < prInfo.size(); ++i) {
@@ -286,7 +268,7 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		int spriteHeight = std::abs(static_cast<int>(screenHeight / transformY));
 		int spriteScreenY = screenHeight / 2 - spriteHeight / 2 + 20; 
 
-		sf::Sprite* projectileSprite = spriteManager.getSprite(1);
+		sf::Sprite* projectileSprite = spriteManager.getSprite(0);
 		projectileSprite->setPosition(spriteScreenX, spriteScreenY);
 
 		float scale = static_cast<float>(spriteHeight) / projectileSprite->getTextureRect().width;
@@ -295,6 +277,56 @@ void Map::rayCastDraw(sf::RenderTarget* window, Player& pInfo, std::vector<Enemy
 		window->draw(*projectileSprite);
 	}
 
+	spriteManager.createSprite(1);
+	AnimationManager animManager(800, 900, 8, 9);
+
+	for (size_t i = 0; i < eInfo.size(); ++i) {
+		sf::Vector2f enemyPos = eInfo[i]->getPos();
+		sf::Vector2f enemyDir = eInfo[i]->getDir();
+		sf::Vector2f relativePos = enemyPos - pInfo.getPos();
+
+		if (!hasLineOfSight(pInfo.getPos(), enemyPos)) {
+			continue;
+		}			
+
+		float invDet = 1.0f / (pInfo.getPlane().x * pInfo.getDir().y - pInfo.getDir().x * pInfo.getPlane().y);
+		float transformX = invDet * (pInfo.getDir().y * relativePos.x - pInfo.getDir().x * relativePos.y);
+		float transformY = invDet * (-pInfo.getPlane().y * relativePos.x + pInfo.getPlane().x * relativePos.y);
+
+		if (transformY <= 0) {
+			continue;
+		}
+
+		int spriteScreenX = static_cast<int>((screenWidth / 2) * (1 + transformX / transformY));
+		int spriteHeight = std::abs(static_cast<int>(screenHeight / transformY));
+		int spriteScreenY = screenHeight / 2 - spriteHeight / 2;
+
+		sf::Sprite* enemySprite = new sf::Sprite();
+		if (eInfo[i]->getType() == 0) {
+			enemySprite = spriteManager.getSprite(1);
+		}
+		else {
+			enemySprite = spriteManager.getSprite(2);
+		}
+
+		enemySprite->setPosition(spriteScreenX, spriteScreenY);
+		float scale = static_cast<float>(spriteHeight) / enemySprite->getTextureRect().width;
+		enemySprite->setScale(scale, scale);
+		
+		int angleFrame = relativeAngle(pInfo.getDir(), enemyDir);
+
+		angleFrame += (9 * eInfo[i]->getFrame());
+		if (eInfo[i]->getState() == 3) {
+			angleFrame += 36;
+		}
+		else if (eInfo[i]->getState() == 4) {
+			angleFrame = 72 + eInfo[i]->getFrame();
+		}
+
+		enemySprite->setTextureRect(animManager.getFrameByIndex(angleFrame));
+
+		window->draw(*enemySprite);
+	}
 
 	sf::Texture pistolTexture;
 	sf::Texture shotgunTexture;

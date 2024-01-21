@@ -15,10 +15,13 @@ protected:
 
 	sf::Clock attackTimer;
 	sf::Clock patrolTimer;
+	sf::Clock frameTimer;
+	sf::Clock deletionTimer;
 
 	int eHealth;
 
 	int eState;
+	int eFrame;
 	int eType;
 
 	float eSpeed;
@@ -37,6 +40,7 @@ public:
 	sf::Vector2f getDir() const { return eDir; }
 	int getHealth() { return eHealth; }
 	int getState() { return eState; }
+	int getFrame() { return eFrame; }
 	int getType() { return eType; }
 	void takeDamage(int damage);
 
