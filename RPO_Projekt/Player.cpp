@@ -5,8 +5,8 @@
 sf::Clock shootTimer;
 Player::Player(float speed) :movementSpeed(movementSpeed), rotationSpeed(rotationSpeed) {
 	
-    this->playerPos.x = 22;
-    this->playerPos.y = 12;
+    this->playerPos.x = 6;
+    this->playerPos.y = 6;
 	this->playerDir.x = 0;
 	this->playerDir.y = 1;
 	this->movementSpeed = 0.10f;
