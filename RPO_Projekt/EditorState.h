@@ -68,16 +68,62 @@ struct MapFileDisplay {
 	}
 };
 
+struct LegendRow {
+	sf::RectangleShape rect;
+	sf::Font font;
+	sf::Text text;
+
+	LegendRow(sf::Vector2f pos, std::string str) {
+		rect.setSize(sf::Vector2f(200.f, 20.f));
+		rect.setFillColor(sf::Color::Black);
+		rect.setOutlineColor(sf::Color::White);
+		rect.setOutlineThickness(1.f);
+		rect.setPosition(pos);
+
+		if (!font.loadFromFile("Assets/Fonts/font1.ttf")) {
+			std::cout << "No font";
+		}
+
+		text.setCharacterSize(15.f);
+		text.setString(str);
+		text.setFont(font);
+		text.setPosition(pos);
+	}
+
+	LegendRow() {}
+
+	void draw(sf::RenderTarget* window) {
+		text.setFont(font);
+
+		window->draw(rect);
+		window->draw(text);
+	}
+};
+
+//struct EnemyObj {
+//	sf::Vector2f pos;
+//	int type;
+//	sf::CircleShape shp;
+//
+//	EnemyObj(sf::Vector2f pos, float rad, int type) : pos(pos), type(type) {
+//		shp.setFillColor(sf::Color::Red);
+//		shp.setOutlineColor(sf::Color::White);
+//		shp.setOutlineThickness(1.f);
+//		shp.setRadius(rad);
+//		shp.setPosition(pos);
+//	}
+//
+//	EnemyObj() {}
+//};
+
 struct EnemyObj {
 	sf::Vector2f pos;
 	int type;
-	sf::CircleShape shp;
+	sf::Sprite shp;
 
-	EnemyObj(sf::Vector2f pos, float rad, int type) : pos(pos), type(type) {
-		shp.setFillColor(sf::Color::Red);
-		shp.setOutlineColor(sf::Color::White);
-		shp.setOutlineThickness(1.f);
-		shp.setRadius(rad);
+	EnemyObj(sf::Vector2f pos, sf::Texture* texture, int type) : pos(pos), type(type) {
+		shp.setTexture(*texture);
+		shp.setScale(0.7f, 0.7f);
 		shp.setPosition(pos);
 	}
 
@@ -132,6 +178,10 @@ private:
 
 	PlayerObj playerSelect;
 	PlayerObj player;
+
+	std::vector<LegendRow> legend;
+
+	sf::Texture enemyTexture1;
 public:
 	EditorState();
 	~EditorState();

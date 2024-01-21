@@ -65,6 +65,22 @@ void EditorState::initState() {
 		std::cout << "Folder does not exist or is not a directory.\n";
 	}
 
+	int offsetLegend = offset + 8;
+
+	legend.push_back(LegendRow(sf::Vector2f(600.f, 10.f + 25.f * offsetLegend), "Legend:"));
+	offsetLegend++;
+	legend.push_back(LegendRow(sf::Vector2f(600.f, 10.f + 25.f * offsetLegend), "Q - zoom in"));
+	offsetLegend++;
+	legend.push_back(LegendRow(sf::Vector2f(600.f, 10.f + 25.f * offsetLegend), "E - zoom out"));
+	offsetLegend++;
+	legend.push_back(LegendRow(sf::Vector2f(600.f, 10.f + 25.f * offsetLegend), "A - move left"));
+	offsetLegend++;
+	legend.push_back(LegendRow(sf::Vector2f(600.f, 10.f + 25.f * offsetLegend), "D - move right"));
+	offsetLegend++;
+	legend.push_back(LegendRow(sf::Vector2f(600.f, 10.f + 25.f * offsetLegend), "W - move up"));
+	offsetLegend++;
+	legend.push_back(LegendRow(sf::Vector2f(600.f, 10.f + 25.f * offsetLegend), "S - move down"));
+
 	dtCounter = 0;
 }
 
@@ -88,8 +104,15 @@ void EditorState::loadTextures() {
 		std::cout << "Folder does not exist or is not a directory.\n";
 	}
 
-	enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * offset + 3), 20, 1));
-	enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * (offset + 1) + 5), 20, 2));
+	/*enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * offset + 3), 20, 1));
+	enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * (offset + 1) + 5), 20, 2));*/
+	if (enemyTexture1.loadFromFile("Assets/Enemy/Enemy.png")) {
+		enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * offset + 3), &enemyTexture1, 1));
+		enemySelection.push_back(EnemyObj(sf::Vector2f(413.f, 40 * (offset + 1) + 5), &enemyTexture1, 2));
+	}
+	else {
+		std::cout << "Folder does not exist or is not a directory.\n";
+	}
 
 	playerSelect = PlayerObj(sf::Vector2f(413.f, 40 * (offset + 2) + 7), 20);
 }
@@ -274,7 +297,8 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 			file.read(reinterpret_cast<char*>(&pozX), sizeof(double));
 			file.read(reinterpret_cast<char*>(&pozY), sizeof(double));
 			file.read(reinterpret_cast<char*>(&type), sizeof(int));
-			enemies.push_back(EnemyObj(sf::Vector2f(pozX * 17.f, pozY * 17.f), 5.f, type));
+			/*enemies.push_back(EnemyObj(sf::Vector2f(pozX * 17.f, pozY * 17.f), 5.f, type));*/
+			enemies.push_back(EnemyObj(sf::Vector2f(pozX * 17.f, pozY * 17.f), &enemyTexture1, type));
 		}
 
 		file.read(reinterpret_cast<char*>(&pozX), sizeof(double));
@@ -313,22 +337,23 @@ void EditorState::update(float dt, sf::Vector2f mousePos) {
 	for (auto& it : enemySelection) {
 		if (it.shp.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			selectedEnemy = it;
-			it.shp.setOutlineColor(sf::Color::Green);
+			it.shp.setColor(sf::Color::Green);
 			selected = 0;
 		}
 
 		if (it.type != selectedEnemy.type) {
-			it.shp.setOutlineColor(sf::Color::White);
+			it.shp.setColor(sf::Color::White);
 		}
 
 		if (selected != 0) {
-			it.shp.setOutlineColor(sf::Color::White);
+			it.shp.setColor(sf::Color::White);
 			selectedEnemy.type = 0;
 		}
 	}
 
 	if (isMouseInView() && sf::Mouse::isButtonPressed(sf::Mouse::Left) && dtCounter > 0.5f && selectedEnemy.type != 0) {
-		enemies.push_back(EnemyObj(worldCoords, 5.f, selectedEnemy.type));
+		/*enemies.push_back(EnemyObj(worldCoords, 5.f, selectedEnemy.type));*/
+		enemies.push_back(EnemyObj(worldCoords, &enemyTexture1, selectedEnemy.type));
 		dtCounter = 0.f;
 	}
 
@@ -424,6 +449,10 @@ void EditorState::draw(sf::RenderTarget* window) {
 	}
 
 	for (auto& it : maps) {
+		it.draw(window);
+	}
+
+	for (auto& it : legend) {
 		it.draw(window);
 	}
 
