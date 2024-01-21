@@ -143,6 +143,11 @@ void GamePlayState::loadmap(int mapNum) {
 				enemies.push_back(new EnemyRange(int(x), int(y), int(x) - 1, int(y) - 1));
 			}
 		}
+
+		/*int x, y;
+
+		file.read(reinterpret_cast<char*>(&x), sizeof(x));
+		file.read(reinterpret_cast<char*>(&y), sizeof(y));*/
 	}
 
 	file.close();
